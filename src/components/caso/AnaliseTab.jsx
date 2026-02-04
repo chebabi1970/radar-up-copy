@@ -60,7 +60,7 @@ export default function AnaliseTab({ caso, cliente, documentos }) {
   const calcularCapacidadeAutomatica = () => {
     const totalRecursos = saldosBancarios + aplicacoesFinanceiras;
     const capacidadeReais = totalRecursos * 0.5;
-    const taxaDolar = 5.2208; // Portaria Coana 167/2025
+    const taxaDolar = 5.3076; // Portaria Coana - válida até 31/12/2026
     return capacidadeReais / taxaDolar;
   };
 
@@ -115,7 +115,7 @@ Com base no Livro RADAR 2025 e na legislação vigente, forneça:
 3. Recomendações sobre documentação adicional necessária
 4. Alertas sobre possíveis inconsistências ou pontos de atenção
 
-Taxa de câmbio vigente: R$ 5,2208 (Portaria Coana 167/2025)
+Taxa de câmbio: R$ 5,3076 (válida até 31/12/2026)
 
 Justifique sua análise citando os artigos relevantes da IN 1984/2020 e Portaria Coana 72/2020.`;
 
@@ -274,7 +274,7 @@ Justifique sua análise citando os artigos relevantes da IN 1984/2020 e Portaria
                   <p className="text-xl font-bold text-green-600">
                     USD {capacidadeEstimada.toLocaleString('en-US', {minimumFractionDigits: 2})}
                   </p>
-                  <p className="text-xs text-slate-500 mt-1">Taxa: R$ 5,2208</p>
+                  <p className="text-xs text-slate-500 mt-1">Taxa: R$ 5,3076</p>
                 </div>
               </div>
             </div>
@@ -425,7 +425,7 @@ Justifique sua análise citando os artigos relevantes da IN 1984/2020 e Portaria
             <div className="p-4 border border-blue-200 bg-blue-50/50 rounded-xl">
               <Badge className="mb-2 bg-blue-600">Limitada</Badge>
               <p className="font-medium text-slate-900 mb-2">Até USD 150.000 por operação</p>
-              <p className="text-sm text-slate-600 mb-2">Limite anual: USD 1.200.000</p>
+              <p className="text-sm text-slate-600 mb-2">Capacidade mínima exigida: R$ 266.000</p>
               <p className="text-xs text-slate-500">
                 Art. 14 IN 1984/2020 - Para empresas com capacidade financeira demonstrada.
               </p>
@@ -433,10 +433,10 @@ Justifique sua análise citando os artigos relevantes da IN 1984/2020 e Portaria
 
             <div className="p-4 border border-purple-200 bg-purple-50/50 rounded-xl">
               <Badge className="mb-2 bg-purple-600">Ilimitada</Badge>
-              <p className="font-medium text-slate-900 mb-2">Sem limite de valor</p>
-              <p className="text-sm text-slate-600 mb-2">Operações de qualquer porte</p>
+              <p className="font-medium text-slate-900 mb-2">Acima de USD 150.000</p>
+              <p className="text-sm text-slate-600 mb-2">Capacidade mínima exigida: R$ 797.000</p>
               <p className="text-xs text-slate-500">
-                Art. 15 IN 1984/2020 - Exige capacidade financeira robusta (mínimo R$ 500.000 em saldos).
+                Art. 15 IN 1984/2020 - Exige capacidade financeira robusta.
               </p>
             </div>
           </div>
