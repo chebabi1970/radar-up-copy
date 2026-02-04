@@ -28,7 +28,7 @@ const statusConfig = {
   nao_aplicavel: { icon: AlertCircle, color: "text-slate-400", bg: "bg-slate-50", label: "N/A" }
 };
 
-export default function ChecklistTab({ casoId, checklistItems, documentos }) {
+export default function ChecklistTab({ casoId, checklistItems, documentos, cliente }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [itemSelecionado, setItemSelecionado] = useState(null);
   const queryClient = useQueryClient();
@@ -143,6 +143,7 @@ export default function ChecklistTab({ casoId, checklistItems, documentos }) {
           item={itemSelecionado}
           documentos={documentos}
           casoId={casoId}
+          cliente={cliente}
           onClose={() => {
             setModalOpen(false);
             setItemSelecionado(null);
