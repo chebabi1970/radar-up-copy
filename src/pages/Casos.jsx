@@ -62,9 +62,11 @@ const statusLabels = {
 
 const hipoteseLabels = {
   recursos_financeiros_livres: "Recursos Financeiros de Livre Movimentação (Art. 4º, I)",
+  fruicao_desoneracao_tributaria: "Fruição de Desonerações Tributárias (Art. 4º, II)",
   recolhimento_tributos_das: "Recolhimento Tributos - DAS (Art. 4º, III)",
   recolhimento_tributos_cprb: "Recolhimento Tributos - CPRB (Art. 4º, IV)",
-  retomada_atividades: "Retomada de Atividades (Art. 4º, V)"
+  retomada_atividades: "Retomada de Atividades (Art. 4º, V)",
+  inicio_retomada_atividades_5anos: "Início/Retomada de Atividades há menos de 5 anos"
 };
 
 export default function Casos() {
@@ -281,6 +283,9 @@ export default function Casos() {
                       <SelectItem value="recursos_financeiros_livres">
                         I - Recursos Financeiros de Livre Movimentação
                       </SelectItem>
+                      <SelectItem value="fruicao_desoneracao_tributaria">
+                        II - Fruição de Desonerações Tributárias
+                      </SelectItem>
                       <SelectItem value="recolhimento_tributos_das">
                         III - Recolhimento Tributos via DAS
                       </SelectItem>
@@ -289,6 +294,9 @@ export default function Casos() {
                       </SelectItem>
                       <SelectItem value="retomada_atividades">
                         V - Retomada de Atividades
+                      </SelectItem>
+                      <SelectItem value="inicio_retomada_atividades_5anos">
+                        Início/Retomada de Atividades há menos de 5 anos
                       </SelectItem>
                     </SelectContent>
                   </Select>

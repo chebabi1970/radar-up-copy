@@ -61,9 +61,11 @@ const statusLabels = {
 
 const hipoteseLabels = {
   recursos_financeiros_livres: "I - Recursos Financeiros de Livre Movimentação (Art. 4º)",
+  fruicao_desoneracao_tributaria: "II - Fruição de Desonerações Tributárias (Art. 4º)",
   recolhimento_tributos_das: "III - Recolhimento Tributos - DAS (Art. 4º)",
   recolhimento_tributos_cprb: "IV - Recolhimento CPRB (Art. 4º)",
-  retomada_atividades: "V - Retomada de Atividades (Art. 4º)"
+  retomada_atividades: "V - Retomada de Atividades (Art. 4º)",
+  inicio_retomada_atividades_5anos: "Início/Retomada de Atividades há menos de 5 anos"
 };
 
 export default function CasoDetalhe() {
