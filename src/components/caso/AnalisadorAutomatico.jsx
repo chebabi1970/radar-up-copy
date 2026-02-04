@@ -111,10 +111,22 @@ Retorne um JSON estruturado com:
           type: 'object',
           properties: {
             resumo: { type: 'string' },
-            informacoes_extraidas: { type: 'array' },
-            discrepancias: { type: 'array' },
-            validacoes: { type: 'array' },
-            riscos: { type: 'array' },
+            informacoes_extraidas: { 
+              type: 'array',
+              items: { type: 'object' }
+            },
+            discrepancias: { 
+              type: 'array',
+              items: { type: 'object' }
+            },
+            validacoes: { 
+              type: 'array',
+              items: { type: 'object' }
+            },
+            riscos: { 
+              type: 'array',
+              items: { type: 'object' }
+            },
             conclusao: { type: 'string' }
           }
         }
