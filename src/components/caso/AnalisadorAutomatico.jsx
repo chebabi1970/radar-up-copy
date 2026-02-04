@@ -24,11 +24,15 @@ const severidadeColors = {
   leve: 'bg-blue-100 text-blue-800 border-blue-200'
 };
 
-export default function AnalisadorAutomatico({ casoId, documentos }) {
+export default function AnalisadorAutomatico({ casoId, documentos, checklistItems = [] }) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [resultado, setResultado] = useState(null);
   const [detalhesModal, setDetalhesModal] = useState(false);
   const queryClient = useQueryClient();
+
+  // Validar se todos os itens do checklist estão aprovados ou N/A
+  const temItemsPendentes = checklistItems.some(item => item.status === 'pendente');
+  const podeAnalisar = documentos.length >= 1 && !temItemsPendentes;
 
   const salvarHistoricoMutation = useMutation({
     mutationFn: (dados) => base44.entities.AnaliseHistorico.create(dados),
@@ -38,8 +42,12 @@ export default function AnalisadorAutomatico({ casoId, documentos }) {
   });
 
   const analisarDocumentos = async () => {
-    if (documentos.length < 1) {
-      alert('É necessário ter pelo menos 1 documento para fazer uma análise');
+    if (!podeAnalisar) {
+      if (temItemsPendentes) {
+        alert('Todos os itens do checklist devem estar aprovados ou marcados como N/A antes de fazer a análise.');
+      } else {
+        alert('É necessário ter pelo menos 1 documento para fazer uma análise');
+      }
       return;
     }
 
@@ -340,13 +348,16 @@ Retorne um JSON estruturado com:
       </div>
       <Button 
         onClick={analisarDocumentos}
-        disabled={documentos.length < 1}
+        disabled={!podeAnalisar}
         className="bg-blue-600 hover:bg-blue-700"
       >
         Iniciar Análise
       </Button>
-      {documentos.length < 1 && (
-        <p className="text-xs text-red-600 mt-3">Mínimo 1 documento necessário</p>
+      {!podeAnalisar && (
+        <div className="text-xs text-red-600 mt-3 space-y-1">
+          {temItemsPendentes && <p>⚠️ Todos os itens do checklist devem estar aprovados ou N/A</p>}
+          {documentos.length < 1 && <p>⚠️ Mínimo 1 documento necessário</p>}
+        </div>
       )}
     </div>
   );
