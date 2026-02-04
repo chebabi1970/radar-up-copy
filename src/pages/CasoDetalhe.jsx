@@ -1,0 +1,287 @@
+import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { 
+  ArrowLeft,
+  Building2,
+  FileText,
+  CheckSquare,
+  AlertTriangle,
+  Upload,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  Loader2,
+  RefreshCw,
+  Calculator
+} from 'lucide-react';
+
+import ChecklistTab from '@/components/caso/ChecklistTab';
+import DocumentosTab from '@/components/caso/DocumentosTab';
+import DivergenciasTab from '@/components/caso/DivergenciasTab';
+import AnaliseTab from '@/components/caso/AnaliseTab';
+
+const statusColors = {
+  novo: "bg-blue-100 text-blue-800 border-blue-200",
+  em_analise: "bg-yellow-100 text-yellow-800 border-yellow-200",
+  aguardando_documentos: "bg-orange-100 text-orange-800 border-orange-200",
+  documentacao_completa: "bg-green-100 text-green-800 border-green-200",
+  protocolado: "bg-purple-100 text-purple-800 border-purple-200",
+  deferido: "bg-emerald-100 text-emerald-800 border-emerald-200",
+  indeferido: "bg-red-100 text-red-800 border-red-200",
+  arquivado: "bg-gray-100 text-gray-800 border-gray-200"
+};
+
+const statusLabels = {
+  novo: "Novo",
+  em_analise: "Em Análise",
+  aguardando_documentos: "Aguardando Documentos",
+  documentacao_completa: "Documentação Completa",
+  protocolado: "Protocolado",
+  deferido: "Deferido",
+  indeferido: "Indeferido",
+  arquivado: "Arquivado"
+};
+
+const hipoteseLabels = {
+  recursos_financeiros_livres: "I - Recursos Financeiros de Livre Movimentação (Art. 4º)",
+  recolhimento_tributos_das: "III - Recolhimento Tributos - DAS (Art. 4º)",
+  recolhimento_tributos_cprb: "IV - Recolhimento CPRB (Art. 4º)",
+  retomada_atividades: "V - Retomada de Atividades (Art. 4º)"
+};
+
+export default function CasoDetalhe() {
+  const [casoId, setCasoId] = useState(null);
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setCasoId(params.get('id'));
+  }, []);
+
+  const { data: caso, isLoading: casoLoading } = useQuery({
+    queryKey: ['caso', casoId],
+    queryFn: () => base44.entities.Caso.filter({ id: casoId }).then(res => res[0]),
+    enabled: !!casoId
+  });
+
+  const { data: cliente } = useQuery({
+    queryKey: ['cliente', caso?.cliente_id],
+    queryFn: () => base44.entities.Cliente.filter({ id: caso.cliente_id }).then(res => res[0]),
+    enabled: !!caso?.cliente_id
+  });
+
+  const { data: checklistItems = [] } = useQuery({
+    queryKey: ['checklist', casoId],
+    queryFn: () => base44.entities.ChecklistItem.filter({ caso_id: casoId }),
+    enabled: !!casoId
+  });
+
+  const { data: documentos = [] } = useQuery({
+    queryKey: ['documentos', casoId],
+    queryFn: () => base44.entities.Documento.filter({ caso_id: casoId }),
+    enabled: !!casoId
+  });
+
+  const updateStatusMutation = useMutation({
+    mutationFn: (newStatus) => base44.entities.Caso.update(casoId, { status: newStatus }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['caso', casoId] });
+    }
+  });
+
+  if (casoLoading || !caso) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
+
+  const pendingItems = checklistItems.filter(i => i.status === 'pendente').length;
+  const completedItems = checklistItems.filter(i => i.status !== 'pendente').length;
+  const unresolvedDivergencias = caso.divergencias_encontradas?.filter(d => !d.resolvida).length || 0;
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="mb-6">
+          <Link to={createPageUrl('Casos')}>
+            <Button variant="ghost" className="mb-4 text-slate-600 hover:text-slate-900">
+              <ArrowLeft className="h-4 w-4 mr-2" /> Voltar aos Casos
+            </Button>
+          </Link>
+          
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+                {caso.numero_caso || `Caso #${caso.id.slice(0, 8)}`}
+              </h1>
+              <div className="flex items-center gap-2 mt-2">
+                <Building2 className="h-4 w-4 text-slate-400" />
+                <span className="text-slate-600">{cliente?.razao_social}</span>
+              </div>
+              <p className="text-sm text-slate-500 mt-1">
+                {hipoteseLabels[caso.hipotese_revisao]}
+              </p>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <Select 
+                value={caso.status} 
+                onValueChange={(value) => updateStatusMutation.mutate(value)}
+              >
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(statusLabels).map(([value, label]) => (
+                    <SelectItem key={value} value={value}>{label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Badge className={`${statusColors[caso.status]} border text-sm py-1.5 px-3`}>
+                {statusLabels[caso.status]}
+              </Badge>
+            </div>
+          </div>
+        </div>
+
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <Card className="border-0 shadow-md">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 bg-blue-50 rounded-lg flex items-center justify-center">
+                  <FileText className="h-5 w-5 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-slate-500">Documentos</p>
+                  <p className="text-xl font-bold text-slate-900">{documentos.length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-md">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 bg-green-50 rounded-lg flex items-center justify-center">
+                  <CheckSquare className="h-5 w-5 text-green-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-slate-500">Checklist</p>
+                  <p className="text-xl font-bold text-slate-900">{completedItems}/{checklistItems.length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-md">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${unresolvedDivergencias > 0 ? 'bg-red-50' : 'bg-green-50'}`}>
+                  <AlertTriangle className={`h-5 w-5 ${unresolvedDivergencias > 0 ? 'text-red-600' : 'text-green-600'}`} />
+                </div>
+                <div>
+                  <p className="text-sm text-slate-500">Divergências</p>
+                  <p className="text-xl font-bold text-slate-900">{unresolvedDivergencias}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-md">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 bg-purple-50 rounded-lg flex items-center justify-center">
+                  <Calculator className="h-5 w-5 text-purple-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-slate-500">Estimativa</p>
+                  <p className="text-xl font-bold text-slate-900">
+                    {caso.estimativa_calculada ? `$${caso.estimativa_calculada.toLocaleString()}` : 'Pendente'}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Tabs */}
+        <Card className="border-0 shadow-lg shadow-slate-200/50">
+          <Tabs defaultValue="checklist" className="w-full">
+            <CardHeader className="border-b border-slate-100 pb-0">
+              <TabsList className="bg-transparent h-auto p-0 gap-4">
+                <TabsTrigger 
+                  value="checklist" 
+                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none pb-3 px-1"
+                >
+                  <CheckSquare className="h-4 w-4 mr-2" />
+                  Checklist
+                  {pendingItems > 0 && (
+                    <Badge className="ml-2 bg-orange-100 text-orange-700">{pendingItems}</Badge>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="documentos" 
+                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none pb-3 px-1"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Documentos
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="divergencias" 
+                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none pb-3 px-1"
+                >
+                  <AlertTriangle className="h-4 w-4 mr-2" />
+                  Divergências
+                  {unresolvedDivergencias > 0 && (
+                    <Badge className="ml-2 bg-red-100 text-red-700">{unresolvedDivergencias}</Badge>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="analise" 
+                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none pb-3 px-1"
+                >
+                  <Calculator className="h-4 w-4 mr-2" />
+                  Análise
+                </TabsTrigger>
+              </TabsList>
+            </CardHeader>
+
+            <TabsContent value="checklist" className="p-6 mt-0">
+              <ChecklistTab casoId={casoId} checklistItems={checklistItems} documentos={documentos} />
+            </TabsContent>
+
+            <TabsContent value="documentos" className="p-6 mt-0">
+              <DocumentosTab casoId={casoId} documentos={documentos} checklistItems={checklistItems} />
+            </TabsContent>
+
+            <TabsContent value="divergencias" className="p-6 mt-0">
+              <DivergenciasTab caso={caso} documentos={documentos} />
+            </TabsContent>
+
+            <TabsContent value="analise" className="p-6 mt-0">
+              <AnaliseTab caso={caso} cliente={cliente} documentos={documentos} />
+            </TabsContent>
+          </Tabs>
+        </Card>
+      </div>
+    </div>
+  );
+}
