@@ -24,8 +24,12 @@ export default function Home() {
 
   useEffect(() => {
     const getUser = async () => {
-      const currentUser = await base44.auth.me();
-      setUser(currentUser);
+      try {
+        const currentUser = await base44.auth.me();
+        setUser(currentUser);
+      } catch (error) {
+        setUser(null);
+      }
     };
     getUser();
   }, []);
@@ -33,17 +37,22 @@ export default function Home() {
   const { data: stats } = useQuery({
     queryKey: ['dashboard-stats'],
     queryFn: async () => {
-      const clientes = await base44.entities.Cliente.list();
-      const casos = await base44.entities.Caso.list();
-      const documentos = await base44.entities.Documento.list();
-      
-      return {
-        totalClientes: clientes.length,
-        totalCasos: casos.length,
-        casosAtivos: casos.filter(c => ['em_analise', 'aguardando_documentos', 'protocolado'].includes(c.status)).length,
-        documentosPendentes: documentos.filter(d => d.status_analise === 'pendente').length
-      };
-    }
+      try {
+        const clientes = await base44.entities.Cliente.list();
+        const casos = await base44.entities.Caso.list();
+        const documentos = await base44.entities.Documento.list();
+        
+        return {
+          totalClientes: clientes.length,
+          totalCasos: casos.length,
+          casosAtivos: casos.filter(c => ['em_analise', 'aguardando_documentos', 'protocolado'].includes(c.status)).length,
+          documentosPendentes: documentos.filter(d => d.status_analise === 'pendente').length
+        };
+      } catch (error) {
+        return null;
+      }
+    },
+    enabled: !!user
   });
 
   const features = [
@@ -178,28 +187,36 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {features.map((feature, idx) => (
-            <Link key={idx} to={createPageUrl(feature.link)}>
-              <Card className="h-full hover:shadow-lg transition-all duration-300 cursor-pointer border-0 bg-white/80 backdrop-blur">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="p-3 rounded-lg bg-slate-100">
-                      {feature.icon}
+          {features.map((feature, idx) => {
+            const handleClick = (e) => {
+              if (!user) {
+                e.preventDefault();
+                base44.auth.redirectToLogin();
+              }
+            };
+            return (
+              <Link key={idx} to={user ? createPageUrl(feature.link) : '#'} onClick={handleClick}>
+                <Card className="h-full hover:shadow-lg transition-all duration-300 cursor-pointer border-0 bg-white/80 backdrop-blur">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="p-3 rounded-lg bg-slate-100">
+                        {feature.icon}
+                      </div>
+                      <ArrowRight className="h-5 w-5 text-slate-400" />
                     </div>
-                    <ArrowRight className="h-5 w-5 text-slate-400" />
-                  </div>
-                  <CardTitle className="text-lg text-slate-900 mt-4">
-                    {feature.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-slate-600">
-                    {feature.descricao}
-                  </p>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
+                    <CardTitle className="text-lg text-slate-900 mt-4">
+                      {feature.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-slate-600">
+                      {feature.descricao}
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
+            );
+          })}
         </div>
       </div>
 
@@ -246,12 +263,23 @@ export default function Home() {
             </p>
           </CardHeader>
           <CardContent className="text-center">
-            <Link to={createPageUrl('Casos')}>
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-slate-100">
-                Criar Novo Caso
+            {user ? (
+              <Link to={createPageUrl('Casos')}>
+                <Button size="lg" className="bg-white text-blue-600 hover:bg-slate-100">
+                  Criar Novo Caso
+                  <ArrowRight className="h-5 w-5 ml-2" />
+                </Button>
+              </Link>
+            ) : (
+              <Button 
+                size="lg" 
+                className="bg-white text-blue-600 hover:bg-slate-100"
+                onClick={() => base44.auth.redirectToLogin()}
+              >
+                Fazer Login
                 <ArrowRight className="h-5 w-5 ml-2" />
               </Button>
-            </Link>
+            )}
           </CardContent>
         </Card>
       </div>
