@@ -68,51 +68,101 @@ export default function AnalisadorAutomatico({ casoId, documentos, checklistItem
           data: d.data_documento
         }));
 
+      // Buscar dados do cliente para comparação
+      const caso = await base44.entities.Caso.list({ id: casoId });
+      const cliente = caso.length > 0 ? await base44.entities.Cliente.list({ id: caso[0].cliente_id }) : [];
+      const clienteData = cliente.length > 0 ? cliente[0] : null;
+
       // Chamar IA para análise
       const analise = await base44.integrations.Core.InvokeLLM({
-        prompt: `Você é um analista de conformidade especializado em análise documental.
+        prompt: `Você é um analista de conformidade especializado em análise documental de processos de habilitação RFB.
 
-Analise os seguintes documentos e identifique:
-1. Informações chave extraídas de cada documento (nome, endereço, dados financeiros, etc)
-2. Validações comparativas com os dados do cadastro da empresa (quando houver múltiplos documentos)
-3. Consistências e inconsistências
-4. Riscos identificados
+ANALISE PROFUNDA dos seguintes documentos:
+${JSON.stringify(dadosDocumentos.map(d => ({ tipo: tiposDocumentos[d.tipo] || d.tipo, nome: d.nome, data: d.data })))}
 
-Documentos a analisar: ${JSON.stringify(dadosDocumentos.map(d => ({ tipo: tiposDocumentos[d.tipo] || d.tipo, nome: d.nome })))}
+DADOS DO CLIENTE PARA CRUZAMENTO:
+${clienteData ? JSON.stringify({
+  razao_social: clienteData.razao_social,
+  cnpj: clienteData.cnpj,
+  endereco: clienteData.endereco
+}) : 'Não disponível'}
 
-Retorne um JSON estruturado com:
+REALIZAR AS SEGUINTES VALIDAÇÕES CRÍTICAS:
+
+1. **CRUZAMENTO DE DOCUMENTOS FINANCEIROS**:
+   - Somas do balancete devem corresponder aos saldos dos extratos
+   - Datas de referência devem ser consistentes (mesmo período)
+   - Saldos em 28/02 (ou 29 em anos bissextos), 30 e 31 devem corresponder
+
+2. **VALIDAÇÃO DE DATAS**:
+   - Nenhum documento pode ter data futura
+   - Verificar se documentos estão dentro de prazos de validade
+   - Alertar se documentos têm datas muito antigas (>6 meses)
+
+3. **VALIDAÇÃO DOCUMENTAL**:
+   - Confirmar se documentos parecem estar assinados/autenticados
+   - Verificar se períodos de referência fazem sentido (não podem ser futuros)
+
+4. **MAPEAMENTO AUTOMÁTICO DE CAMPOS**:
+   - Equiparar "saldo em [data]" do balancete com "saldo final" do extrato
+   - Relacionar "capacidade financeira" com "valor pretendido"
+   - Validar nomes, CNPJs, endereços entre documentos
+
+5. **CRUZAMENTO COM CADASTRO**:
+   - Comparar RAZÃO SOCIAL do cliente registrado com nomes em documentos
+   - Validar CNPJ em todos os documentos
+   - Verificar ENDEREÇO registrado vs endereço nos documentos
+
+6. **DETECÇÃO DE PADRÕES SUSPEITOS**:
+   - Movimentações anormais próximas ao período de análise
+   - Saldos que aumentam/diminuem drasticamente entre períodos
+   - Movimentos circulares (entrada/saída mesmo dia)
+
+7. **ALERTAS ESPECÍFICOS**:
+   - ⚠️ Contrato de mútuo SEM registro em cartório (muito crítico)
+   - ⚠️ Documentação incompleta típica de rejeição
+   - ⚠️ Falta de IOF em contratos de mútuo
+   - ⚠️ Inconsistências de valores
+
+8. **ANÁLISE PREDITIVA**:
+   - Sugerir probabilidade de aprovação (baixa/média/alta)
+   - Listar riscos antes do protocolo que podem resultar em indeferimento
+
+Retorne OBRIGATORIAMENTE um JSON estruturado com:
 {
-  "resumo": "resumo executivo da análise",
+  "resumo": "resumo executivo focado em riscos críticos",
   "informacoes_extraidas": [
     {
       "documento": "nome do documento",
-      "dados": {
-        "chaves": "valores extraídos"
-      }
+      "dados": { campos chave extraídos }
     }
   ],
   "discrepancias": [
     {
-      "tipo": "tipo da discrepância",
-      "descricao": "descrição detalhada",
+      "tipo": "tipo exato da discrepância",
+      "descricao": "descrição técnica e detalhada",
       "documentos_envolvidos": ["doc1", "doc2"],
-      "severidade": "critica|media|leve"
+      "severidade": "critica|media|leve",
+      "campo_1": "valor encontrado",
+      "campo_2": "valor esperado"
     }
   ],
   "validacoes": [
     {
-      "descricao": "descrição da validação",
+      "descricao": "validação realizada",
       "status": "ok|alerta|erro",
-      "detalhes": "detalhes"
+      "detalhes": "resultado detalhado"
     }
   ],
   "riscos": [
     {
-      "descricao": "descrição do risco",
-      "impacto": "alto|medio|baixo"
+      "descricao": "descrição do risco identificado",
+      "impacto": "alto|medio|baixo",
+      "fundamento": "por que é risco"
     }
   ],
-  "conclusao": "conclusão geral da análise"
+  "probabilidade_aprovacao": "baixa|media|alta",
+  "conclusao": "conclusão final com recomendações"
 }`,
         add_context_from_internet: false,
         response_json_schema: {
