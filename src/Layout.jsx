@@ -14,7 +14,7 @@ import {
 import { base44 } from '@/api/base44Client';
 
 const navigation = [
-  { name: 'Dashboard', href: 'Dashboard', icon: LayoutDashboard },
+  { name: 'Home', href: 'Home', icon: LayoutDashboard },
   { name: 'Clientes', href: 'Clientes', icon: Users },
   { name: 'Casos', href: 'Casos', icon: FolderOpen },
 ];
@@ -65,7 +65,7 @@ export default function Layout({ children, currentPageName }) {
           {/* Navigation */}
           <nav className="flex-1 p-4 space-y-1">
             {navigation.map((item) => {
-              const isActive = currentPageName === item.href || currentPageName === item.name;
+              const isActive = currentPageName === item.href || currentPageName === item.name || (item.href === 'Home' && !currentPageName);
               const Icon = item.icon;
               
               return (
