@@ -29,7 +29,10 @@ import {
   Calculator,
   History,
   Zap,
-  Shield
+  Shield,
+  Edit2,
+  Check,
+  X
 } from 'lucide-react';
 
 import ChecklistTab from '@/components/caso/ChecklistTab';
@@ -40,6 +43,7 @@ import HistoricoTab from '@/components/caso/HistoricoTab';
 import AnalisadorAutomatico from '@/components/caso/AnalisadorAutomatico';
 import ConformidadePanel from '@/components/caso/ConformidadePanel';
 import PrivacyWarning from '@/components/caso/PrivacyWarning';
+import { Input } from "@/components/ui/input";
 
 const statusColors = {
   novo: "bg-blue-100 text-blue-800 border-blue-200",
@@ -74,6 +78,8 @@ const hipoteseLabels = {
 
 export default function CasoDetalhe() {
   const [casoId, setCasoId] = useState(null);
+  const [editandoNome, setEditandoNome] = useState(false);
+  const [novoNome, setNovoNome] = useState('');
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -112,6 +118,20 @@ export default function CasoDetalhe() {
     }
   });
 
+  const updateNomeMutation = useMutation({
+    mutationFn: (newNome) => base44.entities.Caso.update(casoId, { numero_caso: newNome }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['caso', casoId] });
+      setEditandoNome(false);
+    }
+  });
+
+  const handleSalvarNome = () => {
+    if (novoNome.trim()) {
+      updateNomeMutation.mutate(novoNome.trim());
+    }
+  };
+
   if (casoLoading || !caso) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex items-center justify-center">
@@ -141,10 +161,50 @@ export default function CasoDetalhe() {
           </Link>
           
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
-                {caso.numero_caso || `Caso #${caso.id.slice(0, 8)}`}
-              </h1>
+            <div className="flex-1">
+              {editandoNome ? (
+                <div className="flex items-center gap-2 mb-4">
+                  <Input
+                    value={novoNome}
+                    onChange={(e) => setNovoNome(e.target.value)}
+                    placeholder="Digite o nome do caso"
+                    className="text-3xl font-bold"
+                    autoFocus
+                  />
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={handleSalvarNome}
+                    disabled={updateNomeMutation.isPending}
+                  >
+                    <Check className="h-5 w-5 text-green-600" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => setEditandoNome(false)}
+                  >
+                    <X className="h-5 w-5 text-red-600" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 mb-2">
+                  <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+                    {caso.numero_caso || `Caso #${caso.id.slice(0, 8)}`}
+                  </h1>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="text-slate-400 hover:text-slate-600"
+                    onClick={() => {
+                      setNovoNome(caso.numero_caso || `Caso #${caso.id.slice(0, 8)}`);
+                      setEditandoNome(true);
+                    }}
+                  >
+                    <Edit2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
               <div className="flex items-center gap-2 mt-2">
                 <Building2 className="h-4 w-4 text-slate-400" />
                 <span className="text-slate-600">{cliente?.razao_social}</span>
