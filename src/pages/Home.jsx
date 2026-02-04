@@ -133,7 +133,7 @@ export default function Home() {
 
           {/* Stats Grid */}
           {stats && (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
               <Card className="border-0 shadow-lg bg-white/80 backdrop-blur">
                 <CardContent className="pt-6">
                   <div className="text-center">
@@ -185,8 +185,8 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {features.map((feature, idx) => {
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+           {features.map((feature, idx) => {
             const handleClick = (e) => {
               if (!user) {
                 e.preventDefault();
@@ -283,37 +283,66 @@ export default function Home() {
         </Card>
       </div>
 
-      {/* Info Section */}
-      <div className="bg-slate-900 text-white py-12">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div>
-              <h3 className="font-semibold text-lg mb-2">Base Legal</h3>
-              <ul className="text-slate-300 text-sm space-y-1">
-                <li>IN RFB 1984/2020</li>
-                <li>Portaria Coana 72/2020</li>
-                <li>Livro RADAR 2025</li>
-              </ul>
+      {/* Onboarding Section */}
+      {user && stats && stats.totalClientes === 0 && (
+        <div className="bg-blue-50 py-16 border-t border-blue-200">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-slate-900 mb-4">
+                Primeiros Passos
+              </h2>
+              <p className="text-slate-600">
+                Siga este guia rápido para começar a usar a plataforma
+              </p>
             </div>
-            <div>
-              <h3 className="font-semibold text-lg mb-2">Segurança</h3>
-              <ul className="text-slate-300 text-sm space-y-1">
-                <li>Dados criptografados</li>
-                <li>Acesso restrito por usuário</li>
-                <li>Conformidade LGPD</li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold text-lg mb-2">Suporte</h3>
-              <ul className="text-slate-300 text-sm space-y-1">
-                <li>FAQ completa</li>
-                <li>Análise com IA</li>
-                <li>Referências legais</li>
-              </ul>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-blue-100">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm">1</div>
+                  <h3 className="font-semibold text-slate-900">Cadastre um Cliente</h3>
+                </div>
+                <p className="text-slate-600 text-sm mb-4">
+                  Comece adicionando sua primeira empresa/cliente ao sistema
+                </p>
+                <Link to={user ? createPageUrl('Clientes') : '#'}>
+                  <Button size="sm" variant="outline" className="w-full">
+                    Ir para Clientes
+                  </Button>
+                </Link>
+              </div>
+
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-blue-100">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-8 w-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-sm">2</div>
+                  <h3 className="font-semibold text-slate-900">Crie um Caso</h3>
+                </div>
+                <p className="text-slate-600 text-sm mb-4">
+                  Crie um novo caso de revisão de estimativa ou habilitação
+                </p>
+                <Link to={user ? createPageUrl('Casos') : '#'}>
+                  <Button size="sm" variant="outline" className="w-full">
+                    Ir para Casos
+                  </Button>
+                </Link>
+              </div>
+
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-blue-100">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-8 w-8 rounded-full bg-green-600 text-white flex items-center justify-center font-bold text-sm">3</div>
+                  <h3 className="font-semibold text-slate-900">Envie Documentos</h3>
+                </div>
+                <p className="text-slate-600 text-sm mb-4">
+                  Carregue os documentos necessários e comece a análise
+                </p>
+                <Button size="sm" variant="outline" className="w-full" disabled>
+                  Criar Caso Primeiro
+                </Button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
