@@ -300,7 +300,7 @@ export default function CasoDetalhe() {
             </CardHeader>
 
             <TabsContent value="checklist" className="p-6 mt-0">
-              <ChecklistTab casoId={casoId} checklistItems={checklistItems} documentos={documentos} />
+              <ChecklistTab casoId={casoId} checklistItems={checklistItems} documentos={documentos} cliente={cliente} />
             </TabsContent>
 
             <TabsContent value="documentos" className="p-6 mt-0">
