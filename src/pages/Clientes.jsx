@@ -227,20 +227,22 @@ export default function Clientes() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email">Email *</Label>
                     <Input
                       id="email"
                       type="email"
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
+                      required
                     />
                   </div>
                   <div>
-                    <Label htmlFor="telefone">Telefone</Label>
+                    <Label htmlFor="telefone">Telefone *</Label>
                     <Input
                       id="telefone"
                       value={formData.telefone}
                       onChange={(e) => setFormData({...formData, telefone: e.target.value})}
+                      required
                     />
                   </div>
                   <div className="md:col-span-2">
@@ -252,11 +254,13 @@ export default function Clientes() {
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <Label htmlFor="endereco">Endereço</Label>
+                    <Label htmlFor="endereco">Endereço *</Label>
                     <Input
                       id="endereco"
                       value={formData.endereco}
                       onChange={(e) => setFormData({...formData, endereco: e.target.value})}
+                      placeholder="Rua, número, complemento, cidade, estado, CEP"
+                      required
                     />
                   </div>
                   <div>
