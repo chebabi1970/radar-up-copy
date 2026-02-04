@@ -23,7 +23,7 @@ import {
 import { 
   Upload, 
   FileText, 
-  ExternalLink, 
+  Eye, 
   Trash2, 
   Plus,
   Loader2,
@@ -34,6 +34,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import VisualizadorDocumento from './VisualizadorDocumento';
 
 const tipoDocumentoLabels = {
   requerimento_das: "Requerimento DAS",
@@ -72,6 +73,8 @@ const statusAnaliseConfig = {
 export default function DocumentosTab({ casoId, documentos, checklistItems }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [documentoSelecionado, setDocumentoSelecionado] = useState(null);
+  const [visualizadorOpen, setVisualizadorOpen] = useState(false);
   const [formData, setFormData] = useState({
     tipo_documento: '',
     nome_arquivo: '',
@@ -86,17 +89,17 @@ export default function DocumentosTab({ casoId, documentos, checklistItems }) {
   const createMutation = useMutation({
     mutationFn: async (data) => {
       setUploading(true);
-      let fileUrl = '';
+      let fileUri = '';
       
       if (file) {
-        const uploadResult = await base44.integrations.Core.UploadFile({ file });
-        fileUrl = uploadResult.file_url;
+        const uploadResult = await base44.integrations.Core.UploadPrivateFile({ file });
+        fileUri = uploadResult.file_uri;
       }
       
       return base44.entities.Documento.create({
         ...data,
         caso_id: casoId,
-        file_url: fileUrl,
+        file_uri: fileUri,
         status_analise: 'pendente'
       });
     },
@@ -296,11 +299,16 @@ export default function DocumentosTab({ casoId, documentos, checklistItems }) {
                     </SelectContent>
                   </Select>
 
-                  {doc.file_url && (
-                    <Button variant="ghost" size="sm" asChild>
-                      <a href={doc.file_url} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="h-4 w-4" />
-                      </a>
+                  {(doc.file_uri || doc.file_url) && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => {
+                        setDocumentoSelecionado(doc);
+                        setVisualizadorOpen(true);
+                      }}
+                    >
+                      <Eye className="h-4 w-4" />
                     </Button>
                   )}
 
@@ -318,6 +326,13 @@ export default function DocumentosTab({ casoId, documentos, checklistItems }) {
           })}
         </div>
       )}
+
+      <VisualizadorDocumento
+        isOpen={visualizadorOpen}
+        onClose={() => setVisualizadorOpen(false)}
+        documento={documentoSelecionado}
+        casoId={casoId}
+      />
     </div>
   );
 }
