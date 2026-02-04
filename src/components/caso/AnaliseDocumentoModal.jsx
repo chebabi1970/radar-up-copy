@@ -4,12 +4,21 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AlertCircle, CheckCircle2, Loader2, X } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-export default function AnaliseDocumentoModal({ item, documentos, onClose }) {
+export default function AnaliseDocumentoModal({ item, documentos, casoId, onClose }) {
   const [analisando, setAnalisando] = useState(false);
   const [resultados, setResultados] = useState(null);
+  const queryClient = useQueryClient();
 
   const linkedDoc = documentos.find(d => d.tipo_documento === item.tipo_documento);
+
+  const saveMutation = useMutation({
+    mutationFn: (analiseData) => base44.entities.AnaliseHistorico.create(analiseData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['historico', casoId] });
+    }
+  });
 
   const analisarBalanceteVsExtrato = async () => {
     setAnalisando(true);
@@ -248,13 +257,46 @@ export default function AnaliseDocumentoModal({ item, documentos, onClose }) {
                 </div>
               )}
 
-              <Button
-                onClick={() => setResultados(null)}
-                className="w-full"
-                variant="outline"
-              >
-                Nova Análise
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => setResultados(null)}
+                  className="flex-1"
+                  variant="outline"
+                >
+                  Nova Análise
+                </Button>
+                <Button
+                  onClick={async () => {
+                    const user = await base44.auth.me();
+                    await saveMutation.mutateAsync({
+                      caso_id: casoId,
+                      tipo_analise: 'balancete_vs_extrato',
+                      documento_tipo: item.tipo_documento,
+                      documento_nome: linkedDoc?.nome_arquivo,
+                      usuario_email: user.email,
+                      data_hora_analise: new Date().toISOString(),
+                      total_discrepancias: resultados.discrepancias?.length || 0,
+                      discrepancias_criticas: resultados.discrepancias?.filter(d => d.severidade === 'critica').length || 0,
+                      discrepancias_medias: resultados.discrepancias?.filter(d => d.severidade === 'media').length || 0,
+                      discrepancias_leves: resultados.discrepancias?.filter(d => d.severidade === 'leve').length || 0,
+                      status_resultado: resultados.discrepancias?.length > 0 ? 'com_discrepancias' : 'sem_discrepancias',
+                      dados_completos: resultados
+                    });
+                    onClose();
+                  }}
+                  disabled={saveMutation.isPending}
+                  className="flex-1 bg-green-600 hover:bg-green-700"
+                >
+                  {saveMutation.isPending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Salvando...
+                    </>
+                  ) : (
+                    'Salvar Análise'
+                  )}
+                </Button>
+              </div>
             </div>
           )}
         </CardContent>
