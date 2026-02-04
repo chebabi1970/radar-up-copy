@@ -118,7 +118,9 @@ export default function Clientes() {
       endereco: '',
       modalidade_habilitacao: '',
       limite_atual: '',
-      observacoes: ''
+      observacoes: '',
+      procuracao_eletronica: false,
+      data_procuracao_eletronica: ''
     });
     setEditingCliente(null);
   };
@@ -135,7 +137,9 @@ export default function Clientes() {
       endereco: cliente.endereco || '',
       modalidade_habilitacao: cliente.modalidade_habilitacao || '',
       limite_atual: cliente.limite_atual || '',
-      observacoes: cliente.observacoes || ''
+      observacoes: cliente.observacoes || '',
+      procuracao_eletronica: cliente.procuracao_eletronica || false,
+      data_procuracao_eletronica: cliente.data_procuracao_eletronica || ''
     });
     setIsDialogOpen(true);
   };
