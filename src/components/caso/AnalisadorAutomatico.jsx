@@ -38,8 +38,8 @@ export default function AnalisadorAutomatico({ casoId, documentos }) {
   });
 
   const analisarDocumentos = async () => {
-    if (documentos.length < 2) {
-      alert('É necessário ter pelo menos 2 documentos para fazer uma análise comparativa');
+    if (documentos.length < 1) {
+      alert('É necessário ter pelo menos 1 documento para fazer uma análise');
       return;
     }
 
@@ -65,9 +65,9 @@ export default function AnalisadorAutomatico({ casoId, documentos }) {
         prompt: `Você é um analista de conformidade especializado em análise documental.
 
 Analise os seguintes documentos e identifique:
-1. Informações chave extraídas de cada documento
-2. Discrepâncias entre os documentos
-3. Validações e inconsistências
+1. Informações chave extraídas de cada documento (nome, endereço, dados financeiros, etc)
+2. Validações comparativas com os dados do cadastro da empresa (quando houver múltiplos documentos)
+3. Consistências e inconsistências
 4. Riscos identificados
 
 Documentos a analisar: ${JSON.stringify(dadosDocumentos.map(d => ({ tipo: tiposDocumentos[d.tipo] || d.tipo, nome: d.nome })))}
@@ -328,13 +328,13 @@ Retorne um JSON estruturado com:
       </div>
       <Button 
         onClick={analisarDocumentos}
-        disabled={documentos.length < 2}
+        disabled={documentos.length < 1}
         className="bg-blue-600 hover:bg-blue-700"
       >
         Iniciar Análise
       </Button>
-      {documentos.length < 2 && (
-        <p className="text-xs text-red-600 mt-3">Mínimo 2 documentos necessários</p>
+      {documentos.length < 1 && (
+        <p className="text-xs text-red-600 mt-3">Mínimo 1 documento necessário</p>
       )}
     </div>
   );
