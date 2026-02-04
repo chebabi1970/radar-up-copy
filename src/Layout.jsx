@@ -17,7 +17,6 @@ const navigation = [
   { name: 'Home', href: 'Home', icon: LayoutDashboard },
   { name: 'Clientes', href: 'Clientes', icon: Users },
   { name: 'Casos', href: 'Casos', icon: FolderOpen },
-  { name: 'FAQ', href: 'FAQ', icon: Scale },
 ];
 
 export default function Layout({ children, currentPageName }) {
