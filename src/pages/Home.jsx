@@ -76,13 +76,6 @@ export default function Home() {
       descricao: "Calcule automaticamente a capacidade financeira conforme IN 1984/2020",
       link: "Casos",
       cor: "green"
-    },
-    {
-      icon: <BookOpen className="h-8 w-8 text-orange-600" />,
-      title: "FAQ - Perguntas Frequentes",
-      descricao: "Acesse respostas baseadas no Livro RADAR 2025 e legislação vigente",
-      link: "FAQ",
-      cor: "orange"
     }
   ];
 
