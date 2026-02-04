@@ -142,6 +142,7 @@ export default function ChecklistTab({ casoId, checklistItems, documentos }) {
         <AnaliseDocumentoModal
           item={itemSelecionado}
           documentos={documentos}
+          casoId={casoId}
           onClose={() => {
             setModalOpen(false);
             setItemSelecionado(null);
