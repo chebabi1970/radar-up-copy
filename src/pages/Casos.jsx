@@ -77,7 +77,9 @@ export default function Casos() {
     hipotese_revisao: '',
     modalidade_pretendida: '',
     limite_pretendido: '',
-    observacoes: ''
+    observacoes: '',
+    numero_processo_ecac: '',
+    data_protocolo_ecac: ''
   });
 
   const queryClient = useQueryClient();
@@ -173,16 +175,28 @@ export default function Casos() {
       hipotese_revisao: '',
       modalidade_pretendida: '',
       limite_pretendido: '',
-      observacoes: ''
+      observacoes: '',
+      numero_processo_ecac: '',
+      data_protocolo_ecac: ''
     });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Calcular prazo de análise se houver data de protocolo
+    let prazoAnalise = null;
+    if (formData.data_protocolo_ecac) {
+      const dataProtocolo = new Date(formData.data_protocolo_ecac);
+      dataProtocolo.setDate(dataProtocolo.getDate() + 30);
+      prazoAnalise = dataProtocolo.toISOString().split('T')[0];
+    }
+    
     const data = {
       ...formData,
       limite_pretendido: formData.limite_pretendido ? parseFloat(formData.limite_pretendido) : null,
-      status: 'novo'
+      prazo_analise_rfb: prazoAnalise,
+      status: formData.data_protocolo_ecac ? 'protocolado' : 'novo'
     };
     createMutation.mutate(data);
   };
@@ -306,6 +320,31 @@ export default function Casos() {
                     onChange={(e) => setFormData({...formData, limite_pretendido: e.target.value})}
                     placeholder="0.00"
                   />
+                </div>
+
+                <div>
+                  <Label htmlFor="numero_processo_ecac">Número do Processo e-CAC (opcional)</Label>
+                  <Input
+                    id="numero_processo_ecac"
+                    value={formData.numero_processo_ecac}
+                    onChange={(e) => setFormData({...formData, numero_processo_ecac: e.target.value})}
+                    placeholder="Ex: 10880.000000/2026-00"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="data_protocolo_ecac">Data de Protocolo e-CAC (opcional)</Label>
+                  <Input
+                    id="data_protocolo_ecac"
+                    type="date"
+                    value={formData.data_protocolo_ecac}
+                    onChange={(e) => setFormData({...formData, data_protocolo_ecac: e.target.value})}
+                  />
+                  {formData.data_protocolo_ecac && (
+                    <p className="text-xs text-amber-600 mt-1">
+                      Prazo RFB: 30 dias após protocolo
+                    </p>
+                  )}
                 </div>
 
                 <div>
