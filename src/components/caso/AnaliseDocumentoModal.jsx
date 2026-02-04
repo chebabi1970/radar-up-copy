@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { AlertCircle, CheckCircle2, Loader2, X } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-export default function AnaliseDocumentoModal({ item, documentos, casoId, onClose }) {
+export default function AnaliseDocumentoModal({ item, documentos, casoId, cliente, onClose }) {
   const [analisando, setAnalisando] = useState(false);
   const [resultados, setResultados] = useState(null);
   const queryClient = useQueryClient();
@@ -128,6 +128,74 @@ export default function AnaliseDocumentoModal({ item, documentos, casoId, onClos
     }
   };
 
+  const analisarDocumentoSimples = async () => {
+    setAnalisando(true);
+    try {
+      if (!linkedDoc) {
+        setResultados({
+          erro: true,
+          mensagem: 'Nenhum documento vinculado encontrado.'
+        });
+        setAnalisando(false);
+        return;
+      }
+
+      const prompt = `Analise este documento e extraia informações principais:
+- Nome/Razão Social
+- CNPJ (se houver)
+- Endereço
+- Período de referência
+- Dados específicos do documento (saldos, valores, etc)
+
+Depois compare com o cadastro da empresa:
+- Razão Social: ${cliente?.razao_social}
+- CNPJ: ${cliente?.cnpj}
+- Endereço: ${cliente?.endereco}
+
+Identifique inconsistências entre o documento e o cadastro.
+
+Retorne como JSON: { 
+  dados_extraidos: {nome: string, cnpj: string, endereco: string, periodo: string, dados_especificos: object},
+  consistencias: {campo: string, valor_documento: string, valor_cadastro: string, coincide: boolean}[],
+  resumo: string,
+  alertas: string[]
+}`;
+
+      const resultado = await base44.integrations.Core.InvokeLLM({
+        prompt,
+        file_urls: [linkedDoc.file_url],
+        response_json_schema: {
+          type: 'object',
+          properties: {
+            dados_extraidos: { type: 'object' },
+            consistencias: {
+              type: 'array',
+              items: { type: 'object' }
+            },
+            resumo: { type: 'string' },
+            alertas: {
+              type: 'array',
+              items: { type: 'string' }
+            }
+          }
+        }
+      });
+
+      setResultados({
+        erro: false,
+        dados: resultado
+      });
+    } catch (error) {
+      console.error('Erro na análise:', error);
+      setResultados({
+        erro: true,
+        mensagem: 'Erro ao analisar documento. Verifique se o PDF está legível.'
+      });
+    } finally {
+      setAnalisando(false);
+    }
+  };
+
   const isBalancete = item.tipo_documento?.includes('balancete');
 
   return (
@@ -153,7 +221,7 @@ export default function AnaliseDocumentoModal({ item, documentos, casoId, onClos
 
               {isBalancete && (
                 <>
-                  <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
+                   <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
                     <p className="font-semibold mb-1">Análise Automática:</p>
                     <p>Serão comparados os saldos de caixa/bancos do balancete com os saldos dos extratos bancários do último dia de cada mês.</p>
                   </div>
@@ -174,23 +242,98 @@ export default function AnaliseDocumentoModal({ item, documentos, casoId, onClos
                   </Button>
                 </>
               )}
+
+              {!isBalancete && (
+                <>
+                  <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
+                    <p className="font-semibold mb-1">Análise Automática:</p>
+                    <p>Serão extraídas informações do documento e comparadas com os dados cadastrais da empresa.</p>
+                  </div>
+
+                  <Button
+                    onClick={analisarDocumentoSimples}
+                    disabled={analisando}
+                    className="w-full bg-blue-600 hover:bg-blue-700"
+                  >
+                    {analisando ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Analisando...
+                      </>
+                    ) : (
+                      'Iniciar Análise'
+                    )}
+                  </Button>
+                </>
+              )}
             </>
           ) : resultados.erro ? (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg space-y-3">
-              <div className="flex items-start gap-3">
-                <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-red-800">{resultados.mensagem}</p>
-              </div>
-              <Button
-                variant="outline"
-                onClick={() => setResultados(null)}
-                className="w-full"
-              >
-                Tentar Novamente
-              </Button>
-            </div>
+           <div className="p-4 bg-red-50 border border-red-200 rounded-lg space-y-3">
+             <div className="flex items-start gap-3">
+               <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+               <p className="text-sm text-red-800">{resultados.mensagem}</p>
+             </div>
+             <Button
+               variant="outline"
+               onClick={() => setResultados(null)}
+               className="w-full"
+             >
+               Tentar Novamente
+             </Button>
+           </div>
+          ) : !isBalancete && resultados.dados ? (
+           <div className="space-y-4">
+             <div className="p-4 bg-slate-50 rounded-lg">
+               <h4 className="font-semibold text-slate-900 mb-2">Dados Extraídos</h4>
+               <div className="text-sm space-y-1 text-slate-600">
+                 {resultados.dados.dados_extraidos?.nome && <p><strong>Nome:</strong> {resultados.dados.dados_extraidos.nome}</p>}
+                 {resultados.dados.dados_extraidos?.cnpj && <p><strong>CNPJ:</strong> {resultados.dados.dados_extraidos.cnpj}</p>}
+                 {resultados.dados.dados_extraidos?.endereco && <p><strong>Endereço:</strong> {resultados.dados.dados_extraidos.endereco}</p>}
+                 {resultados.dados.dados_extraidos?.periodo && <p><strong>Período:</strong> {resultados.dados.dados_extraidos.periodo}</p>}
+               </div>
+             </div>
+
+             {resultados.dados.consistencias?.length > 0 && (
+               <div className="space-y-2">
+                 <h4 className="font-semibold text-slate-900">Validações com Cadastro</h4>
+                 {resultados.dados.consistencias.map((cons, idx) => (
+                   <div key={idx} className={`p-3 rounded-lg border ${cons.coincide ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'}`}>
+                     <div className="text-sm">
+                       <p className="font-semibold text-slate-900">{cons.campo}</p>
+                       <p className="text-xs text-slate-600 mt-1">Documento: {cons.valor_documento}</p>
+                       <p className="text-xs text-slate-600">Cadastro: {cons.valor_cadastro}</p>
+                       {!cons.coincide && <p className="text-xs text-yellow-700 mt-1 font-semibold">⚠ Inconsistência</p>}
+                     </div>
+                   </div>
+                 ))}
+               </div>
+             )}
+
+             {resultados.dados.alertas?.length > 0 && (
+               <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                 <h4 className="font-semibold text-amber-900 mb-2">Alertas</h4>
+                 <ul className="text-sm text-amber-800 space-y-1">
+                   {resultados.dados.alertas.map((alerta, idx) => (
+                     <li key={idx}>• {alerta}</li>
+                   ))}
+                 </ul>
+               </div>
+             )}
+
+             <div className="p-4 bg-blue-50 rounded-lg">
+               <p className="text-sm text-blue-800"><strong>Resumo:</strong> {resultados.dados.resumo}</p>
+             </div>
+
+             <Button
+               onClick={() => setResultados(null)}
+               variant="outline"
+               className="w-full"
+             >
+               Nova Análise
+             </Button>
+           </div>
           ) : (
-            <div className="space-y-4">
+           <div className="space-y-4">
               {/* Resumo */}
               <div className="p-4 bg-slate-50 rounded-lg">
                 <h4 className="font-semibold text-slate-900 mb-2">Resumo da Análise</h4>
