@@ -14,7 +14,8 @@ import {
   Lightbulb,
   CheckCircle2,
   DollarSign,
-  Shield
+  Shield,
+  Zap
 } from 'lucide-react';
 
 export default function Home() {
@@ -74,6 +75,13 @@ export default function Home() {
       descricao: "Calcule automaticamente a capacidade financeira conforme IN 1984/2020",
       link: "Casos",
       cor: "green"
+    },
+    {
+      icon: <Zap className="h-8 w-8 text-red-600" />,
+      title: "Crítica Documental por IA",
+      descricao: "Análise automática de documentos com detecção de discrepâncias e inconsistências",
+      link: "Casos",
+      cor: "red"
     }
   ];
 
