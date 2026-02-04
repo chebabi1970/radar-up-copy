@@ -115,39 +115,65 @@ export default function Casos() {
   });
 
   const generateChecklist = async (casoId, hipotese) => {
-    const baseItems = [
-      { codigo_dda: "1300", tipo_documento: "requerimento_das", descricao: "Requerimento DAS", base_legal: "Art. 5º", obrigatorio: true },
-      { codigo_dda: "2300", tipo_documento: "documento_identificacao_responsavel", descricao: "Documento de identificação do responsável", base_legal: "Art. 5º, § 2º", obrigatorio: true },
-      { codigo_dda: "2310", tipo_documento: "procuracao", descricao: "Procuração", base_legal: "Art. 5º, § 3º", obrigatorio: false },
-      { codigo_dda: "2320", tipo_documento: "documento_identificacao_procurador", descricao: "Documento de identificação do procurador", base_legal: "Art. 5º, § 3º", obrigatorio: false },
-      { codigo_dda: "3300", tipo_documento: "contrato_social", descricao: "Contrato Social e Alterações", base_legal: "Art. 7º, I", obrigatorio: true },
-      { codigo_dda: "3310", tipo_documento: "certidao_junta_comercial", descricao: "Certidão Junta Comercial", base_legal: "Art. 7º, I", obrigatorio: true },
+    // Documentos obrigatórios para todas as hipóteses
+    const documentosObrigatorios = [
+      { codigo_dda: "1300", tipo_documento: "requerimento_das", descricao: "Requerimento DAS", base_legal: "Art. 5º", obrigatorio: true, todas_hipoteses: true },
+      { codigo_dda: "2300", tipo_documento: "documento_identificacao_responsavel", descricao: "Documento de identificação do responsável", base_legal: "Art. 5º, § 2º", obrigatorio: true, todas_hipoteses: true },
+      { codigo_dda: "3300", tipo_documento: "contrato_social", descricao: "Contrato Social e Alterações", base_legal: "Art. 7º, I", obrigatorio: true, todas_hipoteses: true },
+      { codigo_dda: "3310", tipo_documento: "certidao_junta_comercial", descricao: "Certidão da Junta Comercial ou documento equivalente", base_legal: "Art. 7º, I", obrigatorio: true, todas_hipoteses: true },
+      { codigo_dda: "4300", tipo_documento: "conta_energia", descricao: "Conta de energia elétrica ou plano de internet (3 meses)", base_legal: "Art. 7º, III", obrigatorio: true, todas_hipoteses: true },
     ];
 
-    const hipoteseItems = {
+    // Documentos que podem ser necessários dependendo da situação
+    const documentosCondicionais = [
+      { codigo_dda: "2310", tipo_documento: "procuracao", descricao: "Procuração", base_legal: "Art. 5º, § 3º", obrigatorio: false, todas_hipoteses: true },
+      { codigo_dda: "2320", tipo_documento: "documento_identificacao_procurador", descricao: "Documento de identificação do procurador", base_legal: "Art. 5º, § 3º", obrigatorio: false, todas_hipoteses: true },
+      { codigo_dda: "3320", tipo_documento: "guia_iptu", descricao: "Guia de IPTU (imóvel próprio)", base_legal: "Art. 7º, IV, a", obrigatorio: false, todas_hipoteses: true },
+      { codigo_dda: "3330", tipo_documento: "escritura_imovel", descricao: "Escritura e certidão atualizada do Cartório de Registro de Imóveis", base_legal: "Art. 7º, IV, b", obrigatorio: false, todas_hipoteses: true },
+      { codigo_dda: "3340", tipo_documento: "contrato_locacao", descricao: "Contrato de locação e pagamentos dos últimos 3 meses", base_legal: "Art. 7º, IV, c", obrigatorio: false, todas_hipoteses: true },
+      { codigo_dda: "3350", tipo_documento: "comprovante_espaco_armazenamento", descricao: "Contrato de locação de depósito ou prestação de serviço de armazenamento", base_legal: "Art. 7º, V", obrigatorio: false, todas_hipoteses: true },
+    ];
+
+    // Documentos específicos por hipótese
+    const documentosPorHipotese = {
       recursos_financeiros_livres: [
-        { codigo_dda: "5350", tipo_documento: "extrato_bancario_corrente", descricao: "Extratos Bancários das contas correntes (3 meses)", base_legal: "Art. 6º, I, a", obrigatorio: true },
+        { codigo_dda: "5350", tipo_documento: "extrato_bancario_corrente", descricao: "Extratos bancários das contas correntes e aplicações financeiras (3 meses)", base_legal: "Art. 6º, I, a", obrigatorio: true },
         { codigo_dda: "6300", tipo_documento: "balancete_verificacao", descricao: "Balancetes de verificação (3 meses)", base_legal: "Art. 6º, I, b", obrigatorio: true },
+        { codigo_dda: "5360", tipo_documento: "comprovante_transferencia_integralizacao", descricao: "Comprovantes de transferência dos recursos disponíveis (linha 'a')", base_legal: "Art. 6º, I, c", obrigatorio: false },
+        { codigo_dda: "5350", tipo_documento: "extrato_bancario_integralizacao", descricao: "Extratos bancários (integralização capital - se aplicável)", base_legal: "Art. 7º, II, a", obrigatorio: false },
+        { codigo_dda: "6320", tipo_documento: "balanco_patrimonial_integralizacao", descricao: "Balanço patrimonial (integralização capital - se aplicável)", base_legal: "Art. 7º, II, b", obrigatorio: false },
       ],
       recolhimento_tributos_das: [
-        { codigo_dda: "5350", tipo_documento: "das_simples_nacional", descricao: "DAS - Documento de Arrecadação do Simples Nacional", base_legal: "Art. 6º, I, III", obrigatorio: true },
+        { codigo_dda: "1300", tipo_documento: "das_simples_nacional", descricao: "DAS - Documento de Arrecadação do Simples Nacional (60 meses)", base_legal: "Art. 6º, I, III", obrigatorio: true },
       ],
       recolhimento_tributos_cprb: [
-        { codigo_dda: "5360", tipo_documento: "darf_cprb", descricao: "DARF CPRB", base_legal: "Art. 6º, I, IV", obrigatorio: true },
+        { codigo_dda: "1300", tipo_documento: "darf_cprb", descricao: "DARF - Contribuição Previdenciária sobre Receita Bruta (60 meses)", base_legal: "Art. 6º, I, IV", obrigatorio: true },
       ],
       retomada_atividades: [
-        { codigo_dda: "3300", tipo_documento: "contrato_social", descricao: "Contrato Social atualizado", base_legal: "Art. 7º, I", obrigatorio: true },
-        { codigo_dda: "3310", tipo_documento: "certidao_junta_comercial", descricao: "Certidão da Junta Comercial", base_legal: "Art. 7º, I", obrigatorio: true },
+        { codigo_dda: "5350", tipo_documento: "extrato_bancario_corrente", descricao: "Extratos bancários das contas correntes (meses da integralização)", base_legal: "Art. 7º, II, a", obrigatorio: true },
+        { codigo_dda: "6320", tipo_documento: "balanco_patrimonial_integralizacao", descricao: "Balanços patrimoniais referentes aos períodos da integralização", base_legal: "Art. 7º, II, b", obrigatorio: true },
+        { codigo_dda: "5360", tipo_documento: "comprovante_transferencia_integralizacao", descricao: "Comprovantes de transferência dos valores integralizados", base_legal: "Art. 7º, II, c", obrigatorio: true },
       ]
     };
 
-    const items = [...baseItems, ...(hipoteseItems[hipotese] || [])];
-    
-    for (const item of items) {
+    // Combinar todos os itens
+    const todosItens = [
+      ...documentosObrigatorios,
+      ...documentosCondicionais,
+      ...(documentosPorHipotese[hipotese] || [])
+    ];
+
+    // Criar checklist items
+    for (const item of todosItens) {
+      const aplicavelTodasHipoteses = item.todas_hipoteses || false;
       await base44.entities.ChecklistItem.create({
         caso_id: casoId,
-        ...item,
-        aplicavel_hipotese: [hipotese],
+        codigo_dda: item.codigo_dda,
+        tipo_documento: item.tipo_documento,
+        descricao: item.descricao,
+        base_legal: item.base_legal,
+        obrigatorio: item.obrigatorio,
+        aplicavel_hipotese: aplicavelTodasHipoteses ? ['todas'] : [hipotese],
         status: 'pendente'
       });
     }
