@@ -294,6 +294,32 @@ export default function Clientes() {
                       rows={3}
                     />
                   </div>
+
+                  <div className="md:col-span-2 space-y-3">
+                    <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                      <p className="text-sm text-amber-900 font-medium mb-1">⚠️ Procuração Eletrônica e-CAC</p>
+                      <p className="text-xs text-amber-800">
+                        Obrigatória para protocolar documentos junto à RFB pelo e-CAC. 
+                        Sem procuração eletrônica, não é possível realizar o protocolo oficial do requerimento.
+                      </p>
+                    </div>
+                    <label className="flex items-start gap-3 cursor-pointer p-3 border border-slate-200 rounded-lg hover:bg-slate-50">
+                      <input
+                        type="checkbox"
+                        checked={formData.procuracao_eletronica || false}
+                        onChange={(e) => setFormData({...formData, procuracao_eletronica: e.target.checked})}
+                        className="mt-1 rounded"
+                      />
+                      <div>
+                        <span className="text-sm font-medium text-slate-900 block">
+                          Cliente concedeu procuração eletrônica para acesso ao e-CAC RFB
+                        </span>
+                        <span className="text-xs text-slate-500">
+                          Necessário para protocolar junto à Receita Federal
+                        </span>
+                      </div>
+                    </label>
+                  </div>
                 </div>
                 <div className="flex justify-end gap-3 pt-4">
                   <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
@@ -351,6 +377,7 @@ export default function Clientes() {
                       <TableHead>CNPJ</TableHead>
                       <TableHead>Contato</TableHead>
                       <TableHead>Modalidade</TableHead>
+                      <TableHead>Procuração</TableHead>
                       <TableHead>Casos</TableHead>
                       <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
@@ -390,6 +417,13 @@ export default function Clientes() {
                                 ? 'Análise de Regularização'
                                 : cliente.modalidade_habilitacao.charAt(0).toUpperCase() + cliente.modalidade_habilitacao.slice(1)}
                             </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {cliente.procuracao_eletronica ? (
+                            <Badge className="bg-green-100 text-green-800 border-green-200">✓ Ativa</Badge>
+                          ) : (
+                            <Badge className="bg-red-100 text-red-800 border-red-200">✗ Pendente</Badge>
                           )}
                         </TableCell>
                         <TableCell>
