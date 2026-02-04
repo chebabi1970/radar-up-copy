@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Badge } from "@/components/ui/badge";
@@ -15,8 +15,11 @@ import {
   Circle, 
   FileText, 
   AlertCircle,
-  Clock
+  Clock,
+  Zap,
+  Loader2
 } from 'lucide-react';
+import AnaliseDocumentoModal from './AnaliseDocumentoModal';
 
 const statusConfig = {
   pendente: { icon: Circle, color: "text-slate-400", bg: "bg-slate-100", label: "Pendente" },
@@ -26,6 +29,8 @@ const statusConfig = {
 };
 
 export default function ChecklistTab({ casoId, checklistItems, documentos }) {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [itemSelecionado, setItemSelecionado] = useState(null);
   const queryClient = useQueryClient();
 
   const updateStatusMutation = useMutation({
@@ -39,16 +44,22 @@ export default function ChecklistTab({ casoId, checklistItems, documentos }) {
     return documentos.find(d => d.tipo_documento === item.tipo_documento);
   };
 
+  const handleAnalisar = (item) => {
+    setItemSelecionado(item);
+    setModalOpen(true);
+  };
+
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-slate-900">
-          Documentação Instrutória - Anexo Único Portaria Coana 72/2020
-        </h3>
-        <div className="flex items-center gap-2 text-sm text-slate-500">
-          <span>{checklistItems.filter(i => i.status !== 'pendente').length} de {checklistItems.length} concluídos</span>
+    <>
+      <div className="space-y-3">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-semibold text-slate-900">
+            Documentação Instrutória - Anexo Único Portaria Coana 72/2020
+          </h3>
+          <div className="flex items-center gap-2 text-sm text-slate-500">
+            <span>{checklistItems.filter(i => i.status !== 'pendente').length} de {checklistItems.length} concluídos</span>
+          </div>
         </div>
-      </div>
 
       {checklistItems.length === 0 ? (
         <div className="text-center py-8 text-slate-500">
@@ -88,25 +99,50 @@ export default function ChecklistTab({ casoId, checklistItems, documentos }) {
                   </div>
                 </div>
 
-                <Select 
-                  value={item.status} 
-                  onValueChange={(value) => updateStatusMutation.mutate({ itemId: item.id, status: value })}
-                >
-                  <SelectTrigger className="w-[140px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="pendente">Pendente</SelectItem>
-                    <SelectItem value="enviado">Enviado</SelectItem>
-                    <SelectItem value="aprovado">Aprovado</SelectItem>
-                    <SelectItem value="nao_aplicavel">N/A</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="flex items-center gap-2">
+                  {linkedDoc && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleAnalisar(item)}
+                      className="h-9 px-3 text-xs gap-1"
+                    >
+                      <Zap className="h-3.5 w-3.5" />
+                      Analisar
+                    </Button>
+                  )}
+                  <Select 
+                    value={item.status} 
+                    onValueChange={(value) => updateStatusMutation.mutate({ itemId: item.id, status: value })}
+                  >
+                    <SelectTrigger className="w-[140px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pendente">Pendente</SelectItem>
+                      <SelectItem value="enviado">Enviado</SelectItem>
+                      <SelectItem value="aprovado">Aprovado</SelectItem>
+                      <SelectItem value="nao_aplicavel">N/A</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             );
           })}
         </div>
       )}
-    </div>
+      </div>
+
+      {modalOpen && (
+        <AnaliseDocumentoModal
+          item={itemSelecionado}
+          documentos={documentos}
+          onClose={() => {
+            setModalOpen(false);
+            setItemSelecionado(null);
+          }}
+        />
+      )}
+    </>
   );
 }
