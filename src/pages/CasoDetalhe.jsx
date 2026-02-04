@@ -320,7 +320,7 @@ export default function CasoDetalhe() {
             </TabsContent>
 
             <TabsContent value="ia-analise" className="p-6 mt-0">
-              <AnalisadorAutomatico casoId={casoId} documentos={documentos} />
+              <AnalisadorAutomatico casoId={casoId} documentos={documentos} checklistItems={checklistItems} />
             </TabsContent>
 
             <TabsContent value="conformidade" className="p-6 mt-0">
