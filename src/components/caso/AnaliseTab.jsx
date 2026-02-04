@@ -415,40 +415,7 @@ Justifique sua análise citando os artigos relevantes da IN 1984/2020 e Portaria
         </CardContent>
       </Card>
 
-      {/* Modalidades Reference */}
-      <Card className="border border-slate-200">
-        <CardHeader>
-          <CardTitle className="text-lg">Referência - Modalidades de Habilitação (IN 1984/2020)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-4 border border-blue-200 bg-blue-50/50 rounded-xl">
-              <Badge className="mb-2 bg-blue-600">Limitada</Badge>
-              <p className="font-medium text-slate-900 mb-2">Até USD 150.000 por operação</p>
-              <p className="text-sm text-slate-600 mb-2">Capacidade mínima exigida: R$ 266.000</p>
-              <p className="text-xs text-slate-500">
-                Art. 14 IN 1984/2020 - Para empresas com capacidade financeira demonstrada.
-              </p>
-            </div>
 
-            <div className="p-4 border border-purple-200 bg-purple-50/50 rounded-xl">
-              <Badge className="mb-2 bg-purple-600">Ilimitada</Badge>
-              <p className="font-medium text-slate-900 mb-2">Acima de USD 150.000</p>
-              <p className="text-sm text-slate-600 mb-2">Capacidade mínima exigida: R$ 797.000</p>
-              <p className="text-xs text-slate-500">
-                Art. 15 IN 1984/2020 - Exige capacidade financeira robusta.
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-            <p className="text-xs text-amber-800">
-              <strong>Importante:</strong> Balancetes devem ser consistentes com extratos bancários. 
-              Divergências podem resultar em exigências complementares conforme Art. 39 IN 1984/2020.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
