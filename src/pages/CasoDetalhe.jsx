@@ -27,7 +27,8 @@ import {
   Loader2,
   RefreshCw,
   Calculator,
-  History
+  History,
+  Zap
 } from 'lucide-react';
 
 import ChecklistTab from '@/components/caso/ChecklistTab';
@@ -35,6 +36,7 @@ import DocumentosTab from '@/components/caso/DocumentosTab';
 import DivergenciasTab from '@/components/caso/DivergenciasTab';
 import AnaliseTab from '@/components/caso/AnaliseTab';
 import HistoricoTab from '@/components/caso/HistoricoTab';
+import AnalisadorAutomatico from '@/components/caso/AnalisadorAutomatico';
 import PrivacyWarning from '@/components/caso/PrivacyWarning';
 
 const statusColors = {
@@ -278,6 +280,13 @@ export default function CasoDetalhe() {
                   <History className="h-4 w-4 mr-2" />
                   Histórico
                 </TabsTrigger>
+                <TabsTrigger 
+                  value="ia-analise" 
+                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none pb-3 px-1"
+                >
+                  <Zap className="h-4 w-4 mr-2" />
+                  Análise IA
+                </TabsTrigger>
               </TabsList>
             </CardHeader>
 
@@ -299,6 +308,10 @@ export default function CasoDetalhe() {
 
             <TabsContent value="historico" className="p-6 mt-0">
               <HistoricoTab casoId={casoId} />
+            </TabsContent>
+
+            <TabsContent value="ia-analise" className="p-6 mt-0">
+              <AnalisadorAutomatico casoId={casoId} documentos={documentos} />
             </TabsContent>
           </Tabs>
         </Card>
