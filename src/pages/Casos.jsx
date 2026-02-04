@@ -32,7 +32,8 @@ import {
   Clock,
   CheckCircle2,
   Loader2,
-  Filter
+  Filter,
+  Trash2
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -111,6 +112,13 @@ export default function Casos() {
       queryClient.invalidateQueries({ queryKey: ['casos'] });
       setIsDialogOpen(false);
       resetForm();
+    }
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => base44.entities.Caso.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['casos'] });
     }
   });
 
@@ -314,9 +322,9 @@ export default function Casos() {
                       <SelectValue placeholder="Selecione..." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="expressa">Expressa</SelectItem>
-                      <SelectItem value="limitada">Limitada</SelectItem>
+                      <SelectItem value="limitada">Limitada (até USD 150.000,00)</SelectItem>
                       <SelectItem value="ilimitada">Ilimitada</SelectItem>
+                      <SelectItem value="analise_regularizacao">Análise de Regularização</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -406,42 +414,54 @@ export default function Casos() {
         ) : (
           <div className="grid gap-4">
             {filteredCasos.map((caso) => (
-              <Link key={caso.id} to={createPageUrl(`CasoDetalhe?id=${caso.id}`)}>
-                <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl transition-all cursor-pointer">
-                  <CardContent className="p-6">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                      <div className="flex items-start gap-4">
-                        <div className="h-12 w-12 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                          <FolderOpen className="h-6 w-6 text-blue-600" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-slate-900">
-                            {caso.numero_caso || `Caso #${caso.id.slice(0, 8)}`}
-                          </h3>
-                          <p className="text-slate-600 mt-0.5">
-                            {getClienteName(caso.cliente_id)}
-                          </p>
-                          <p className="text-sm text-slate-500 mt-1">
-                            {hipoteseLabels[caso.hipotese_revisao]}
-                          </p>
-                        </div>
+              <Card key={caso.id} className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl transition-all">
+                <CardContent className="p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <Link to={createPageUrl(`CasoDetalhe?id=${caso.id}`)} className="flex items-start gap-4 flex-1 cursor-pointer">
+                      <div className="h-12 w-12 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <FolderOpen className="h-6 w-6 text-blue-600" />
                       </div>
-                      <div className="flex items-center gap-3 sm:flex-shrink-0">
-                        {caso.divergencias_encontradas?.some(d => !d.resolvida) && (
-                          <div className="flex items-center gap-1 text-red-600 text-sm">
-                            <AlertTriangle className="h-4 w-4" />
-                            <span>Divergências</span>
-                          </div>
-                        )}
-                        <Badge className={`${statusColors[caso.status]} border`}>
-                          {statusLabels[caso.status]}
-                        </Badge>
+                      <div>
+                        <h3 className="font-semibold text-slate-900">
+                          {caso.numero_caso || `Caso #${caso.id.slice(0, 8)}`}
+                        </h3>
+                        <p className="text-slate-600 mt-0.5">
+                          {getClienteName(caso.cliente_id)}
+                        </p>
+                        <p className="text-sm text-slate-500 mt-1">
+                          {hipoteseLabels[caso.hipotese_revisao]}
+                        </p>
+                      </div>
+                    </Link>
+                    <div className="flex items-center gap-3 sm:flex-shrink-0">
+                      {caso.divergencias_encontradas?.some(d => !d.resolvida) && (
+                        <div className="flex items-center gap-1 text-red-600 text-sm">
+                          <AlertTriangle className="h-4 w-4" />
+                          <span>Divergências</span>
+                        </div>
+                      )}
+                      <Badge className={`${statusColors[caso.status]} border`}>
+                        {statusLabels[caso.status]}
+                      </Badge>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          if (window.confirm(`Deseja realmente excluir este caso?`)) {
+                            deleteMutation.mutate(caso.id);
+                          }
+                        }}
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                      <Link to={createPageUrl(`CasoDetalhe?id=${caso.id}`)}>
                         <ArrowRight className="h-5 w-5 text-slate-400" />
-                      </div>
+                      </Link>
                     </div>
-                  </CardContent>
-                </Card>
-              </Link>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         )}

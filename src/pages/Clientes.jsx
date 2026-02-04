@@ -38,15 +38,16 @@ import {
   MapPin,
   Edit,
   FolderOpen,
-  Loader2
+  Loader2,
+  Trash2
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
 const modalidadeColors = {
-  expressa: "bg-green-100 text-green-800",
   limitada: "bg-blue-100 text-blue-800",
-  ilimitada: "bg-purple-100 text-purple-800"
+  ilimitada: "bg-purple-100 text-purple-800",
+  analise_regularizacao: "bg-amber-100 text-amber-800"
 };
 
 export default function Clientes() {
@@ -93,6 +94,13 @@ export default function Clientes() {
       queryClient.invalidateQueries({ queryKey: ['clientes'] });
       setIsDialogOpen(false);
       resetForm();
+    }
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => base44.entities.Cliente.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['clientes'] });
     }
   });
 
@@ -254,9 +262,9 @@ export default function Clientes() {
                         <SelectValue placeholder="Selecione..." />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="expressa">Expressa</SelectItem>
-                        <SelectItem value="limitada">Limitada</SelectItem>
+                        <SelectItem value="limitada">Limitada (até USD 150.000,00)</SelectItem>
                         <SelectItem value="ilimitada">Ilimitada</SelectItem>
+                        <SelectItem value="analise_regularizacao">Análise de Regularização</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -371,7 +379,9 @@ export default function Clientes() {
                         <TableCell>
                           {cliente.modalidade_habilitacao && (
                             <Badge className={modalidadeColors[cliente.modalidade_habilitacao]}>
-                              {cliente.modalidade_habilitacao.charAt(0).toUpperCase() + cliente.modalidade_habilitacao.slice(1)}
+                              {cliente.modalidade_habilitacao === 'analise_regularizacao' 
+                                ? 'Análise de Regularização'
+                                : cliente.modalidade_habilitacao.charAt(0).toUpperCase() + cliente.modalidade_habilitacao.slice(1)}
                             </Badge>
                           )}
                         </TableCell>
@@ -394,6 +404,18 @@ export default function Clientes() {
                                 <FolderOpen className="h-4 w-4" />
                               </Button>
                             </Link>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                if (window.confirm(`Deseja realmente excluir o cliente ${cliente.razao_social}?`)) {
+                                  deleteMutation.mutate(cliente.id);
+                                }
+                              }}
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
                           </div>
                         </TableCell>
                       </TableRow>
