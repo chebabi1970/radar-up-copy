@@ -7,84 +7,45 @@ import { Loader2, Send, X } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
 export default function ConformidadeChat({ casoId, onClose, analiseExistente }) {
-  const [conversationId, setConversationId] = useState(null);
   const [mensagens, setMensagens] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    // Criar ou carregar conversa
-    const iniciarConversa = async () => {
-      try {
-        let convId;
-        
-        if (analiseExistente) {
-          // Carregar conversa existente
-          const conversas = await base44.agents.listConversations({
-            agent_name: 'analise_conformidade'
-          });
-          const conversa = conversas.find(c => c.metadata?.caso_id === casoId);
-          if (conversa) {
-            convId = conversa.id;
-            setMensagens(conversa.messages || []);
-          } else {
-            // Criar nova
-            const novaConv = await base44.agents.createConversation({
-              agent_name: 'analise_conformidade',
-              metadata: { caso_id: casoId }
-            });
-            convId = novaConv.id;
-          }
-        } else {
-          // Criar nova conversa
-          const novaConv = await base44.agents.createConversation({
-            agent_name: 'analise_conformidade',
-            metadata: { caso_id: casoId }
-          });
-          convId = novaConv.id;
-        }
-        
-        setConversationId(convId);
-      } catch (error) {
-        console.error('Erro ao inicializar conversa:', error);
-      }
-    };
-
-    iniciarConversa();
-  }, [casoId, analiseExistente]);
-
-  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [mensagens]);
 
-  useEffect(() => {
-    if (!conversationId) return;
-
-    // Subscrever a atualizações em tempo real
-    const unsubscribe = base44.agents.subscribeToConversation(conversationId, (data) => {
-      setMensagens(data.messages || []);
-      setIsLoading(false);
-    });
-
-    return unsubscribe;
-  }, [conversationId]);
-
   const handleEnviar = async () => {
-    if (!input.trim() || !conversationId) return;
+    if (!input.trim()) return;
 
     const mensagem = input.trim();
     setInput('');
     setIsLoading(true);
 
     try {
-      const conv = await base44.agents.getConversation(conversationId);
-      await base44.agents.addMessage(conv, {
-        role: 'user',
-        content: mensagem
+      // Adicionar mensagem do usuário
+      const novasMensagens = [...mensagens, { role: 'user', content: mensagem }];
+      setMensagens(novasMensagens);
+
+      // Chamar LLM para análise
+      const historico = novasMensagens.map(m => `${m.role === 'user' ? 'Usuário' : 'Assistente'}: ${m.content}`).join('\n\n');
+      
+      const resposta = await base44.integrations.Core.InvokeLLM({
+        prompt: `Você é um especialista em conformidade fiscal e habilitação com a RFB conforme IN 1984/2020 e Portaria Coana 72/2020.
+        
+Histórico da conversa:
+${historico}
+
+Forneça uma análise detalhada e profissional sobre o caso, considerando documentação, capacidade financeira e requisitos legais.`,
+        add_context_from_internet: false
       });
+
+      setMensagens([...novasMensagens, { role: 'assistant', content: resposta }]);
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error);
+      setMensagens(prev => [...prev, { role: 'assistant', content: 'Erro ao processar a mensagem. Tente novamente.' }]);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -146,23 +107,23 @@ export default function ConformidadeChat({ casoId, onClose, analiseExistente }) 
 
         <div className="border-t p-4 flex gap-2">
           <Input
-            placeholder="Digite sua mensagem..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                handleEnviar();
-              }
-            }}
-            disabled={isLoading || !conversationId}
+           placeholder="Digite sua mensagem..."
+           value={input}
+           onChange={(e) => setInput(e.target.value)}
+           onKeyPress={(e) => {
+             if (e.key === 'Enter' && !e.shiftKey) {
+               e.preventDefault();
+               handleEnviar();
+             }
+           }}
+           disabled={isLoading}
           />
           <Button 
-            onClick={handleEnviar}
-            disabled={isLoading || !conversationId || !input.trim()}
-            className="bg-blue-600 hover:bg-blue-700"
+           onClick={handleEnviar}
+           disabled={isLoading || !input.trim()}
+           className="bg-blue-600 hover:bg-blue-700"
           >
-            <Send className="h-4 w-4" />
+           <Send className="h-4 w-4" />
           </Button>
         </div>
       </Card>
