@@ -64,13 +64,7 @@ export default function AnaliseTab({ caso, cliente, documentos }) {
     return capacidadeReais / taxaDolar;
   };
 
-  // Calcular prazo de análise (30 dias da data de protocolo)
-  const calcularPrazoAnalise = (dataProtocolo) => {
-    if (!dataProtocolo) return null;
-    const data = new Date(dataProtocolo);
-    data.setDate(data.getDate() + 30);
-    return data.toISOString().split('T')[0];
-  };
+
 
   const updateCasoMutation = useMutation({
     mutationFn: (data) => base44.entities.Caso.update(caso.id, data),
@@ -81,14 +75,12 @@ export default function AnaliseTab({ caso, cliente, documentos }) {
 
   const salvarDadosFinanceiros = async () => {
     const capacidadeCalculada = calcularCapacidadeAutomatica();
-    const prazoAnalise = calcularPrazoAnalise(dataProtocoloEcac);
     
     await updateCasoMutation.mutateAsync({
       saldos_bancarios: saldosBancarios,
       aplicacoes_financeiras: aplicacoesFinanceiras,
       numero_processo_ecac: numeroProcessoEcac,
       data_protocolo_ecac: dataProtocoloEcac,
-      prazo_analise_rfb: prazoAnalise,
       estimativa_calculada: capacidadeCalculada
     });
   };
@@ -188,14 +180,7 @@ Justifique sua análise citando os artigos relevantes da IN 1984/2020 e Portaria
               />
             </div>
           </div>
-          {dataProtocoloEcac && (
-            <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
-              <p className="text-sm text-amber-800">
-                <strong>Prazo para análise RFB:</strong> {format(new Date(calcularPrazoAnalise(dataProtocoloEcac)), 'dd/MM/yyyy', { locale: ptBR })} 
-                <span className="text-xs ml-2">(30 dias conforme Art. 57 IN 1984/2020)</span>
-              </p>
-            </div>
-          )}
+
         </CardContent>
       </Card>
 
@@ -442,8 +427,7 @@ Justifique sua análise citando os artigos relevantes da IN 1984/2020 e Portaria
               <p className="font-medium text-slate-900 mb-2">Até USD 150.000 por operação</p>
               <p className="text-sm text-slate-600 mb-2">Limite anual: USD 1.200.000</p>
               <p className="text-xs text-slate-500">
-                Art. 14 IN 1984/2020 - Para empresas com capacidade financeira demonstrada. 
-                Análise em 10-15 dias úteis.
+                Art. 14 IN 1984/2020 - Para empresas com capacidade financeira demonstrada.
               </p>
             </div>
 
@@ -452,8 +436,7 @@ Justifique sua análise citando os artigos relevantes da IN 1984/2020 e Portaria
               <p className="font-medium text-slate-900 mb-2">Sem limite de valor</p>
               <p className="text-sm text-slate-600 mb-2">Operações de qualquer porte</p>
               <p className="text-xs text-slate-500">
-                Art. 15 IN 1984/2020 - Exige capacidade financeira robusta (mínimo R$ 500.000 em saldos). 
-                Análise em 15-30 dias úteis.
+                Art. 15 IN 1984/2020 - Exige capacidade financeira robusta (mínimo R$ 500.000 em saldos).
               </p>
             </div>
           </div>
@@ -461,7 +444,7 @@ Justifique sua análise citando os artigos relevantes da IN 1984/2020 e Portaria
           <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
             <p className="text-xs text-amber-800">
               <strong>Importante:</strong> Balancetes devem ser consistentes com extratos bancários. 
-              Divergências podem gerar intimações (prazo 10 dias para resposta - Art. 39, §4º).
+              Divergências podem resultar em exigências complementares conforme Art. 39 IN 1984/2020.
             </p>
           </div>
         </CardContent>
