@@ -123,64 +123,32 @@ export default function Casos() {
   });
 
   const generateChecklist = async (casoId, hipotese) => {
-    const documentosPorHipotese = {
-      recursos_financeiros_livres: [
-        { codigo_dda: "1100", tipo_documento: "requerimento_das", descricao: "Requerimento Disponibilidade Ativo Circulante", base_legal: "Art. 5º", obrigatorio: true },
-        { codigo_dda: "2100", tipo_documento: "documento_identificacao_responsavel", descricao: "Documento de identificação do responsável", base_legal: "Art. 5º, § 2º", obrigatorio: true },
-        { codigo_dda: "2110", tipo_documento: "procuracao", descricao: "Procuração", base_legal: "Art. 5º, § 3º", obrigatorio: false },
-        { codigo_dda: "2120", tipo_documento: "documento_identificacao_procurador", descricao: "Documento de identificação do procurador", base_legal: "Art. 5º, § 3º", obrigatorio: false },
-        { codigo_dda: "3100", tipo_documento: "contrato_social", descricao: "Contrato Social e Alterações", base_legal: "Art. 7º, I", obrigatorio: true },
-        { codigo_dda: "3110", tipo_documento: "certidao_junta_comercial", descricao: "Certidão Junta Comercial", base_legal: "Art. 7º, I", obrigatorio: true },
-        { codigo_dda: "4100", tipo_documento: "conta_energia", descricao: "Conta de energia dos últimos 3 meses", base_legal: "Art. 7º, III", obrigatorio: true },
-        { codigo_dda: "4110", tipo_documento: "plano_internet", descricao: "Plano de internet dos últimos 3 meses", base_legal: "Art. 7º, III", obrigatorio: true },
-        { codigo_dda: "3120", tipo_documento: "guia_iptu", descricao: "Guia de IPTU", base_legal: "Art. 7º, IV, a", obrigatorio: false },
-        { codigo_dda: "3130", tipo_documento: "escritura_imovel", descricao: "Escritura do imóvel", base_legal: "Art. 7º, IV, b", obrigatorio: false },
-        { codigo_dda: "3140", tipo_documento: "contrato_locacao", descricao: "Contrato de locação e pagamentos dos últimos 3 meses", base_legal: "Art. 7º, IV, c", obrigatorio: false },
-        { codigo_dda: "3150", tipo_documento: "comprovante_espaco_armazenamento", descricao: "Comprovante Espaço Armazenagem", base_legal: "Art. 7º, V", obrigatorio: false },
-        { codigo_dda: "5100", tipo_documento: "extrato_bancario_corrente", descricao: "Extratos Bancários dos últimos 3 meses", base_legal: "Art. 6º, I, a", obrigatorio: true },
-        { codigo_dda: "6100", tipo_documento: "balancete_verificacao", descricao: "Balancete de Verificação dos últimos 3 meses", base_legal: "Art. 6º, I, b", obrigatorio: true },
-        { codigo_dda: "5160", tipo_documento: "comprovante_transferencia_integralizacao", descricao: "Comprovante de transferência de recursos", base_legal: "Art. 6º, I, c", obrigatorio: false },
-        { codigo_dda: "5130", tipo_documento: "contrato_mutuo", descricao: "Contrato de Empréstimo Bancário", base_legal: "Art. 6º, I, d", obrigatorio: false },
-        { codigo_dda: "5120", tipo_documento: "contrato_mutuo", descricao: "Contrato de Mútuo Registrado em Cartório", base_legal: "Art. 6º, I, e", obrigatorio: false },
-        { codigo_dda: "2130", tipo_documento: "contrato_social", descricao: "Contrato Social do Mutuante", base_legal: "Art. 6º, § 3º, I", obrigatorio: false },
-        { codigo_dda: "6110", tipo_documento: "balancete_mutuante", descricao: "Balancete de verificação do Mutuante PJ - 3 meses antecedentes ao aporte", base_legal: "Art. 6º, § 3º, II", obrigatorio: false },
-        { codigo_dda: "5140", tipo_documento: "comprovante_iof", descricao: "Comprovante Recolhimento IOF Contrato Mútuo PJ", base_legal: "Art. 6º, § 3º, III", obrigatorio: false },
-        { codigo_dda: "5150", tipo_documento: "extrato_bancario_integralizacao", descricao: "Extratos Bancários no mês do aporte", base_legal: "Art. 7º, II, a", obrigatorio: false },
-        { codigo_dda: "6120", tipo_documento: "balanco_patrimonial_integralizacao", descricao: "Balanço Patrimonial - Integralização ou Aumento Capital Social", base_legal: "Art. 7º, II, b", obrigatorio: false },
-        { codigo_dda: "5160", tipo_documento: "comprovante_transferencia_integralizacao", descricao: "Comprovante de transferência de recursos", base_legal: "Art. 7º, II, c", obrigatorio: false },
-      ],
-      recolhimento_tributos_das: [
-        { codigo_dda: "1300", tipo_documento: "requerimento_das", descricao: "Requerimento DAS", base_legal: "Art. 5º", obrigatorio: true },
-        { codigo_dda: "2100", tipo_documento: "documento_identificacao_responsavel", descricao: "Documento de identificação do responsável", base_legal: "Art. 5º, § 2º", obrigatorio: true },
-        { codigo_dda: "2110", tipo_documento: "procuracao", descricao: "Procuração", base_legal: "Art. 5º, § 3º", obrigatorio: false },
-        { codigo_dda: "2120", tipo_documento: "documento_identificacao_procurador", descricao: "Documento de identificação do procurador", base_legal: "Art. 5º, § 3º", obrigatorio: false },
-        { codigo_dda: "3100", tipo_documento: "contrato_social", descricao: "Contrato Social e Alterações", base_legal: "Art. 7º, I", obrigatorio: true },
-        { codigo_dda: "3110", tipo_documento: "certidao_junta_comercial", descricao: "Certidão Junta Comercial", base_legal: "Art. 7º, I", obrigatorio: true },
-        { codigo_dda: "1300", tipo_documento: "das_simples_nacional", descricao: "DAS - Documento de Arrecadação do Simples Nacional (60 meses)", base_legal: "Art. 6º, I, III", obrigatorio: true },
-      ],
-      recolhimento_tributos_cprb: [
-        { codigo_dda: "1400", tipo_documento: "requerimento_das", descricao: "Requerimento CPRB", base_legal: "Art. 5º", obrigatorio: true },
-        { codigo_dda: "2100", tipo_documento: "documento_identificacao_responsavel", descricao: "Documento de identificação do responsável", base_legal: "Art. 5º, § 2º", obrigatorio: true },
-        { codigo_dda: "2110", tipo_documento: "procuracao", descricao: "Procuração", base_legal: "Art. 5º, § 3º", obrigatorio: false },
-        { codigo_dda: "2120", tipo_documento: "documento_identificacao_procurador", descricao: "Documento de identificação do procurador", base_legal: "Art. 5º, § 3º", obrigatorio: false },
-        { codigo_dda: "3100", tipo_documento: "contrato_social", descricao: "Contrato Social e Alterações", base_legal: "Art. 7º, I", obrigatorio: true },
-        { codigo_dda: "3110", tipo_documento: "certidao_junta_comercial", descricao: "Certidão Junta Comercial", base_legal: "Art. 7º, I", obrigatorio: true },
-        { codigo_dda: "1400", tipo_documento: "darf_cprb", descricao: "DARF - Contribuição Previdenciária sobre Receita Bruta (60 meses)", base_legal: "Art. 6º, I, IV", obrigatorio: true },
-      ],
-      retomada_atividades: [
-        { codigo_dda: "1500", tipo_documento: "requerimento_das", descricao: "Requerimento Retomada de Atividades", base_legal: "Art. 5º", obrigatorio: true },
-        { codigo_dda: "2100", tipo_documento: "documento_identificacao_responsavel", descricao: "Documento de identificação do responsável", base_legal: "Art. 5º, § 2º", obrigatorio: true },
-        { codigo_dda: "2110", tipo_documento: "procuracao", descricao: "Procuração", base_legal: "Art. 5º, § 3º", obrigatorio: false },
-        { codigo_dda: "2120", tipo_documento: "documento_identificacao_procurador", descricao: "Documento de identificação do procurador", base_legal: "Art. 5º, § 3º", obrigatorio: false },
-        { codigo_dda: "3100", tipo_documento: "contrato_social", descricao: "Contrato Social e Alterações", base_legal: "Art. 7º, I", obrigatorio: true },
-        { codigo_dda: "3110", tipo_documento: "certidao_junta_comercial", descricao: "Certidão Junta Comercial", base_legal: "Art. 7º, I", obrigatorio: true },
-        { codigo_dda: "5150", tipo_documento: "extrato_bancario_integralizacao", descricao: "Extratos bancários das contas correntes (meses da integralização)", base_legal: "Art. 7º, II, a", obrigatorio: true },
-        { codigo_dda: "6120", tipo_documento: "balanco_patrimonial_integralizacao", descricao: "Balanços patrimoniais referentes aos períodos da integralização", base_legal: "Art. 7º, II, b", obrigatorio: true },
-        { codigo_dda: "5160", tipo_documento: "comprovante_transferencia_integralizacao", descricao: "Comprovantes de transferência dos valores integralizados", base_legal: "Art. 7º, II, c", obrigatorio: true },
-      ]
-    };
-
-    const items = documentosPorHipotese[hipotese] || [];
+    // Lista padrão para todas as hipóteses (baseada na lista de Recursos Financeiros)
+    const items = [
+      { codigo_dda: "1100", tipo_documento: "requerimento_das", descricao: "Requerimento Disponibilidade Ativo Circulante", base_legal: "Art. 5º", obrigatorio: true },
+      { codigo_dda: "2100", tipo_documento: "documento_identificacao_responsavel", descricao: "Documento de identificação do responsável", base_legal: "Art. 5º, § 2º", obrigatorio: true },
+      { codigo_dda: "2110", tipo_documento: "procuracao", descricao: "Procuração", base_legal: "Art. 5º, § 3º", obrigatorio: false },
+      { codigo_dda: "2120", tipo_documento: "documento_identificacao_procurador", descricao: "Documento de identificação do procurador", base_legal: "Art. 5º, § 3º", obrigatorio: false },
+      { codigo_dda: "3100", tipo_documento: "contrato_social", descricao: "Contrato Social e Alterações", base_legal: "Art. 7º, I", obrigatorio: true },
+      { codigo_dda: "3110", tipo_documento: "certidao_junta_comercial", descricao: "Certidão Junta Comercial", base_legal: "Art. 7º, I", obrigatorio: true },
+      { codigo_dda: "4100", tipo_documento: "conta_energia", descricao: "Conta de energia dos últimos 3 meses", base_legal: "Art. 7º, III", obrigatorio: true },
+      { codigo_dda: "4110", tipo_documento: "plano_internet", descricao: "Plano de internet dos últimos 3 meses", base_legal: "Art. 7º, III", obrigatorio: true },
+      { codigo_dda: "3120", tipo_documento: "guia_iptu", descricao: "Guia de IPTU", base_legal: "Art. 7º, IV, a", obrigatorio: false },
+      { codigo_dda: "3130", tipo_documento: "escritura_imovel", descricao: "Escritura do imóvel", base_legal: "Art. 7º, IV, b", obrigatorio: false },
+      { codigo_dda: "3140", tipo_documento: "contrato_locacao", descricao: "Contrato de locação e pagamentos dos últimos 3 meses", base_legal: "Art. 7º, IV, c", obrigatorio: false },
+      { codigo_dda: "3150", tipo_documento: "comprovante_espaco_armazenamento", descricao: "Comprovante Espaço Armazenagem", base_legal: "Art. 7º, V", obrigatorio: false },
+      { codigo_dda: "5100", tipo_documento: "extrato_bancario_corrente", descricao: "Extratos Bancários dos últimos 3 meses", base_legal: "Art. 6º, I, a", obrigatorio: true },
+      { codigo_dda: "6100", tipo_documento: "balancete_verificacao", descricao: "Balancete de Verificação dos últimos 3 meses", base_legal: "Art. 6º, I, b", obrigatorio: true },
+      { codigo_dda: "5160", tipo_documento: "comprovante_transferencia_integralizacao", descricao: "Comprovante de transferência de recursos", base_legal: "Art. 6º, I, c", obrigatorio: false },
+      { codigo_dda: "5130", tipo_documento: "contrato_mutuo", descricao: "Contrato de Empréstimo Bancário", base_legal: "Art. 6º, I, d", obrigatorio: false },
+      { codigo_dda: "5120", tipo_documento: "contrato_mutuo", descricao: "Contrato de Mútuo Registrado em Cartório", base_legal: "Art. 6º, I, e", obrigatorio: false },
+      { codigo_dda: "2130", tipo_documento: "contrato_social", descricao: "Contrato Social do Mutuante", base_legal: "Art. 6º, § 3º, I", obrigatorio: false },
+      { codigo_dda: "6110", tipo_documento: "balancete_mutuante", descricao: "Balancete de verificação do Mutuante PJ - 3 meses antecedentes ao aporte", base_legal: "Art. 6º, § 3º, II", obrigatorio: false },
+      { codigo_dda: "5140", tipo_documento: "comprovante_iof", descricao: "Comprovante Recolhimento IOF Contrato Mútuo PJ", base_legal: "Art. 6º, § 3º, III", obrigatorio: false },
+      { codigo_dda: "5150", tipo_documento: "extrato_bancario_integralizacao", descricao: "Extratos Bancários no mês do aporte", base_legal: "Art. 7º, II, a", obrigatorio: false },
+      { codigo_dda: "6120", tipo_documento: "balanco_patrimonial_integralizacao", descricao: "Balanço Patrimonial - Integralização ou Aumento Capital Social", base_legal: "Art. 7º, II, b", obrigatorio: false },
+      { codigo_dda: "5160", tipo_documento: "comprovante_transferencia_integralizacao", descricao: "Comprovante de transferência de recursos", base_legal: "Art. 7º, II, c", obrigatorio: false },
+    ];
     
     for (const item of items) {
       await base44.entities.ChecklistItem.create({
