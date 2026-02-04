@@ -11,10 +11,8 @@ import {
   FileText,
   Users,
   TrendingUp,
-  BookOpen,
   Lightbulb,
   CheckCircle2,
-  Calendar,
   DollarSign,
   Shield
 } from 'lucide-react';
