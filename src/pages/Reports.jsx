@@ -4,6 +4,16 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -17,7 +27,8 @@ import {
   Clock,
   Trash2,
   AlertTriangle,
-  FileText
+  FileText,
+  Plus
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
@@ -38,6 +49,14 @@ const prioridadeConfig = {
 
 export default function Reports() {
   const [filtroStatus, setFiltroStatus] = useState('todos');
+  const [openDialog, setOpenDialog] = useState(false);
+  const [formData, setFormData] = useState({
+    titulo: '',
+    descricao: '',
+    prioridade: 'media',
+    usuario_email: '',
+    pagina_origem: ''
+  });
   const queryClient = useQueryClient();
 
   const { data: reports = [], isLoading } = useQuery({
@@ -61,6 +80,25 @@ export default function Reports() {
     }
   });
 
+  const createReportMutation = useMutation({
+    mutationFn: (data) => base44.entities.ReportErro.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reports'] });
+      toast.success('Report criado com sucesso');
+      setOpenDialog(false);
+      setFormData({ titulo: '', descricao: '', prioridade: 'media', usuario_email: '', pagina_origem: '' });
+    }
+  });
+
+  const handleSubmitReport = (e) => {
+    e.preventDefault();
+    if (!formData.descricao.trim() || !formData.usuario_email.trim()) {
+      toast.error('Preencha os campos obrigatórios');
+      return;
+    }
+    createReportMutation.mutate(formData);
+  };
+
   const reportsFiltrados = filtroStatus === 'todos' 
     ? reports 
     : reports.filter(r => r.status === filtroStatus);
@@ -83,9 +121,15 @@ export default function Reports() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-slate-900">Reports de Erros</h1>
-          <p className="text-slate-600 mt-1">Gerencie os erros reportados pelos usuários</p>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900">Reports de Erros</h1>
+            <p className="text-slate-600 mt-1">Gerencie os erros reportados</p>
+          </div>
+          <Button onClick={() => setOpenDialog(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Novo Report
+          </Button>
         </div>
 
         {/* Stats */}
@@ -251,6 +295,90 @@ export default function Reports() {
             })
           )}
         </div>
+
+        {/* Dialog Novo Report */}
+        <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Criar Novo Report</DialogTitle>
+              <DialogDescription>
+                Registre um erro ou problema reportado por usuário
+              </DialogDescription>
+            </DialogHeader>
+
+            <form onSubmit={handleSubmitReport} className="space-y-4">
+              <div>
+                <Label htmlFor="usuario_email">Email do Usuário *</Label>
+                <Input
+                  id="usuario_email"
+                  value={formData.usuario_email}
+                  onChange={(e) => setFormData({ ...formData, usuario_email: e.target.value })}
+                  placeholder="usuario@exemplo.com"
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="titulo">Título</Label>
+                <Input
+                  id="titulo"
+                  value={formData.titulo}
+                  onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
+                  placeholder="Ex: Erro ao salvar documento"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="descricao">Descrição *</Label>
+                <Textarea
+                  id="descricao"
+                  value={formData.descricao}
+                  onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
+                  placeholder="Descreva o problema"
+                  className="h-24"
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="pagina_origem">Página</Label>
+                <Input
+                  id="pagina_origem"
+                  value={formData.pagina_origem}
+                  onChange={(e) => setFormData({ ...formData, pagina_origem: e.target.value })}
+                  placeholder="Ex: /casos"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="prioridade">Prioridade</Label>
+                <Select
+                  value={formData.prioridade}
+                  onValueChange={(value) => setFormData({ ...formData, prioridade: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="baixa">Baixa</SelectItem>
+                    <SelectItem value="media">Média</SelectItem>
+                    <SelectItem value="alta">Alta</SelectItem>
+                    <SelectItem value="critica">Crítica</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="outline" onClick={() => setOpenDialog(false)}>
+                  Cancelar
+                </Button>
+                <Button type="submit" disabled={createReportMutation.isPending}>
+                  {createReportMutation.isPending ? 'Criando...' : 'Criar Report'}
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

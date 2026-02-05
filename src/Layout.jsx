@@ -13,7 +13,6 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import ReportErroButton from '@/components/ReportErroButton';
 
 const navigation = [
   { name: 'Home', href: 'Home', icon: LayoutDashboard },
@@ -99,8 +98,7 @@ export default function Layout({ children, currentPageName }) {
           </nav>
 
           {/* Footer */}
-          <div className="p-4 border-t border-slate-100 space-y-2">
-            <ReportErroButton currentPage={currentPageName} />
+          <div className="p-4 border-t border-slate-100">
             <Button 
               variant="ghost" 
               className="w-full justify-start text-slate-600 hover:text-slate-900"
