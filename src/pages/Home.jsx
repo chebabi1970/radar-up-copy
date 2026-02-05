@@ -306,38 +306,38 @@ export default function Home() {
                   Comece adicionando sua primeira empresa/cliente ao sistema
                 </p>
                 <Link to={user ? createPageUrl('Clientes') : '#'}>
-                   <Button size="sm" className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 border-0 shadow-md hover:shadow-lg transition-all duration-300">
-                     Ir para Clientes
-                   </Button>
-                 </Link>
-                </div>
+                  <Button size="sm" className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 border-0 shadow-md hover:shadow-lg transition-all duration-300">
+                    Ir para Clientes
+                  </Button>
+                </Link>
+              </div>
 
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-blue-100">
-                 <div className="flex items-center gap-3 mb-4">
-                   <div className="h-8 w-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-sm">2</div>
-                   <h3 className="font-semibold text-slate-900">Crie um Caso</h3>
-                 </div>
-                 <p className="text-slate-600 text-sm mb-4">
-                   Crie um novo caso de revisão de estimativa ou habilitação
-                 </p>
-                 <Link to={user ? createPageUrl('Casos') : '#'}>
-                   <Button size="sm" className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 border-0 shadow-md hover:shadow-lg transition-all duration-300">
-                     Ir para Casos
-                   </Button>
-                 </Link>
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-blue-100">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-8 w-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-sm">2</div>
+                  <h3 className="font-semibold text-slate-900">Crie um Caso</h3>
                 </div>
+                <p className="text-slate-600 text-sm mb-4">
+                  Crie um novo caso de revisão de estimativa ou habilitação
+                </p>
+                <Link to={user ? createPageUrl('Casos') : '#'}>
+                  <Button size="sm" className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 border-0 shadow-md hover:shadow-lg transition-all duration-300">
+                    Ir para Casos
+                  </Button>
+                </Link>
+              </div>
 
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-blue-100">
-                 <div className="flex items-center gap-3 mb-4">
-                   <div className="h-8 w-8 rounded-full bg-green-600 text-white flex items-center justify-center font-bold text-sm">3</div>
-                   <h3 className="font-semibold text-slate-900">Envie Documentos</h3>
-                 </div>
-                 <p className="text-slate-600 text-sm mb-4">
-                   Carregue os documentos necessários e comece a análise
-                 </p>
-                 <Button size="sm" className="w-full bg-gradient-to-r from-slate-400 to-slate-500 text-white border-0 cursor-not-allowed opacity-60" disabled>
-                   Criar Caso Primeiro
-                 </Button>
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-blue-100">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-8 w-8 rounded-full bg-green-600 text-white flex items-center justify-center font-bold text-sm">3</div>
+                  <h3 className="font-semibold text-slate-900">Envie Documentos</h3>
+                </div>
+                <p className="text-slate-600 text-sm mb-4">
+                  Carregue os documentos necessários e comece a análise
+                </p>
+                <Button size="sm" className="w-full bg-gradient-to-r from-slate-400 to-slate-500 text-white border-0 cursor-not-allowed opacity-60" disabled>
+                  Criar Caso Primeiro
+                </Button>
               </div>
             </div>
           </div>
