@@ -9,18 +9,26 @@ import {
   Menu,
   X,
   LogOut,
-  Scale
+  Scale,
+  AlertCircle
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import ReportErroButton from '@/components/ReportErroButton';
 
 const navigation = [
   { name: 'Home', href: 'Home', icon: LayoutDashboard },
   { name: 'Clientes', href: 'Clientes', icon: Users },
   { name: 'Casos', href: 'Casos', icon: FolderOpen },
+  { name: 'Reports', href: 'Reports', icon: AlertCircle, adminOnly: true },
 ];
 
 export default function Layout({ children, currentPageName }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [user, setUser] = useState(null);
+
+  React.useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
 
   const handleLogout = () => {
     base44.auth.logout();
@@ -65,6 +73,8 @@ export default function Layout({ children, currentPageName }) {
           {/* Navigation */}
           <nav className="flex-1 p-4 space-y-1">
             {navigation.map((item) => {
+              if (item.adminOnly && user?.role !== 'admin') return null;
+              
               const isActive = currentPageName === item.href || currentPageName === item.name || (item.href === 'Home' && !currentPageName);
               const Icon = item.icon;
               
@@ -89,7 +99,8 @@ export default function Layout({ children, currentPageName }) {
           </nav>
 
           {/* Footer */}
-          <div className="p-4 border-t border-slate-100">
+          <div className="p-4 border-t border-slate-100 space-y-2">
+            <ReportErroButton currentPage={currentPageName} />
             <Button 
               variant="ghost" 
               className="w-full justify-start text-slate-600 hover:text-slate-900"
