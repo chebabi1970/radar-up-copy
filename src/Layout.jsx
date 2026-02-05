@@ -9,8 +9,7 @@ import {
   Menu,
   X,
   LogOut,
-  Scale,
-  AlertCircle
+  Scale
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
@@ -18,7 +17,6 @@ const navigation = [
   { name: 'Home', href: 'Home', icon: LayoutDashboard },
   { name: 'Clientes', href: 'Clientes', icon: Users },
   { name: 'Casos', href: 'Casos', icon: FolderOpen },
-  { name: 'Reports', href: 'Reports', icon: AlertCircle, adminOnly: true },
 ];
 
 export default function Layout({ children, currentPageName }) {
