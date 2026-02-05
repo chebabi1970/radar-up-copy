@@ -264,7 +264,7 @@ export default function Home() {
           <CardContent className="text-center">
             {user ? (
               <Link to={createPageUrl('Casos')}>
-                <Button size="lg" className="bg-white/20 backdrop-blur border border-white/30 text-white hover:bg-white/30 transition-all duration-300 shadow-lg hover:shadow-xl">
+                <Button size="lg" className="bg-white text-blue-600 hover:bg-slate-100">
                   Criar Novo Caso
                   <ArrowRight className="h-5 w-5 ml-2" />
                 </Button>
@@ -272,7 +272,7 @@ export default function Home() {
             ) : (
               <Button 
                 size="lg" 
-                className="bg-white/20 backdrop-blur border border-white/30 text-white hover:bg-white/30 transition-all duration-300 shadow-lg hover:shadow-xl"
+                className="bg-white text-blue-600 hover:bg-slate-100"
                 onClick={() => base44.auth.redirectToLogin()}
               >
                 Fazer Login
@@ -306,7 +306,7 @@ export default function Home() {
                   Comece adicionando sua primeira empresa/cliente ao sistema
                 </p>
                 <Link to={user ? createPageUrl('Clientes') : '#'}>
-                  <Button size="sm" className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 border-0 shadow-md hover:shadow-lg transition-all duration-300">
+                  <Button size="sm" variant="outline" className="w-full">
                     Ir para Clientes
                   </Button>
                 </Link>
@@ -321,7 +321,7 @@ export default function Home() {
                   Crie um novo caso de revisão de estimativa ou habilitação
                 </p>
                 <Link to={user ? createPageUrl('Casos') : '#'}>
-                  <Button size="sm" className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 border-0 shadow-md hover:shadow-lg transition-all duration-300">
+                  <Button size="sm" variant="outline" className="w-full">
                     Ir para Casos
                   </Button>
                 </Link>
@@ -335,7 +335,7 @@ export default function Home() {
                 <p className="text-slate-600 text-sm mb-4">
                   Carregue os documentos necessários e comece a análise
                 </p>
-                <Button size="sm" className="w-full bg-gradient-to-r from-slate-400 to-slate-500 text-white border-0 cursor-not-allowed opacity-60" disabled>
+                <Button size="sm" variant="outline" className="w-full" disabled>
                   Criar Caso Primeiro
                 </Button>
               </div>
