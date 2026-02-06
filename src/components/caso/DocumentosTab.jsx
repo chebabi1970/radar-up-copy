@@ -37,7 +37,7 @@ import { ptBR } from 'date-fns/locale';
 import VisualizadorDocumento from './VisualizadorDocumento';
 
 const tipoDocumentoLabels = {
-  requerimento_das: "Requerimento DAS",
+  requerimento_das: "REQUERIMENTO",
   documento_identificacao_responsavel: "Documento de Identificação do Responsável",
   procuracao: "Procuração",
   documento_identificacao_procurador: "Documento de Identificação do Procurador",
