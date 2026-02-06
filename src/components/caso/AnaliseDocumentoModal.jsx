@@ -247,9 +247,31 @@ Retorne JSON estruturado com:
         throw new Error('URL do documento não disponível');
       }
 
+      // Array de arquivos - pode ter múltiplos do mesmo tipo
+      const linkedDocs = documentos.filter(d => d.tipo_documento === item.tipo_documento);
+      const fileUrls = [];
+      
+      for (const doc of linkedDocs) {
+        let docUrl = doc.file_url;
+        if (!docUrl && doc.file_uri) {
+          const signedResult = await base44.integrations.Core.CreateFileSignedUrl({
+            file_uri: doc.file_uri,
+            expires_in: 3600
+          });
+          docUrl = signedResult.signed_url;
+        }
+        if (docUrl) {
+          fileUrls.push(docUrl);
+        }
+      }
+
+      if (fileUrls.length === 0) {
+        throw new Error('Nenhuma URL de documento disponível');
+      }
+
       const resultado = await base44.integrations.Core.InvokeLLM({
         prompt,
-        file_urls: [fileUrl],
+        file_urls: fileUrls,
         response_json_schema: {
           type: 'object',
           properties: {
