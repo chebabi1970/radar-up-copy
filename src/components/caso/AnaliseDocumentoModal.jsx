@@ -79,9 +79,22 @@ export default function AnaliseDocumentoModal({ item, documentos, casoId, client
       
       Retorne como JSON com estrutura: { extratos: [{banco: string, conta: string, mes_ano: string, saldo_final: number, saldo_data: string}] }`;
 
+      // Obter URLs assinadas para extratos
+      const extratosUrls = await Promise.all(extratos.map(async (e) => {
+        if (e.file_url) return e.file_url;
+        if (e.file_uri) {
+          const signedResult = await base44.integrations.Core.CreateFileSignedUrl({
+            file_uri: e.file_uri,
+            expires_in: 3600
+          });
+          return signedResult.signed_url;
+        }
+        return null;
+      }));
+
       const dadosExtratos = await base44.integrations.Core.InvokeLLM({
         prompt: promptExtratos,
-        file_urls: extratos.map(e => e.file_url),
+        file_urls: extratosUrls.filter(url => url),
         response_json_schema: {
           type: 'object',
           properties: {
