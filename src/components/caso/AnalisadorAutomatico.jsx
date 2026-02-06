@@ -117,46 +117,55 @@ ${JSON.stringify(dadosDocumentos.map(d => ({
 **CHECKLIST DE DOCUMENTOS OBRIGATÓRIOS**:
 ${JSON.stringify(checklistContext, null, 2)}
 
-REALIZAR AS SEGUINTES VALIDAÇÕES CRÍTICAS:
+**ANÁLISE COMPLETA - CHECKLIST AUTOMATIZADO**:
 
-1. **CRUZAMENTO DE DOCUMENTOS FINANCEIROS**:
+1. **ANÁLISE DE CHECKLIST**:
+   - Identificar documentos obrigatórios faltantes
+   - Verificar conformidade dos documentos enviados vs obrigatoriedade
+   - Alertar sobre documentos críticos não fornecidos
+
+2. **CRUZAMENTO DE DOCUMENTOS FINANCEIROS**:
    - Somas do balancete devem corresponder aos saldos dos extratos
    - Datas de referência devem ser consistentes (mesmo período)
    - Saldos em 28/02 (ou 29 em anos bissextos), 30 e 31 devem corresponder
+   - Validar se valores batem entre diferentes documentos
 
-2. **VALIDAÇÃO DE DATAS**:
+3. **VALIDAÇÃO DE DATAS E PRAZOS**:
    - Nenhum documento pode ter data futura
    - Verificar se documentos estão dentro de prazos de validade
    - Alertar se documentos têm datas muito antigas (>6 meses)
+   - Comparar datas entre documentos relacionados
 
-3. **VALIDAÇÃO DOCUMENTAL**:
-   - Confirmar se documentos parecem estar assinados/autenticados
-   - Verificar se períodos de referência fazem sentido (não podem ser futuros)
+4. **EXTRAÇÃO AUTOMÁTICA DE DADOS CHAVE**:
+   - Extrair valores financeiros (saldos, movimentações, capacidade)
+   - Identificar CNPJs, razões sociais, endereços
+   - Capturar datas de referência e períodos
+   - Extrair assinaturas e autenticações
 
-4. **MAPEAMENTO AUTOMÁTICO DE CAMPOS**:
-   - Equiparar "saldo em [data]" do balancete com "saldo final" do extrato
-   - Relacionar "capacidade financeira" com "valor pretendido"
-   - Validar nomes, CNPJs, endereços entre documentos
-
-5. **CRUZAMENTO COM CADASTRO**:
-   - Comparar RAZÃO SOCIAL do cliente registrado com nomes em documentos
+5. **VALIDAÇÃO CADASTRAL E DOCUMENTAL**:
+   - Comparar RAZÃO SOCIAL do cadastro com documentos
    - Validar CNPJ em todos os documentos
-   - Verificar ENDEREÇO registrado vs endereço nos documentos
+   - Verificar ENDEREÇO cadastrado vs documentos
+   - Confirmar procuração e-CAC se necessário
 
 6. **DETECÇÃO DE PADRÕES SUSPEITOS**:
    - Movimentações anormais próximas ao período de análise
    - Saldos que aumentam/diminuem drasticamente entre períodos
    - Movimentos circulares (entrada/saída mesmo dia)
+   - Valores "redondos" suspeitos
 
-7. **ALERTAS ESPECÍFICOS**:
-   - ⚠️ Contrato de mútuo SEM registro em cartório (muito crítico)
-   - ⚠️ Documentação incompleta típica de rejeição
+7. **ALERTAS ESPECÍFICOS RFB**:
+   - ⚠️ Contrato de mútuo SEM registro em cartório
    - ⚠️ Falta de IOF em contratos de mútuo
-   - ⚠️ Inconsistências de valores
+   - ⚠️ Inconsistências de valores entre documentos
+   - ⚠️ Documentação incompleta típica de rejeição
+   - ⚠️ Falta de procuração e-CAC
 
-8. **ANÁLISE PREDITIVA**:
-   - Sugerir probabilidade de aprovação (baixa/média/alta)
-   - Listar riscos antes do protocolo que podem resultar em indeferimento
+8. **ANÁLISE PREDITIVA E RECOMENDAÇÕES**:
+   - Probabilidade de aprovação (baixa/média/alta) com justificativa
+   - Listar riscos que podem resultar em indeferimento
+   - Sugerir próximos passos e documentos adicionais
+   - Recomendar ações corretivas antes do protocolo
 
 Retorne OBRIGATORIAMENTE um JSON estruturado com:
 {
