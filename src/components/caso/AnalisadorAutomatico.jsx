@@ -228,10 +228,15 @@ ${JSON.stringify(checklistContext, null, 2)}
   "conclusao": "conclusão final com recomendações estratégicas"
 }`,
         add_context_from_internet: false,
+        file_urls: documentoUrls.length > 0 ? documentoUrls : undefined,
         response_json_schema: {
           type: 'object',
           properties: {
             resumo: { type: 'string' },
+            documentos_faltantes: { 
+              type: 'array',
+              items: { type: 'object' }
+            },
             informacoes_extraidas: { 
               type: 'array',
               items: { type: 'object' }
@@ -248,6 +253,12 @@ ${JSON.stringify(checklistContext, null, 2)}
               type: 'array',
               items: { type: 'object' }
             },
+            proximos_passos: { 
+              type: 'array',
+              items: { type: 'object' }
+            },
+            probabilidade_aprovacao: { type: 'string' },
+            justificativa_probabilidade: { type: 'string' },
             conclusao: { type: 'string' }
           }
         }
