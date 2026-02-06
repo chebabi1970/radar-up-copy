@@ -39,7 +39,6 @@ export default function VisualizadorDocumento({ isOpen, onClose, documento, caso
   });
 
   const carregarDocumento = async () => {
-    // Verificar se há file_uri OU file_url
     const fileUri = documento?.file_uri;
     const fileUrl = documento?.file_url;
 
@@ -50,16 +49,13 @@ export default function VisualizadorDocumento({ isOpen, onClose, documento, caso
 
     setLoading(true);
     try {
-      // Se tiver file_uri (privado), gerar signed URL
       if (fileUri) {
         const resultado = await base44.integrations.Core.CreateFileSignedUrl({
           file_uri: fileUri,
-          expires_in: 600 // 10 minutos
+          expires_in: 600
         });
         setSignedUrl(resultado.signed_url);
-      } 
-      // Se tiver apenas file_url (público), usar diretamente
-      else if (fileUrl) {
+      } else if (fileUrl) {
         setSignedUrl(fileUrl);
       }
       
@@ -126,11 +122,12 @@ export default function VisualizadorDocumento({ isOpen, onClose, documento, caso
           </div>
         ) : signedUrl ? (
           <div className="space-y-4">
-            <div className="w-full h-[600px] border border-slate-200 rounded-lg overflow-hidden bg-white">
+            <div className="w-full h-[600px] border border-slate-200 rounded-lg overflow-hidden bg-slate-50">
               <iframe
-                src={signedUrl}
+                src={`https://docs.google.com/viewer?url=${encodeURIComponent(signedUrl)}&embedded=true`}
                 className="w-full h-full"
                 title={documento.nome_arquivo}
+                frameBorder="0"
               />
             </div>
             <div className="flex justify-center gap-2">
