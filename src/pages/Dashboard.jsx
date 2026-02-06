@@ -226,16 +226,25 @@ export default function Dashboard() {
                           to={createPageUrl(`CasoDetalhe?id=${doc.caso_id}`)}
                           className="flex items-center justify-between p-3 bg-white rounded-lg hover:bg-orange-50 transition-colors"
                         >
-                          <div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Badge variant="outline" className="text-xs font-semibold">
+                                {caso?.numero_caso || `Caso #${doc.caso_id.slice(0, 8)}`}
+                              </Badge>
+                              <span className="text-xs text-slate-400">•</span>
+                              <span className="text-xs text-slate-500">
+                                {getClienteName(caso?.cliente_id)}
+                              </span>
+                            </div>
                             <p className="font-medium text-slate-900 text-sm">
                               {doc.nome_arquivo}
                             </p>
-                            <p className="text-xs text-slate-600">
-                              {caso?.numero_caso || `Caso #${doc.caso_id.slice(0, 8)}`} • Enviado há {diasPendente} dias
+                            <p className="text-xs text-slate-500 mt-0.5">
+                              Pendente há {diasPendente} dias
                             </p>
                           </div>
                           <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="text-xs border-orange-300 text-orange-700">
+                            <Badge className="text-xs bg-orange-100 text-orange-700 border-orange-300">
                               {diasPendente} dias
                             </Badge>
                             <ArrowRight className="h-4 w-4 text-slate-400" />
