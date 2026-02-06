@@ -39,22 +39,34 @@ export default function VisualizadorDocumento({ isOpen, onClose, documento, caso
   });
 
   const carregarDocumento = async () => {
-    if (!documento?.file_uri) {
-      alert('Caminho do arquivo não disponível');
+    // Verificar se há file_uri OU file_url
+    const fileUri = documento?.file_uri;
+    const fileUrl = documento?.file_url;
+
+    if (!fileUri && !fileUrl) {
+      alert('Caminho do arquivo não disponível. O documento precisa ser enviado primeiro.');
       return;
     }
 
     setLoading(true);
     try {
-      const resultado = await base44.integrations.Core.CreateFileSignedUrl({
-        file_uri: documento.file_uri,
-        expires_in: 600 // 10 minutos
-      });
-      setSignedUrl(resultado.signed_url);
+      // Se tiver file_uri (privado), gerar signed URL
+      if (fileUri) {
+        const resultado = await base44.integrations.Core.CreateFileSignedUrl({
+          file_uri: fileUri,
+          expires_in: 600 // 10 minutos
+        });
+        setSignedUrl(resultado.signed_url);
+      } 
+      // Se tiver apenas file_url (público), usar diretamente
+      else if (fileUrl) {
+        setSignedUrl(fileUrl);
+      }
+      
       setMostrarConteudo(true);
     } catch (error) {
       console.error('Erro ao carregar documento:', error);
-      alert('Erro ao carregar documento. Tente novamente.');
+      alert('Erro ao carregar documento: ' + (error.message || 'Tente novamente.'));
     } finally {
       setLoading(false);
     }
