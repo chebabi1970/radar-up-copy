@@ -16,10 +16,12 @@ import {
   Plus,
   ArrowRight,
   TrendingUp,
-  FileText
+  FileText,
+  Bell
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, differenceInDays, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const statusColors = {
   novo: "bg-blue-100 text-blue-800",
@@ -63,6 +65,43 @@ export default function Dashboard() {
   const casosComDivergencias = casos.filter(c => c.divergencias_encontradas?.some(d => !d.resolvida));
   const docsPendentes = documentos.filter(d => d.status_analise === 'pendente');
 
+  // Alertas de prazo
+  const casosComPrazoProximo = casos.filter(c => {
+    if (!c.prazo_analise_rfb) return false;
+    const diasRestantes = differenceInDays(parseISO(c.prazo_analise_rfb), new Date());
+    return diasRestantes >= 0 && diasRestantes <= 3 && c.status === 'protocolado';
+  });
+
+  // Analytics - Status Distribution
+  const statusDistribution = Object.keys(statusLabels).map(status => ({
+    name: statusLabels[status],
+    value: casos.filter(c => c.status === status).length
+  })).filter(item => item.value > 0);
+
+  const COLORS = ['#3b82f6', '#f59e0b', '#f97316', '#10b981', '#8b5cf6', '#10b981', '#ef4444', '#6b7280'];
+
+  // Analytics - Casos por mês (últimos 6 meses)
+  const last6Months = Array.from({ length: 6 }, (_, i) => {
+    const date = new Date();
+    date.setMonth(date.getMonth() - (5 - i));
+    return date;
+  });
+
+  const casosPorMes = last6Months.map(date => {
+    const month = format(date, 'MMM/yy', { locale: ptBR });
+    const count = casos.filter(c => {
+      const casoDate = new Date(c.created_date);
+      return casoDate.getMonth() === date.getMonth() && casoDate.getFullYear() === date.getFullYear();
+    }).length;
+    return { mes: month, casos: count };
+  });
+
+  // Taxa de aprovação
+  const casosFinalizados = casos.filter(c => ['deferido', 'indeferido'].includes(c.status));
+  const taxaAprovacao = casosFinalizados.length > 0 
+    ? Math.round((casos.filter(c => c.status === 'deferido').length / casosFinalizados.length) * 100) 
+    : 0;
+
   const getClienteName = (clienteId) => {
     const cliente = clientes.find(c => c.id === clienteId);
     return cliente?.razao_social || 'Cliente não encontrado';
@@ -80,6 +119,52 @@ export default function Dashboard() {
             Sistema de controle para habilitação no comércio exterior
           </p>
         </div>
+
+        {/* Alertas de Prazo */}
+        {casosComPrazoProximo.length > 0 && (
+          <Card className="border-0 shadow-lg shadow-red-200/50 bg-red-50 border-red-200 mb-6">
+            <CardContent className="p-6">
+              <div className="flex items-start gap-4">
+                <div className="h-10 w-10 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Bell className="h-5 w-5 text-red-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-red-900 mb-2">
+                    ⚠️ Atenção: {casosComPrazoProximo.length} caso(s) com prazo RFB próximo
+                  </h3>
+                  <div className="space-y-2">
+                    {casosComPrazoProximo.map(caso => {
+                      const diasRestantes = differenceInDays(parseISO(caso.prazo_analise_rfb), new Date());
+                      return (
+                        <Link 
+                          key={caso.id}
+                          to={createPageUrl(`CasoDetalhe?id=${caso.id}`)}
+                          className="flex items-center justify-between p-3 bg-white rounded-lg hover:bg-red-50 transition-colors"
+                        >
+                          <div>
+                            <p className="font-medium text-slate-900 text-sm">
+                              {caso.numero_caso || `Caso #${caso.id.slice(0, 8)}`}
+                            </p>
+                            <p className="text-xs text-slate-600">
+                              {getClienteName(caso.cliente_id)}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="destructive" className="text-xs">
+                              <Clock className="h-3 w-3 mr-1" />
+                              {diasRestantes} {diasRestantes === 1 ? 'dia' : 'dias'}
+                            </Badge>
+                            <ArrowRight className="h-4 w-4 text-slate-400" />
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -173,6 +258,119 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           </Link>
+        </div>
+
+        {/* Analytics */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Status Distribution */}
+          <Card className="border-0 shadow-lg shadow-slate-200/50">
+            <CardHeader className="border-b border-slate-100">
+              <CardTitle className="text-lg font-semibold text-slate-900">
+                Distribuição por Status
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6">
+              {statusDistribution.length > 0 ? (
+                <ResponsiveContainer width="100%" height={250}>
+                  <PieChart>
+                    <Pie
+                      data={statusDistribution}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {statusDistribution.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-[250px] flex items-center justify-center text-slate-400">
+                  Sem dados para exibir
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Casos por Mês */}
+          <Card className="border-0 shadow-lg shadow-slate-200/50">
+            <CardHeader className="border-b border-slate-100">
+              <CardTitle className="text-lg font-semibold text-slate-900">
+                Casos Criados (Últimos 6 Meses)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6">
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={casosPorMes}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="mes" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="casos" fill="#3b82f6" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Performance Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card className="border-0 shadow-lg shadow-slate-200/50 bg-gradient-to-br from-green-50 to-emerald-50">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-green-700">Taxa de Aprovação</p>
+                  <p className="text-3xl font-bold text-green-900 mt-1">{taxaAprovacao}%</p>
+                  <p className="text-xs text-green-600 mt-1">
+                    {casos.filter(c => c.status === 'deferido').length} deferidos de {casosFinalizados.length} finalizados
+                  </p>
+                </div>
+                <div className="h-12 w-12 bg-green-100 rounded-xl flex items-center justify-center">
+                  <TrendingUp className="h-6 w-6 text-green-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg shadow-slate-200/50 bg-gradient-to-br from-purple-50 to-violet-50">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-purple-700">Em Análise</p>
+                  <p className="text-3xl font-bold text-purple-900 mt-1">
+                    {casos.filter(c => c.status === 'em_analise').length}
+                  </p>
+                  <p className="text-xs text-purple-600 mt-1">Casos em andamento</p>
+                </div>
+                <div className="h-12 w-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                  <Clock className="h-6 w-6 text-purple-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg shadow-slate-200/50 bg-gradient-to-br from-blue-50 to-cyan-50">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-blue-700">Protocolados RFB</p>
+                  <p className="text-3xl font-bold text-blue-900 mt-1">
+                    {casos.filter(c => c.status === 'protocolado').length}
+                  </p>
+                  <p className="text-xs text-blue-600 mt-1">Aguardando análise RFB</p>
+                </div>
+                <div className="h-12 w-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                  <CheckCircle2 className="h-6 w-6 text-blue-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Recent Cases */}
