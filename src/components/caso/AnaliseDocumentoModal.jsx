@@ -44,9 +44,22 @@ export default function AnaliseDocumentoModal({ item, documentos, casoId, client
       
       Retorne como JSON com estrutura: { data_balancete: string, saldos_caixa: {[banco]: number}, total_caixa: number, contas_detalhadas: {[descricao]: number} }`;
 
+      // Obter URLs assinadas para balancetes
+      const balanceteUrls = await Promise.all(balancetes.map(async (b) => {
+        if (b.file_url) return b.file_url;
+        if (b.file_uri) {
+          const signedResult = await base44.integrations.Core.CreateFileSignedUrl({
+            file_uri: b.file_uri,
+            expires_in: 3600
+          });
+          return signedResult.signed_url;
+        }
+        return null;
+      }));
+
       const dadosBalancete = await base44.integrations.Core.InvokeLLM({
         prompt: promptBalancete,
-        file_urls: balancetes.map(b => b.file_url),
+        file_urls: balanceteUrls.filter(url => url),
         response_json_schema: {
           type: 'object',
           properties: {
