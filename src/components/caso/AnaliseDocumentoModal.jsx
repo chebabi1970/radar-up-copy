@@ -170,7 +170,7 @@ export default function AnaliseDocumentoModal({ item, documentos, casoId, client
       const todosDocsCaso = documentos.map(d => ({
         tipo: d.tipo_documento,
         nome: d.nome_arquivo,
-        url: d.file_url
+        url: d.file_url || d.file_uri
       }));
 
       const tipoDoc = item.tipo_documento;
