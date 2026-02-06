@@ -295,10 +295,20 @@ Retorne JSON estruturado com:
               type: 'object',
               properties: {
                 dados_extraidos: { type: 'object' },
-                checklist_verificacao: {
-                  type: 'array',
-                  items: { type: 'object' }
-                },
+                checklist_verificacao: { type: 'array' },
+                indicadores_alerta: { type: 'array' },
+                resumo: { type: 'string' },
+                classificacao_final: { type: 'string' }
+              }
+            }
+          : isProcuracao
+          ? {
+              type: 'object',
+              properties: {
+                dados_procuracao: { type: 'object' },
+                dados_procurador_documento: { type: 'object' },
+                comparacao_procurador: { type: 'object' },
+                checklist_verificacao: { type: 'array' },
                 indicadores_alerta: { type: 'array' },
                 resumo: { type: 'string' },
                 classificacao_final: { type: 'string' }
