@@ -380,6 +380,57 @@ ${JSON.stringify(checklistContext, null, 2)}
           </Card>
         </div>
 
+        {/* Documentos Faltantes */}
+        {resultado.documentos_faltantes?.length > 0 && (
+          <Card className="border-0 shadow-sm border-l-4 border-l-orange-500">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 text-orange-600" />
+                Documentos Obrigatórios Faltantes
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {resultado.documentos_faltantes.map((doc, idx) => (
+                <div key={idx} className="p-3 rounded-lg border border-orange-200 bg-orange-50">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <p className="font-medium text-sm text-orange-900">{doc.tipo}</p>
+                      <p className="text-xs mt-1 text-orange-700">{doc.motivo}</p>
+                      <Badge className="mt-2 text-xs" variant={doc.criticidade === 'critica' ? 'destructive' : 'outline'}>
+                        {doc.criticidade}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Informações Extraídas */}
+        {resultado.informacoes_extraidas?.length > 0 && (
+          <Card className="border-0 shadow-sm">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Dados Extraídos dos Documentos</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {resultado.informacoes_extraidas.map((info, idx) => (
+                <div key={idx} className="p-3 rounded-lg border border-slate-200 bg-slate-50">
+                  <p className="font-medium text-sm text-slate-900 mb-2">{info.documento}</p>
+                  <div className="text-xs text-slate-600 space-y-1">
+                    {Object.entries(info.dados_chave || {}).map(([key, value]) => (
+                      <div key={key} className="flex justify-between">
+                        <span className="font-medium capitalize">{key.replace(/_/g, ' ')}:</span>
+                        <span className="text-slate-700">{typeof value === 'object' ? JSON.stringify(value) : value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Discrepâncias */}
         {resultado.discrepancias.length > 0 && (
           <Card className="border-0 shadow-sm">
@@ -393,6 +444,12 @@ ${JSON.stringify(checklistContext, null, 2)}
                     <div className="flex-1">
                       <p className="font-medium text-sm">{disc.tipo}</p>
                       <p className="text-xs mt-1 opacity-90">{disc.descricao}</p>
+                      {(disc.valor_encontrado || disc.valor_esperado) && (
+                        <div className="mt-2 text-xs space-y-1">
+                          {disc.valor_encontrado && <p><span className="font-semibold">Encontrado:</span> {disc.valor_encontrado}</p>}
+                          {disc.valor_esperado && <p><span className="font-semibold">Esperado:</span> {disc.valor_esperado}</p>}
+                        </div>
+                      )}
                       {disc.documentos_envolvidos?.length > 0 && (
                         <div className="flex gap-1 mt-2 flex-wrap">
                           {disc.documentos_envolvidos.map((doc, i) => (
