@@ -186,36 +186,25 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-           {features.map((feature, idx) => {
-            const handleClick = (e) => {
-              if (!user) {
-                e.preventDefault();
-                base44.auth.redirectToLogin();
-              }
-            };
-            return (
-              <Link key={idx} to={user ? createPageUrl(feature.link) : '#'} onClick={handleClick}>
-                <Card className="h-full hover:shadow-lg transition-all duration-300 cursor-pointer border-0 bg-white/80 backdrop-blur">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="p-3 rounded-lg bg-slate-100">
-                        {feature.icon}
-                      </div>
-                      <ArrowRight className="h-5 w-5 text-slate-400" />
+           {features.map((feature, idx) => (
+              <Card key={idx} className="h-full hover:shadow-lg transition-all duration-300 border-0 bg-white/80 backdrop-blur">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="p-3 rounded-lg bg-slate-100">
+                      {feature.icon}
                     </div>
-                    <CardTitle className="text-lg text-slate-900 mt-4">
-                      {feature.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-slate-600">
-                      {feature.descricao}
-                    </p>
-                  </CardContent>
-                </Card>
-              </Link>
-            );
-          })}
+                  </div>
+                  <CardTitle className="text-lg text-slate-900 mt-4">
+                    {feature.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-slate-600">
+                    {feature.descricao}
+                  </p>
+                </CardContent>
+              </Card>
+          ))}
         </div>
       </div>
 
