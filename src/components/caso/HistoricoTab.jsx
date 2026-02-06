@@ -28,6 +28,9 @@ const statusColors = {
 };
 
 export default function HistoricoTab({ casoId }) {
+  const [expandedItem, setExpandedItem] = useState(null);
+  const [detailsModal, setDetailsModal] = useState(null);
+
   const { data: historico = [], isLoading } = useQuery({
     queryKey: ['historico', casoId],
     queryFn: () => base44.entities.AnaliseHistorico.filter(
