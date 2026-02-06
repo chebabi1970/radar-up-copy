@@ -125,37 +125,23 @@ export default function VisualizadorDocumento({ isOpen, onClose, documento, caso
             </Button>
           </div>
         ) : signedUrl ? (
-          <div className="flex flex-col items-center justify-center py-12 space-y-6">
-            <div className="text-center">
-              <div className="bg-blue-100 rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-4">
-                <Eye className="h-8 w-8 text-blue-600" />
-              </div>
-              <h3 className="text-lg font-semibold text-slate-900 mb-2">Documento Pronto</h3>
-              <p className="text-sm text-slate-600 mb-4 max-w-md">
-                Por questões de segurança, o documento será aberto em uma nova aba do navegador.
-              </p>
+          <div className="space-y-4">
+            <div className="w-full h-[600px] border border-slate-200 rounded-lg overflow-hidden bg-white">
+              <iframe
+                src={signedUrl}
+                className="w-full h-full"
+                title={documento.nome_arquivo}
+              />
             </div>
-            
-            <Button 
-              onClick={() => {
-                window.open(signedUrl, '_blank');
-                // Registrar visualização
-                registrarAcessoMutation.mutate({
-                  documento_id: documento.id,
-                  tipo_acesso: 'visualizacao',
-                  tempo_visualizacao_segundos: 0
-                });
-              }}
-              className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-6"
-              size="lg"
-            >
-              <Eye className="h-5 w-5 mr-2" />
-              Abrir Documento
-            </Button>
-
-            <p className="text-xs text-slate-500">
-              Link expira em 10 minutos • Acesso registrado em auditoria
-            </p>
+            <div className="flex justify-center gap-2">
+              <Button 
+                variant="outline"
+                onClick={() => window.open(signedUrl, '_blank')}
+                size="sm"
+              >
+                Abrir em Nova Aba
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="flex items-center justify-center py-8">
