@@ -219,42 +219,16 @@ Retorne JSON com:
       const resultado = await base44.integrations.Core.InvokeLLM({
         prompt,
         file_urls: fileUrls,
-        response_json_schema: isDocumentoIdentificacao 
-          ? {
-              type: 'object',
-              properties: {
-                dados_extraidos: { type: 'object' },
-                checklist_verificacao: { type: 'array' },
-                indicadores_alerta: { type: 'array' },
-                resumo: { type: 'string' },
-                classificacao_final: { type: 'string' }
-              }
-            }
-          : isProcuracao
-          ? {
-              type: 'object',
-              properties: {
-                dados_procuracao: { type: 'object' },
-                dados_procurador_documento: { type: 'object' },
-                comparacao_procurador: { type: 'object' },
-                checklist_verificacao: { type: 'array' },
-                indicadores_alerta: { type: 'array' },
-                resumo: { type: 'string' },
-                classificacao_final: { type: 'string' }
-              }
-            }
-          : {
-              type: 'object',
-              properties: {
-                dados_extraidos: { type: 'object' },
-                checklist_verificacao: { type: 'array' },
-                indicadores_alerta: { type: 'array' },
-                verificacoes_cruzadas_necessarias: { type: 'array' },
-                validacoes_cadastro: { type: 'array' },
-                resumo: { type: 'string' },
-                classificacao_final: { type: 'string' }
-              }
-            }
+        response_json_schema: {
+          type: 'object',
+          properties: {
+            dados_extraidos: { type: 'object' },
+            checklist_verificacao: { type: 'array' },
+            indicadores_alerta: { type: 'array' },
+            resumo: { type: 'string' },
+            classificacao_final: { type: 'string' }
+          }
+        }
       });
 
       setResultados({
