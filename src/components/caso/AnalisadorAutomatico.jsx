@@ -89,19 +89,33 @@ export default function AnalisadorAutomatico({ casoId, documentos, checklistItem
         descricao: item.descricao
       }));
 
-      // Chamar IA para análise
+      // Chamar IA para análise com contexto completo
       const analise = await base44.integrations.Core.InvokeLLM({
-        prompt: `Você é um analista de conformidade especializado em análise documental de processos de habilitação RFB.
+        prompt: `Você é um analista sênior de conformidade RFB especializado em processos de habilitação de importadores/exportadores.
 
-ANALISE PROFUNDA dos seguintes documentos:
-${JSON.stringify(dadosDocumentos.map(d => ({ tipo: tiposDocumentos[d.tipo] || d.tipo, nome: d.nome, data: d.data })))}
+**DADOS DO CASO**:
+Número: ${caso?.numero_caso || 'N/A'}
+Status: ${caso?.status || 'N/A'}
+Modalidade Pretendida: ${caso?.modalidade_pretendida || 'N/A'}
+Limite Pretendido: ${caso?.limite_pretendido ? `USD ${caso.limite_pretendido.toLocaleString()}` : 'N/A'}
+Hipótese Legal: ${caso?.hipotese_revisao || 'N/A'}
 
-DADOS DO CLIENTE PARA CRUZAMENTO:
-${clienteData ? JSON.stringify({
-  razao_social: clienteData.razao_social,
-  cnpj: clienteData.cnpj,
-  endereco: clienteData.endereco
-}) : 'Não disponível'}
+**CLIENTE**:
+Razão Social: ${clienteData?.razao_social || 'N/A'}
+CNPJ: ${clienteData?.cnpj || 'N/A'}
+Endereço: ${clienteData?.endereco || 'N/A'}
+Procuração e-CAC: ${clienteData?.procuracao_eletronica ? 'SIM' : 'NÃO'}
+
+**DOCUMENTOS PARA ANÁLISE** (${dadosDocumentos.length} documentos):
+${JSON.stringify(dadosDocumentos.map(d => ({ 
+  tipo: tiposDocumentos[d.tipo] || d.tipo, 
+  nome: d.nome, 
+  data: d.data,
+  status: d.status_analise 
+})), null, 2)}
+
+**CHECKLIST DE DOCUMENTOS OBRIGATÓRIOS**:
+${JSON.stringify(checklistContext, null, 2)}
 
 REALIZAR AS SEGUINTES VALIDAÇÕES CRÍTICAS:
 
