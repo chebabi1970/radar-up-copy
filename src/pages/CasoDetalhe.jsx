@@ -112,7 +112,32 @@ export default function CasoDetalhe() {
   });
 
   const updateStatusMutation = useMutation({
-    mutationFn: (newStatus) => base44.entities.Caso.update(casoId, { status: newStatus }),
+    mutationFn: async (newStatus) => {
+      await base44.entities.Caso.update(casoId, { status: newStatus });
+      
+      // Enviar email automático quando status muda
+      if (cliente?.email) {
+        try {
+          await base44.integrations.Core.SendEmail({
+            to: cliente.email,
+            subject: `Status do Caso ${caso.numero_caso || casoId.slice(0, 8)} Atualizado`,
+            body: `
+              <h2>Atualização de Status</h2>
+              <p>Olá,</p>
+              <p>O status do seu caso <strong>${caso.numero_caso || `#${casoId.slice(0, 8)}`}</strong> foi atualizado para:</p>
+              <h3 style="color: #3b82f6;">${statusLabels[newStatus]}</h3>
+              <p><strong>Cliente:</strong> ${cliente.razao_social}<br/>
+              <strong>CNPJ:</strong> ${cliente.cnpj}</p>
+              <p>Para mais detalhes, acesse o sistema RevEstimativa.</p>
+              <br/>
+              <p>Atenciosamente,<br/>Equipe RevEstimativa</p>
+            `
+          });
+        } catch (error) {
+          console.error('Erro ao enviar email:', error);
+        }
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['caso', casoId] });
     }
