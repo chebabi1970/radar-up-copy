@@ -245,59 +245,32 @@ Retorne JSON estruturado com:
       const resultado = await base44.integrations.Core.InvokeLLM({
         prompt,
         file_urls: fileUrls,
-        response_json_schema: {
-          type: 'object',
-          properties: {
-            dados_extraidos: { type: 'object' },
-            checklist_verificacao: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  item: { type: 'string' },
-                  status: { type: 'string' },
-                  observacao: { type: 'string' }
-                }
+        response_json_schema: isDocumentoIdentificacao 
+          ? {
+              type: 'object',
+              properties: {
+                dados_extraidos: { type: 'object' },
+                checklist_verificacao: {
+                  type: 'array',
+                  items: { type: 'object' }
+                },
+                indicadores_alerta: { type: 'array' },
+                resumo: { type: 'string' },
+                classificacao_final: { type: 'string' }
               }
-            },
-            indicadores_alerta: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  tipo: { type: 'string' },
-                  severidade: { type: 'string' },
-                  descricao: { type: 'string' },
-                  fundamento_normativo: { type: 'string' }
-                }
+            }
+          : {
+              type: 'object',
+              properties: {
+                dados_extraidos: { type: 'object' },
+                checklist_verificacao: { type: 'array' },
+                indicadores_alerta: { type: 'array' },
+                verificacoes_cruzadas_necessarias: { type: 'array' },
+                validacoes_cadastro: { type: 'array' },
+                resumo: { type: 'string' },
+                classificacao_final: { type: 'string' }
               }
-            },
-            verificacoes_cruzadas_necessarias: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  documento_relacionado: { type: 'string' },
-                  o_que_verificar: { type: 'string' }
-                }
-              }
-            },
-            validacoes_cadastro: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  campo: { type: 'string' },
-                  valor_documento: { type: 'string' },
-                  valor_cadastro: { type: 'string' },
-                  coincide: { type: 'boolean' }
-                }
-              }
-            },
-            resumo: { type: 'string' },
-            classificacao_final: { type: 'string' }
-          }
-        }
+            }
       });
 
       setResultados({
