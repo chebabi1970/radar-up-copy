@@ -369,7 +369,7 @@ Guia em construção - será preenchido nesta semana.`;
                 📄 Dados Extraídos do Documento
               </h4>
               <div className="text-sm space-y-1 text-slate-700">
-                {Object.entries(resultados.dados.dados_extraidos || resultados.dados.dados_procuracao || {}).map(([key, value]) => (
+                {Object.entries(resultados.dados.dados_extraidos || {}).map(([key, value]) => (
                   <p key={key}>
                     <strong className="text-slate-900">{key.replace(/_/g, ' ')}:</strong>{' '}
                     {typeof value === 'object' ? JSON.stringify(value) : String(value)}
