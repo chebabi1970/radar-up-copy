@@ -125,14 +125,24 @@ export default function VisualizadorDocumento({ isOpen, onClose, documento, caso
             </Button>
           </div>
         ) : signedUrl ? (
-          <div className="w-full h-[600px] border border-slate-200 rounded-lg overflow-hidden bg-slate-50">
-            <iframe
-              src={signedUrl}
-              className="w-full h-full"
-              title={documento.nome_arquivo}
-              sandbox="allow-same-origin"
-              onContextMenu={(e) => e.preventDefault()}
-            />
+          <div className="space-y-4">
+            <div className="w-full h-[600px] border border-slate-200 rounded-lg overflow-hidden bg-slate-50">
+              <iframe
+                src={`${signedUrl}#toolbar=0&navpanes=0`}
+                className="w-full h-full"
+                title={documento.nome_arquivo}
+                allow="fullscreen"
+              />
+            </div>
+            <div className="flex justify-center">
+              <Button 
+                variant="outline"
+                onClick={() => window.open(signedUrl, '_blank')}
+                className="text-sm"
+              >
+                Abrir em Nova Aba
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="flex items-center justify-center py-8">
