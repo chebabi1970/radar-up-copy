@@ -180,9 +180,23 @@ Retorne JSON estruturado com:
   classificacao_final: "APROVADO"|"APROVADO_COM_RESSALVAS"|"REPROVADO"
 }`;
 
+      // Obter URL assinada se for file_uri
+      let fileUrl = linkedDoc.file_url;
+      if (!fileUrl && linkedDoc.file_uri) {
+        const signedResult = await base44.integrations.Core.CreateFileSignedUrl({
+          file_uri: linkedDoc.file_uri,
+          expires_in: 3600
+        });
+        fileUrl = signedResult.signed_url;
+      }
+
+      if (!fileUrl) {
+        throw new Error('URL do documento não disponível');
+      }
+
       const resultado = await base44.integrations.Core.InvokeLLM({
         prompt,
-        file_urls: [linkedDoc.file_url],
+        file_urls: [fileUrl],
         response_json_schema: {
           type: 'object',
           properties: {
