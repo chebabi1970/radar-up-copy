@@ -202,21 +202,19 @@ export default function DocumentosTab({ casoId, documentos, checklistItems }) {
               </div>
 
               <div>
-                <Label>Arquivo</Label>
+                <Label>Arquivo(s) *</Label>
                 <Input
                   type="file"
+                  multiple
                   onChange={handleFileChange}
                   className="cursor-pointer"
+                  required
                 />
-              </div>
-
-              <div>
-                <Label>Nome do Arquivo</Label>
-                <Input
-                  value={formData.nome_arquivo}
-                  onChange={(e) => setFormData({...formData, nome_arquivo: e.target.value})}
-                  placeholder="Nome do documento"
-                />
+                {files.length > 0 && (
+                  <p className="text-sm text-slate-600 mt-2">
+                    {files.length} arquivo(s) selecionado(s)
+                  </p>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
