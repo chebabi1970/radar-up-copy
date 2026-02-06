@@ -166,42 +166,15 @@ export default function AnaliseDocumentoModal({ item, documentos, casoId, client
         return;
       }
 
-      // Coletar documentos relacionados para verificação cruzada
-      const todosDocsCaso = documentos.map(d => ({
-        tipo: d.tipo_documento,
-        nome: d.nome_arquivo,
-        url: d.file_url || d.file_uri
-      }));
-
       const tipoDoc = item.tipo_documento;
-
-      // Prompt simplificado para análise mais rápida
       const isDocumentoIdentificacao = tipoDoc.includes('documento_identificacao');
       
+      // Prompt bem mais simples para identificação
       const prompt = isDocumentoIdentificacao 
-        ? `Analise este documento de identificação e extraia:
-- Nome completo
-- CPF
-- RG/Número de registro
-- Data de nascimento
-- Data de emissão
-- Órgão emissor
-- Validade do documento
-
-Verifique:
-✓ Documento está válido (não expirado)
-✓ Foto legível
-✓ Dados completos e legíveis
-
-Retorne JSON com:
-{
-  dados_extraidos: {nome, cpf, rg, data_nascimento, data_emissao, orgao_emissor, validade},
-  checklist_verificacao: [{item, status: "OK"|"ALERTA"|"CRÍTICO", observacao}],
-  indicadores_alerta: [{tipo, severidade: "critica"|"media"|"leve", descricao}],
-  validacoes_cadastro: [{campo, valor_documento, valor_cadastro: "${cliente?.razao_social || 'N/A'}", coincide}],
-  resumo: string,
-  classificacao_final: "APROVADO"|"APROVADO_COM_RESSALVAS"|"REPROVADO"
-}`
+        ? `Extraia os dados do documento de identificação:
+Nome, CPF, RG, Data Nascimento, Data Emissão, Órgão Emissor, Data Validade.
+Verifique: Documento válido? Foto legível? Dados completos?
+Retorne JSON: {dados_extraidos: {nome, cpf, rg, data_nascimento, data_emissao, orgao_emissor, data_validade}, checklist_verificacao: [{item, status, observacao}], indicadores_alerta: [], resumo: string, classificacao_final: "APROVADO"|"REPROVADO"}`
         : `Você é um analista especializado em habilitação RADAR conforme IN RFB nº 1.984/2020 e Portaria Coana nº 72/2020.
 
 DOCUMENTO A ANALISAR: ${tipoDoc}
