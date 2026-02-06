@@ -59,19 +59,35 @@ export default function AnalisadorAutomatico({ casoId, documentos, checklistItem
       
       // Preparar dados dos documentos para análise
       const dadosDocumentos = documentos
-        .filter(d => d.file_url)
-        .slice(0, 5) // Limitar a 5 documentos por análise
+        .filter(d => d.file_url || d.file_uri)
+        .slice(0, 8) // Aumentar para 8 documentos
         .map(d => ({
           tipo: d.tipo_documento,
           nome: d.nome_arquivo,
-          url: d.file_url,
-          data: d.data_documento
+          url: d.file_url || d.file_uri,
+          data: d.data_documento,
+          status_analise: d.status_analise
         }));
 
-      // Buscar dados do cliente para comparação
-      const caso = await base44.entities.Caso.list({ id: casoId });
-      const cliente = caso.length > 0 ? await base44.entities.Cliente.list({ id: caso[0].cliente_id }) : [];
+      // Buscar dados do cliente e caso completo
+      const casos = await base44.entities.Caso.list({ id: casoId });
+      const caso = casos.length > 0 ? casos[0] : null;
+      const cliente = caso ? await base44.entities.Cliente.list({ id: caso.cliente_id }) : [];
       const clienteData = cliente.length > 0 ? cliente[0] : null;
+
+      // Preparar URLs dos documentos para análise visual pela IA
+      const documentoUrls = dadosDocumentos
+        .filter(d => d.url && !d.url.includes('gs://')) // Apenas URLs públicas
+        .slice(0, 5) // Limitar a 5 para análise visual
+        .map(d => d.url);
+
+      // Preparar contexto do checklist
+      const checklistContext = checklistItems.map(item => ({
+        tipo: item.tipo_documento,
+        status: item.status,
+        obrigatorio: item.obrigatorio,
+        descricao: item.descricao
+      }));
 
       // Chamar IA para análise
       const analise = await base44.integrations.Core.InvokeLLM({
