@@ -745,56 +745,219 @@ ALERTAS GERAIS:
              </Button>
            </div>
           ) : !isBalancete && resultados.dados ? (
-           <div className="space-y-4">
-             <div className="p-4 bg-slate-50 rounded-lg">
-               <h4 className="font-semibold text-slate-900 mb-2">Dados Extraídos</h4>
-               <div className="text-sm space-y-1 text-slate-600">
-                 {resultados.dados.dados_extraidos?.nome && <p><strong>Nome:</strong> {resultados.dados.dados_extraidos.nome}</p>}
-                 {resultados.dados.dados_extraidos?.cnpj && <p><strong>CNPJ:</strong> {resultados.dados.dados_extraidos.cnpj}</p>}
-                 {resultados.dados.dados_extraidos?.endereco && <p><strong>Endereço:</strong> {resultados.dados.dados_extraidos.endereco}</p>}
-                 {resultados.dados.dados_extraidos?.periodo && <p><strong>Período:</strong> {resultados.dados.dados_extraidos.periodo}</p>}
-               </div>
-             </div>
+          <div className="space-y-4">
+            {/* Classificação Final */}
+            <div className={`p-4 rounded-lg border-2 ${
+              resultados.dados.classificacao_final === 'APROVADO' 
+                ? 'bg-green-50 border-green-300' 
+                : resultados.dados.classificacao_final === 'APROVADO_COM_RESSALVAS'
+                ? 'bg-yellow-50 border-yellow-300'
+                : 'bg-red-50 border-red-300'
+            }`}>
+              <div className="flex items-center gap-3">
+                {resultados.dados.classificacao_final === 'APROVADO' ? (
+                  <CheckCircle2 className="h-6 w-6 text-green-600" />
+                ) : (
+                  <AlertCircle className="h-6 w-6 text-red-600" />
+                )}
+                <div>
+                  <h4 className="font-bold text-lg">
+                    {resultados.dados.classificacao_final?.replace(/_/g, ' ')}
+                  </h4>
+                  <p className="text-sm mt-1">{resultados.dados.resumo}</p>
+                </div>
+              </div>
+            </div>
 
-             {resultados.dados.consistencias?.length > 0 && (
-               <div className="space-y-2">
-                 <h4 className="font-semibold text-slate-900">Validações com Cadastro</h4>
-                 {resultados.dados.consistencias.map((cons, idx) => (
-                   <div key={idx} className={`p-3 rounded-lg border ${cons.coincide ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'}`}>
-                     <div className="text-sm">
-                       <p className="font-semibold text-slate-900">{cons.campo}</p>
-                       <p className="text-xs text-slate-600 mt-1">Documento: {cons.valor_documento}</p>
-                       <p className="text-xs text-slate-600">Cadastro: {cons.valor_cadastro}</p>
-                       {!cons.coincide && <p className="text-xs text-yellow-700 mt-1 font-semibold">⚠ Inconsistência</p>}
-                     </div>
-                   </div>
-                 ))}
-               </div>
-             )}
+            {/* Dados Extraídos */}
+            <div className="p-4 bg-slate-50 rounded-lg">
+              <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                📄 Dados Extraídos do Documento
+              </h4>
+              <div className="text-sm space-y-1 text-slate-700">
+                {Object.entries(resultados.dados.dados_extraidos || {}).map(([key, value]) => (
+                  <p key={key}>
+                    <strong className="text-slate-900">{key.replace(/_/g, ' ')}:</strong>{' '}
+                    {typeof value === 'object' ? JSON.stringify(value) : String(value)}
+                  </p>
+                ))}
+              </div>
+            </div>
 
-             {resultados.dados.alertas?.length > 0 && (
-               <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                 <h4 className="font-semibold text-amber-900 mb-2">Alertas</h4>
-                 <ul className="text-sm text-amber-800 space-y-1">
-                   {resultados.dados.alertas.map((alerta, idx) => (
-                     <li key={idx}>• {alerta}</li>
-                   ))}
-                 </ul>
-               </div>
-             )}
+            {/* Checklist de Verificação */}
+            {resultados.dados.checklist_verificacao?.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="font-semibold text-slate-900 flex items-center gap-2">
+                  ✓ Checklist de Verificação
+                </h4>
+                {resultados.dados.checklist_verificacao.map((check, idx) => (
+                  <div key={idx} className={`p-3 rounded-lg border ${
+                    check.status === 'OK' 
+                      ? 'bg-green-50 border-green-200' 
+                      : check.status === 'ALERTA'
+                      ? 'bg-yellow-50 border-yellow-200'
+                      : 'bg-red-50 border-red-200'
+                  }`}>
+                    <div className="flex items-start gap-2">
+                      <span className="text-lg">
+                        {check.status === 'OK' ? '✅' : check.status === 'ALERTA' ? '⚠️' : '❌'}
+                      </span>
+                      <div className="flex-1">
+                        <p className="font-semibold text-sm text-slate-900">{check.item}</p>
+                        {check.observacao && (
+                          <p className="text-xs text-slate-600 mt-1">{check.observacao}</p>
+                        )}
+                      </div>
+                      <Badge className={
+                        check.status === 'OK' 
+                          ? 'bg-green-100 text-green-800' 
+                          : check.status === 'ALERTA'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-red-100 text-red-800'
+                      }>
+                        {check.status}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
 
-             <div className="p-4 bg-blue-50 rounded-lg">
-               <p className="text-sm text-blue-800"><strong>Resumo:</strong> {resultados.dados.resumo}</p>
-             </div>
+            {/* Indicadores de Alerta */}
+            {resultados.dados.indicadores_alerta?.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="font-semibold text-slate-900 flex items-center gap-2">
+                  🚨 Indicadores de Alerta
+                </h4>
+                {resultados.dados.indicadores_alerta.map((alerta, idx) => (
+                  <div key={idx} className={`p-3 rounded-lg border ${
+                    alerta.severidade === 'critica' 
+                      ? 'bg-red-50 border-red-300' 
+                      : alerta.severidade === 'media'
+                      ? 'bg-yellow-50 border-yellow-300'
+                      : 'bg-blue-50 border-blue-300'
+                  }`}>
+                    <div className="flex items-start gap-3">
+                      <span className="text-2xl">
+                        {alerta.severidade === 'critica' ? '🔴' : alerta.severidade === 'media' ? '🟡' : '🟠'}
+                      </span>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="font-bold text-sm text-slate-900">{alerta.tipo}</p>
+                          <Badge className={
+                            alerta.severidade === 'critica' 
+                              ? 'bg-red-600 text-white' 
+                              : alerta.severidade === 'media'
+                              ? 'bg-yellow-600 text-white'
+                              : 'bg-blue-600 text-white'
+                          }>
+                            {alerta.severidade.toUpperCase()}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-slate-700 mb-2">{alerta.descricao}</p>
+                        {alerta.fundamento_normativo && (
+                          <p className="text-xs text-slate-500 italic">
+                            Base legal: {alerta.fundamento_normativo}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
 
-             <Button
-               onClick={() => setResultados(null)}
-               variant="outline"
-               className="w-full"
-             >
-               Nova Análise
-             </Button>
-           </div>
+            {/* Validações com Cadastro */}
+            {resultados.dados.validacoes_cadastro?.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="font-semibold text-slate-900 flex items-center gap-2">
+                  🔍 Validações com Cadastro
+                </h4>
+                {resultados.dados.validacoes_cadastro.map((val, idx) => (
+                  <div key={idx} className={`p-3 rounded-lg border ${
+                    val.coincide ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
+                  }`}>
+                    <div className="flex items-start gap-2">
+                      <span className="text-lg">{val.coincide ? '✅' : '❌'}</span>
+                      <div className="flex-1 text-sm">
+                        <p className="font-semibold text-slate-900">{val.campo}</p>
+                        <p className="text-slate-600 mt-1">
+                          <span className="font-medium">Documento:</span> {val.valor_documento}
+                        </p>
+                        <p className="text-slate-600">
+                          <span className="font-medium">Cadastro:</span> {val.valor_cadastro}
+                        </p>
+                        {!val.coincide && (
+                          <p className="text-red-700 font-semibold mt-1">⚠ INCONSISTÊNCIA DETECTADA</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Verificações Cruzadas Necessárias */}
+            {resultados.dados.verificacoes_cruzadas_necessarias?.length > 0 && (
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <h4 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
+                  🔗 Verificações Cruzadas Recomendadas
+                </h4>
+                <ul className="text-sm text-blue-800 space-y-2">
+                  {resultados.dados.verificacoes_cruzadas_necessarias.map((verif, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <span>→</span>
+                      <div>
+                        <p className="font-semibold">{verif.documento_relacionado}</p>
+                        <p className="text-xs mt-0.5">{verif.o_que_verificar}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <div className="flex gap-2">
+              <Button
+                onClick={() => setResultados(null)}
+                variant="outline"
+                className="flex-1"
+              >
+                Nova Análise
+              </Button>
+              <Button
+                onClick={async () => {
+                  const user = await base44.auth.me();
+                  await saveMutation.mutateAsync({
+                    caso_id: casoId,
+                    tipo_analise: 'validacao_documento',
+                    documento_tipo: item.tipo_documento,
+                    documento_nome: linkedDoc?.nome_arquivo,
+                    usuario_email: user.email,
+                    data_hora_analise: new Date().toISOString(),
+                    total_discrepancias: resultados.dados.indicadores_alerta?.length || 0,
+                    discrepancias_criticas: resultados.dados.indicadores_alerta?.filter(a => a.severidade === 'critica').length || 0,
+                    discrepancias_medias: resultados.dados.indicadores_alerta?.filter(a => a.severidade === 'media').length || 0,
+                    discrepancias_leves: resultados.dados.indicadores_alerta?.filter(a => a.severidade === 'leve').length || 0,
+                    status_resultado: resultados.dados.classificacao_final === 'APROVADO' ? 'sem_discrepancias' : 'com_discrepancias',
+                    dados_completos: resultados
+                  });
+                  onClose();
+                }}
+                disabled={saveMutation.isPending}
+                className="flex-1 bg-green-600 hover:bg-green-700"
+              >
+                {saveMutation.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Salvando...
+                  </>
+                ) : (
+                  'Salvar Análise'
+                )}
+              </Button>
+            </div>
+          </div>
           ) : (
            <div className="space-y-4">
               {/* Resumo */}
