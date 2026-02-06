@@ -327,14 +327,30 @@ ${JSON.stringify(checklistContext, null, 2)}
   }
 
   if (resultado) {
+    const probabilidadeColors = {
+      baixa: 'text-red-600 bg-red-50',
+      media: 'text-yellow-600 bg-yellow-50',
+      alta: 'text-green-600 bg-green-50'
+    };
+
     return (
       <div className="space-y-4">
-        {/* Resumo */}
-        <Card className="border-0 shadow-sm bg-gradient-to-r from-blue-50 to-indigo-50">
-          <CardContent className="p-4">
-            <p className="text-sm text-slate-700 leading-relaxed">{resultado.resumo}</p>
-          </CardContent>
-        </Card>
+        {/* Resumo e Probabilidade */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <Card className="border-0 shadow-sm bg-gradient-to-r from-blue-50 to-indigo-50 lg:col-span-2">
+            <CardContent className="p-4">
+              <p className="text-xs font-semibold text-blue-600 uppercase mb-2">Resumo Executivo</p>
+              <p className="text-sm text-slate-700 leading-relaxed">{resultado.resumo}</p>
+            </CardContent>
+          </Card>
+          <Card className={`border-0 shadow-sm ${probabilidadeColors[resultado.probabilidade_aprovacao] || 'bg-slate-50'}`}>
+            <CardContent className="p-4">
+              <p className="text-xs font-semibold uppercase mb-1">Probabilidade de Aprovação</p>
+              <p className="text-2xl font-bold mb-2 capitalize">{resultado.probabilidade_aprovacao}</p>
+              <p className="text-xs opacity-80 leading-relaxed">{resultado.justificativa_probabilidade}</p>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Status geral */}
         <div className="grid grid-cols-4 gap-3">
