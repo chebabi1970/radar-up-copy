@@ -273,9 +273,14 @@ ${JSON.stringify(checklistContext, null, 2)}
 
       const resultadoAnalise = {
         resumo: analise.resumo,
+        documentos_faltantes: analise.documentos_faltantes || [],
+        informacoes_extraidas: analise.informacoes_extraidas || [],
         discrepancias: discrepancias,
         validacoes: analise.validacoes || [],
         riscos: analise.riscos || [],
+        proximos_passos: analise.proximos_passos || [],
+        probabilidade_aprovacao: analise.probabilidade_aprovacao,
+        justificativa_probabilidade: analise.justificativa_probabilidade,
         conclusao: analise.conclusao,
         totalDiscrepancias,
         criticas,
