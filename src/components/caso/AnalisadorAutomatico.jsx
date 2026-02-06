@@ -167,13 +167,26 @@ ${JSON.stringify(checklistContext, null, 2)}
    - Sugerir próximos passos e documentos adicionais
    - Recomendar ações corretivas antes do protocolo
 
-Retorne OBRIGATORIAMENTE um JSON estruturado com:
+**RETORNE OBRIGATORIAMENTE UM JSON ESTRUTURADO**:
 {
-  "resumo": "resumo executivo focado em riscos críticos",
+  "resumo": "resumo executivo focado em riscos críticos e principais achados",
+  "documentos_faltantes": [
+    {
+      "tipo": "tipo do documento obrigatório",
+      "criticidade": "critica|alta|media",
+      "motivo": "por que é necessário"
+    }
+  ],
   "informacoes_extraidas": [
     {
       "documento": "nome do documento",
-      "dados": { campos chave extraídos }
+      "dados_chave": {
+        "cnpj": "valor extraído",
+        "razao_social": "valor extraído",
+        "valores_financeiros": ["lista de valores"],
+        "data_referencia": "data",
+        "outros_campos": "conforme relevante"
+      }
     }
   ],
   "discrepancias": [
@@ -182,26 +195,37 @@ Retorne OBRIGATORIAMENTE um JSON estruturado com:
       "descricao": "descrição técnica e detalhada",
       "documentos_envolvidos": ["doc1", "doc2"],
       "severidade": "critica|media|leve",
-      "campo_1": "valor encontrado",
-      "campo_2": "valor esperado"
+      "valor_encontrado": "valor real",
+      "valor_esperado": "valor que deveria ser",
+      "impacto": "impacto no processo"
     }
   ],
   "validacoes": [
     {
-      "descricao": "validação realizada",
+      "item": "o que foi validado",
       "status": "ok|alerta|erro",
-      "detalhes": "resultado detalhado"
+      "detalhes": "resultado detalhado da validação"
     }
   ],
   "riscos": [
     {
       "descricao": "descrição do risco identificado",
       "impacto": "alto|medio|baixo",
-      "fundamento": "por que é risco"
+      "fundamento_legal": "artigo/norma aplicável",
+      "probabilidade_problema": "alta|media|baixa"
+    }
+  ],
+  "proximos_passos": [
+    {
+      "acao": "ação recomendada",
+      "prioridade": "alta|media|baixa",
+      "prazo_sugerido": "urgente|curto|medio",
+      "justificativa": "por que fazer isso"
     }
   ],
   "probabilidade_aprovacao": "baixa|media|alta",
-  "conclusao": "conclusão final com recomendações"
+  "justificativa_probabilidade": "explicação da avaliação",
+  "conclusao": "conclusão final com recomendações estratégicas"
 }`,
         add_context_from_internet: false,
         response_json_schema: {
