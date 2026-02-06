@@ -8,6 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -80,6 +88,8 @@ export default function CasoDetalhe() {
   const [casoId, setCasoId] = useState(null);
   const [editandoNome, setEditandoNome] = useState(false);
   const [novoNome, setNovoNome] = useState('');
+  const [dialogEmail, setDialogEmail] = useState(false);
+  const [novoStatus, setNovoStatus] = useState(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -112,11 +122,11 @@ export default function CasoDetalhe() {
   });
 
   const updateStatusMutation = useMutation({
-    mutationFn: async (newStatus) => {
+    mutationFn: async ({ newStatus, enviarEmail }) => {
       await base44.entities.Caso.update(casoId, { status: newStatus });
       
-      // Enviar email automático quando status muda
-      if (cliente?.email) {
+      // Enviar email se autorizado
+      if (enviarEmail && cliente?.email) {
         try {
           await base44.integrations.Core.SendEmail({
             to: cliente.email,
@@ -140,8 +150,19 @@ export default function CasoDetalhe() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['caso', casoId] });
+      setDialogEmail(false);
+      setNovoStatus(null);
     }
   });
+
+  const handleStatusChange = (value) => {
+    setNovoStatus(value);
+    setDialogEmail(true);
+  };
+
+  const confirmarAlteracao = (enviarEmail) => {
+    updateStatusMutation.mutate({ newStatus: novoStatus, enviarEmail });
+  };
 
   const updateNomeMutation = useMutation({
     mutationFn: (newNome) => base44.entities.Caso.update(casoId, { numero_caso: newNome }),
@@ -242,7 +263,7 @@ export default function CasoDetalhe() {
             <div className="flex items-center gap-3">
               <Select 
                 value={caso.status} 
-                onValueChange={(value) => updateStatusMutation.mutate(value)}
+                onValueChange={handleStatusChange}
               >
                 <SelectTrigger className="w-[200px]">
                   <SelectValue />
@@ -257,6 +278,34 @@ export default function CasoDetalhe() {
                 {statusLabels[caso.status]}
               </Badge>
             </div>
+
+            {/* Dialog de confirmação de email */}
+            <Dialog open={dialogEmail} onOpenChange={setDialogEmail}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Notificar Cliente?</DialogTitle>
+                  <DialogDescription>
+                    Deseja enviar um email para <strong>{cliente?.email}</strong> notificando sobre a mudança de status para <strong>{statusLabels[novoStatus]}</strong>?
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="gap-2">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => confirmarAlteracao(false)}
+                    disabled={updateStatusMutation.isPending}
+                  >
+                    Não enviar
+                  </Button>
+                  <Button 
+                    onClick={() => confirmarAlteracao(true)}
+                    disabled={updateStatusMutation.isPending}
+                  >
+                    {updateStatusMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                    Enviar email
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
