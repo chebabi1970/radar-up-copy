@@ -65,11 +65,32 @@ export default function Dashboard() {
   const casosComDivergencias = casos.filter(c => c.divergencias_encontradas?.some(d => !d.resolvida));
   const docsPendentes = documentos.filter(d => d.status_analise === 'pendente');
 
-  // Alertas de prazo
+  // Alertas de prazo RFB (considerando 10 dias úteis do protocolo)
   const casosComPrazoProximo = casos.filter(c => {
-    if (!c.prazo_analise_rfb) return false;
-    const diasRestantes = differenceInDays(parseISO(c.prazo_analise_rfb), new Date());
-    return diasRestantes >= 0 && diasRestantes <= 3 && c.status === 'protocolado';
+    if (!c.data_protocolo_ecac || c.status !== 'protocolado') return false;
+    
+    // Calcular 10 dias úteis a partir do protocolo
+    let dataProtocolo = parseISO(c.data_protocolo_ecac);
+    let diasUteis = 0;
+    let dataLimite = new Date(dataProtocolo);
+    
+    while (diasUteis < 10) {
+      dataLimite.setDate(dataLimite.getDate() + 1);
+      const diaSemana = dataLimite.getDay();
+      if (diaSemana !== 0 && diaSemana !== 6) { // Não é fim de semana
+        diasUteis++;
+      }
+    }
+    
+    const diasRestantes = differenceInDays(dataLimite, new Date());
+    return diasRestantes >= 0 && diasRestantes <= 3;
+  });
+
+  // Alertas de documentos pendentes > 7 dias
+  const docsAntigos = documentos.filter(d => {
+    if (d.status_analise !== 'pendente') return false;
+    const diasPendente = differenceInDays(new Date(), new Date(d.created_date));
+    return diasPendente > 7;
   });
 
   // Analytics - Status Distribution
@@ -120,7 +141,7 @@ export default function Dashboard() {
           </p>
         </div>
 
-        {/* Alertas de Prazo */}
+        {/* Alertas de Prazo RFB */}
         {casosComPrazoProximo.length > 0 && (
           <Card className="border-0 shadow-lg shadow-red-200/50 bg-red-50 border-red-200 mb-6">
             <CardContent className="p-6">
@@ -132,9 +153,22 @@ export default function Dashboard() {
                   <h3 className="font-semibold text-red-900 mb-2">
                     ⚠️ Atenção: {casosComPrazoProximo.length} caso(s) com prazo RFB próximo
                   </h3>
+                  <p className="text-sm text-red-700 mb-3">
+                    Prazo de 10 dias úteis após protocolo está terminando
+                  </p>
                   <div className="space-y-2">
                     {casosComPrazoProximo.map(caso => {
-                      const diasRestantes = differenceInDays(parseISO(caso.prazo_analise_rfb), new Date());
+                      // Calcular dias restantes
+                      let dataProtocolo = parseISO(caso.data_protocolo_ecac);
+                      let diasUteis = 0;
+                      let dataLimite = new Date(dataProtocolo);
+                      while (diasUteis < 10) {
+                        dataLimite.setDate(dataLimite.getDate() + 1);
+                        const diaSemana = dataLimite.getDay();
+                        if (diaSemana !== 0 && diaSemana !== 6) diasUteis++;
+                      }
+                      const diasRestantes = differenceInDays(dataLimite, new Date());
+                      
                       return (
                         <Link 
                           key={caso.id}
@@ -146,19 +180,74 @@ export default function Dashboard() {
                               {caso.numero_caso || `Caso #${caso.id.slice(0, 8)}`}
                             </p>
                             <p className="text-xs text-slate-600">
-                              {getClienteName(caso.cliente_id)}
+                              {getClienteName(caso.cliente_id)} • Protocolado em {format(parseISO(caso.data_protocolo_ecac), 'dd/MM/yyyy')}
                             </p>
                           </div>
                           <div className="flex items-center gap-2">
                             <Badge variant="destructive" className="text-xs">
                               <Clock className="h-3 w-3 mr-1" />
-                              {diasRestantes} {diasRestantes === 1 ? 'dia' : 'dias'}
+                              {diasRestantes} {diasRestantes === 1 ? 'dia útil' : 'dias úteis'}
                             </Badge>
                             <ArrowRight className="h-4 w-4 text-slate-400" />
                           </div>
                         </Link>
                       );
                     })}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Alertas de Documentos Pendentes */}
+        {docsAntigos.length > 0 && (
+          <Card className="border-0 shadow-lg shadow-orange-200/50 bg-orange-50 border-orange-200 mb-6">
+            <CardContent className="p-6">
+              <div className="flex items-start gap-4">
+                <div className="h-10 w-10 bg-orange-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <FileCheck className="h-5 w-5 text-orange-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-orange-900 mb-2">
+                    📄 {docsAntigos.length} documento(s) pendente(s) há mais de 7 dias
+                  </h3>
+                  <p className="text-sm text-orange-700 mb-3">
+                    Documentos aguardando análise há muito tempo
+                  </p>
+                  <div className="space-y-2">
+                    {docsAntigos.slice(0, 5).map(doc => {
+                      const diasPendente = differenceInDays(new Date(), new Date(doc.created_date));
+                      const caso = casos.find(c => c.id === doc.caso_id);
+                      
+                      return (
+                        <Link 
+                          key={doc.id}
+                          to={createPageUrl(`CasoDetalhe?id=${doc.caso_id}`)}
+                          className="flex items-center justify-between p-3 bg-white rounded-lg hover:bg-orange-50 transition-colors"
+                        >
+                          <div>
+                            <p className="font-medium text-slate-900 text-sm">
+                              {doc.nome_arquivo}
+                            </p>
+                            <p className="text-xs text-slate-600">
+                              {caso?.numero_caso || `Caso #${doc.caso_id.slice(0, 8)}`} • Enviado há {diasPendente} dias
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline" className="text-xs border-orange-300 text-orange-700">
+                              {diasPendente} dias
+                            </Badge>
+                            <ArrowRight className="h-4 w-4 text-slate-400" />
+                          </div>
+                        </Link>
+                      );
+                    })}
+                    {docsAntigos.length > 5 && (
+                      <p className="text-xs text-orange-600 text-center pt-2">
+                        + {docsAntigos.length - 5} documento(s) adicional(is)
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
