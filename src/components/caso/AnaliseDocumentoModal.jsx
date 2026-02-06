@@ -363,36 +363,6 @@ Guia em construção - será preenchido nesta semana.`;
               </div>
             </div>
 
-            {/* Para Procurações: Comparação do Procurador */}
-            {isProcuracao && resultados.dados.comparacao_procurador && (
-              <div className={`p-4 rounded-lg border-2 ${
-                resultados.dados.comparacao_procurador.nomes_coincidem && resultados.dados.comparacao_procurador.cpfs_coincidem
-                  ? 'bg-green-50 border-green-300'
-                  : 'bg-red-50 border-red-300'
-              }`}>
-                <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
-                  🔍 Validação: Procurador vs Documento
-                </h4>
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center justify-between">
-                    <span><strong>Nomes coincidem:</strong></span>
-                    <span className={resultados.dados.comparacao_procurador.nomes_coincidem ? 'text-green-700 font-bold' : 'text-red-700 font-bold'}>
-                      {resultados.dados.comparacao_procurador.nomes_coincidem ? '✅ SIM' : '❌ NÃO'}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span><strong>CPFs coincidem:</strong></span>
-                    <span className={resultados.dados.comparacao_procurador.cpfs_coincidem ? 'text-green-700 font-bold' : 'text-red-700 font-bold'}>
-                      {resultados.dados.comparacao_procurador.cpfs_coincidem ? '✅ SIM' : '❌ NÃO'}
-                    </span>
-                  </div>
-                  {resultados.dados.comparacao_procurador.observacao && (
-                    <p className="text-slate-600 mt-2 italic">{resultados.dados.comparacao_procurador.observacao}</p>
-                  )}
-                </div>
-              </div>
-            )}
-
             {/* Dados Extraídos */}
             <div className="p-4 bg-slate-50 rounded-lg">
               <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
