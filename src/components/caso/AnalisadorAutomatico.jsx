@@ -489,10 +489,78 @@ ${JSON.stringify(checklistContext, null, 2)}
           </Card>
         )}
 
+        {/* Riscos */}
+        {resultado.riscos?.length > 0 && (
+          <Card className="border-0 shadow-sm border-l-4 border-l-red-500">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-red-600" />
+                Riscos Identificados
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {resultado.riscos.map((risco, idx) => (
+                <div key={idx} className="p-3 rounded-lg border border-red-200 bg-red-50">
+                  <div className="flex items-start gap-2">
+                    <Badge variant="destructive" className="text-xs mt-0.5">
+                      {risco.impacto}
+                    </Badge>
+                    <div className="flex-1">
+                      <p className="font-medium text-sm text-red-900">{risco.descricao}</p>
+                      {risco.fundamento_legal && (
+                        <p className="text-xs text-red-700 mt-1">
+                          <span className="font-semibold">Base Legal:</span> {risco.fundamento_legal}
+                        </p>
+                      )}
+                      {risco.probabilidade_problema && (
+                        <p className="text-xs text-red-600 mt-1">
+                          Probabilidade: {risco.probabilidade_problema}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Próximos Passos */}
+        {resultado.proximos_passos?.length > 0 && (
+          <Card className="border-0 shadow-sm border-l-4 border-l-blue-500">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-blue-600" />
+                Próximos Passos Recomendados
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {resultado.proximos_passos.map((passo, idx) => (
+                <div key={idx} className="p-3 rounded-lg border border-blue-200 bg-blue-50">
+                  <div className="flex items-start gap-2">
+                    <Badge className="text-xs mt-0.5 bg-blue-600">
+                      {passo.prioridade}
+                    </Badge>
+                    <div className="flex-1">
+                      <p className="font-medium text-sm text-blue-900">{passo.acao}</p>
+                      <p className="text-xs text-blue-700 mt-1">{passo.justificativa}</p>
+                      {passo.prazo_sugerido && (
+                        <p className="text-xs text-blue-600 mt-1">
+                          <span className="font-semibold">Prazo:</span> {passo.prazo_sugerido}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Conclusão */}
         <Card className="border-0 shadow-sm bg-slate-50">
           <CardContent className="p-4">
-            <p className="text-sm text-slate-700 font-medium mb-2">Conclusão</p>
+            <p className="text-sm text-slate-700 font-medium mb-2">Conclusão e Recomendações Estratégicas</p>
             <p className="text-sm text-slate-600 leading-relaxed">{resultado.conclusao}</p>
           </CardContent>
         </Card>
