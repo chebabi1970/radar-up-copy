@@ -82,26 +82,34 @@ export default function DocumentosTab({ casoId, documentos, checklistItems }) {
     periodo_referencia: '',
     observacoes: ''
   });
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
 
   const queryClient = useQueryClient();
 
   const createMutation = useMutation({
     mutationFn: async (data) => {
       setUploading(true);
-      let fileUri = '';
+      const documentsToCreate = [];
       
-      if (file) {
-        const uploadResult = await base44.integrations.Core.UploadPrivateFile({ file });
-        fileUri = uploadResult.file_uri;
+      for (const file of files) {
+        let fileUri = '';
+        
+        if (file) {
+          const uploadResult = await base44.integrations.Core.UploadPrivateFile({ file });
+          fileUri = uploadResult.file_uri;
+        }
+        
+        documentsToCreate.push({
+          ...data,
+          caso_id: casoId,
+          file_uri: fileUri,
+          nome_arquivo: file.name,
+          status_analise: 'pendente'
+        });
       }
       
-      return base44.entities.Documento.create({
-        ...data,
-        caso_id: casoId,
-        file_uri: fileUri,
-        status_analise: 'pendente'
-      });
+      // Criar todos os documentos
+      return Promise.all(documentsToCreate.map(doc => base44.entities.Documento.create(doc)));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['documentos', casoId] });
