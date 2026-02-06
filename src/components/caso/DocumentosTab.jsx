@@ -144,21 +144,22 @@ export default function DocumentosTab({ casoId, documentos, checklistItems }) {
       periodo_referencia: '',
       observacoes: ''
     });
-    setFile(null);
+    setFiles([]);
   };
 
   const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      if (!formData.nome_arquivo) {
-        setFormData({ ...formData, nome_arquivo: selectedFile.name });
-      }
+    const selectedFiles = Array.from(e.target.files || []);
+    if (selectedFiles.length > 0) {
+      setFiles(selectedFiles);
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (files.length === 0) {
+      alert('Selecione pelo menos um arquivo');
+      return;
+    }
     createMutation.mutate(formData);
   };
 
