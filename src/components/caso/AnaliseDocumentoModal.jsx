@@ -167,83 +167,17 @@ export default function AnaliseDocumentoModal({ item, documentos, casoId, client
       }
 
       const tipoDoc = item.tipo_documento;
-      const isDocumentoIdentificacao = tipoDoc.includes('documento_identificacao');
-      const isProcuracao = tipoDoc === 'procuracao';
       
-      // Para procurações, buscar docs do procurador
-      let procuradorDocs = [];
-      if (isProcuracao) {
-        procuradorDocs = documentos.filter(d => d.tipo_documento === 'documento_identificacao_procurador');
-      }
-      
-      // Prompt bem mais simples para identificação
-      const prompt = isDocumentoIdentificacao 
-        ? `Extraia os dados do documento de identificação:
-Nome, CPF, RG, Data Nascimento, Data Emissão, Órgão Emissor, Data Validade.
-Verifique: Documento válido? Foto legível? Dados completos?
-Retorne JSON: {dados_extraidos: {nome, cpf, rg, data_nascimento, data_emissao, orgao_emissor, data_validade}, checklist_verificacao: [{item, status, observacao}], indicadores_alerta: [], resumo: string, classificacao_final: "APROVADO"|"REPROVADO"}`
-        : isProcuracao && procuradorDocs.length > 0
-        ? `Você é analista de procurações para RADAR.
+      // Prompt genérico - guias serão preenchidas depois
+      const prompt = `Extraia dados do documento: ${tipoDoc}
 
-PROCURAÇÃO FORNECIDA: Extraia dados do outorgante e outorgado
-- Nome do outorgante (quem outorga - sócio/administrador)
-- CPF do outorgante
-- Nome do outorgado (procurador - quem recebe os poderes)
-- CPF do outorgado
-- Poderes concedidos
-- Data da procuração
-- Data de validade/vencimento
-- Reconhecimento de firma
-
-DOCUMENTOS DO PROCURADOR FORNECIDOS: Você também receberá documento(s) de identificação do procurador (outorgado).
-
-ANÁLISE REQUERIDA:
-1. Extraia dados da procuração (acima)
-2. Compare nome e CPF do procurador na procuração COM nome e CPF no documento de identificação
-3. Verifique se coincidem - se não coincidem é CRÍTICO
-
-Retorne JSON: {
-  dados_procuracao: {outorgante_nome, outorgante_cpf, outorgado_nome, outorgado_cpf, poderes, data_procuracao, validade, reconhecimento_firma},
-  dados_procurador_documento: {nome, cpf},
-  comparacao_procurador: {
-    nomes_coincidem: boolean,
-    cpfs_coincidem: boolean,
-    observacao: string
-  },
-  checklist_verificacao: [{item, status, observacao}],
-  indicadores_alerta: [{tipo, severidade, descricao}],
-  resumo: string,
-  classificacao_final: "APROVADO"|"REPROVADO"
-}`
-        : `Você é um analista especializado em habilitação RADAR conforme IN RFB nº 1.984/2020 e Portaria Coana nº 72/2020.
-
-DOCUMENTO A ANALISAR: ${tipoDoc}
-
-CONTEXTO DA EMPRESA:
-- Razão Social: ${cliente?.razao_social}
-- CNPJ: ${cliente?.cnpj}
-- Endereço: ${cliente?.endereco}
-
-GUIA DE ANÁLISE POR TIPO DE DOCUMENTO:
-
-${getAnalysisGuideForType(tipoDoc)}
-
-INSTRUÇÕES:
-1. Extraia TODOS os dados relevantes do documento
-2. Aplique o CHECKLIST DE VERIFICAÇÃO específico do tipo de documento
-3. Identifique INDICADORES DE ALERTA conforme o guia
-4. Verifique se há necessidade de VERIFICAÇÃO CRUZADA com outros documentos
-5. Classifique cada problema como: CRÍTICO, MÉDIO ou LEVE
-
-Retorne JSON estruturado com:
+Retorne JSON com:
 {
-  dados_extraidos: {campos relevantes do documento},
-  checklist_verificacao: [{item: string, status: "OK"|"ALERTA"|"CRÍTICO", observacao: string}],
-  indicadores_alerta: [{tipo: string, severidade: "critica"|"media"|"leve", descricao: string, fundamento_normativo: string}],
-  verificacoes_cruzadas_necessarias: [{documento_relacionado: string, o_que_verificar: string}],
-  validacoes_cadastro: [{campo: string, valor_documento: string, valor_cadastro: string, coincide: boolean}],
-  resumo: string,
-  classificacao_final: "APROVADO"|"APROVADO_COM_RESSALVAS"|"REPROVADO"
+  dados_extraidos: {},
+  checklist_verificacao: [],
+  indicadores_alerta: [],
+  resumo: "Análise em construção",
+  classificacao_final: "PENDENTE"
 }`;
 
       // Obter URL assinada se for file_uri
