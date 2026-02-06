@@ -278,36 +278,36 @@ export default function CasoDetalhe() {
                 {statusLabels[caso.status]}
               </Badge>
             </div>
-
-            {/* Dialog de confirmação de email */}
-            <Dialog open={dialogEmail} onOpenChange={setDialogEmail}>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Notificar Cliente?</DialogTitle>
-                  <DialogDescription>
-                    Deseja enviar um email para <strong>{cliente?.email}</strong> notificando sobre a mudança de status para <strong>{statusLabels[novoStatus]}</strong>?
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter className="gap-2">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => confirmarAlteracao(false)}
-                    disabled={updateStatusMutation.isPending}
-                  >
-                    Não enviar
-                  </Button>
-                  <Button 
-                    onClick={() => confirmarAlteracao(true)}
-                    disabled={updateStatusMutation.isPending}
-                  >
-                    {updateStatusMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                    Enviar email
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
           </div>
         </div>
+
+        {/* Dialog de confirmação de email */}
+        <Dialog open={dialogEmail} onOpenChange={setDialogEmail}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Notificar Cliente?</DialogTitle>
+              <DialogDescription>
+                Deseja enviar um email para <strong>{cliente?.email}</strong> notificando sobre a mudança de status para <strong>{statusLabels[novoStatus]}</strong>?
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => confirmarAlteracao(false)}
+                disabled={updateStatusMutation.isPending}
+              >
+                Não enviar
+              </Button>
+              <Button 
+                onClick={() => confirmarAlteracao(true)}
+                disabled={updateStatusMutation.isPending}
+              >
+                {updateStatusMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                Enviar email
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
