@@ -195,15 +195,10 @@ Retorne JSON com:
       }
 
       // Array de arquivos - pode ter múltiplos do mesmo tipo
-      // Se for procuração, incluir também docs do procurador
-      let docsParaAnalisar = documentos.filter(d => d.tipo_documento === item.tipo_documento);
-      if (isProcuracao && procuradorDocs.length > 0) {
-        docsParaAnalisar = [...docsParaAnalisar, ...procuradorDocs];
-      }
-      
+      const linkedDocs = documentos.filter(d => d.tipo_documento === item.tipo_documento);
       const fileUrls = [];
       
-      for (const doc of docsParaAnalisar) {
+      for (const doc of linkedDocs) {
         let docUrl = doc.file_url;
         if (!docUrl && doc.file_uri) {
           const signedResult = await base44.integrations.Core.CreateFileSignedUrl({
