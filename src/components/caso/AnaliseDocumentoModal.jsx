@@ -19,7 +19,7 @@ export default function AnaliseDocumentoModal({ item, documentos, casoId, client
   const [docVisualizar, setDocVisualizar] = useState(null);
   const queryClient = useQueryClient();
 
-  const linkedDoc = documentos.find(d => d.tipo_documento === item.tipo_documento);
+  const linkedDoc = documentos.find(d => d.tipo_documento === docSelecionado.tipo_documento);
 
   const saveMutation = useMutation({
     mutationFn: (analiseData) => base44.entities.AnaliseHistorico.create(analiseData),
