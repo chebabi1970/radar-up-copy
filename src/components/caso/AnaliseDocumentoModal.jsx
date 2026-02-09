@@ -431,12 +431,12 @@ Retorne JSON com:
           ) : (
            <div className="space-y-4">
               {/* Resumo */}
-              <div className="p-4 bg-slate-50 rounded-lg">
-                <h4 className="font-semibold text-slate-900 mb-2">Resumo da Análise</h4>
-                <div className="text-sm space-y-1 text-slate-600">
-                  <p><strong>Saldo Total em Caixa (Balancete):</strong> R$ {(resultados.balancete?.total_caixa || 0).toLocaleString('pt-BR')}</p>
-                  <p><strong>Número de Contas:</strong> {Object.keys(resultados.balancete?.saldos_caixa || {}).length}</p>
-                  <p><strong>Período do Balancete:</strong> {resultados.balancete?.data_balancete}</p>
+              <div className="p-2.5 sm:p-4 bg-slate-50 rounded-lg">
+                <h4 className="font-semibold text-slate-900 mb-2 text-sm sm:text-base">Resumo</h4>
+                <div className="text-xs sm:text-sm space-y-0.5 sm:space-y-1 text-slate-600">
+                  <p><strong>Saldo:</strong> R$ {(resultados.balancete?.total_caixa || 0).toLocaleString('pt-BR')}</p>
+                  <p><strong>Contas:</strong> {Object.keys(resultados.balancete?.saldos_caixa || {}).length}</p>
+                  <p><strong>Período:</strong> {resultados.balancete?.data_balancete}</p>
                 </div>
               </div>
 
