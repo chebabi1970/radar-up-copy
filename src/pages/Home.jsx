@@ -289,57 +289,57 @@ export default function Home() {
 
       {/* Onboarding Section */}
       {user && stats && stats.totalClientes === 0 && (
-        <div className="bg-blue-50 py-16 border-t border-blue-200">
+        <div className="py-20 border-t border-slate-700">
           <div className="max-w-6xl mx-auto px-6">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-slate-900 mb-4">
-                Primeiros Passos
+            <div className="text-center mb-16">
+              <h2 className="text-5xl font-bold text-white mb-6">
+                Comece em 3 passos simples
               </h2>
-              <p className="text-slate-600">
-                Siga este guia rápido para começar a usar a plataforma
+              <p className="text-xl text-slate-300">
+                Seu primeiro caso em menos de 5 minutos
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-blue-100">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm">1</div>
-                  <h3 className="font-semibold text-slate-900">Cadastre um Cliente</h3>
+              <div className="relative rounded-2xl bg-gradient-to-br from-blue-600/20 to-blue-700/20 p-8 border border-blue-500/30 hover:border-blue-500/60 transition-all hover:shadow-xl">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center font-bold text-lg shadow-lg">1</div>
+                  <h3 className="font-bold text-white text-lg">Cadastre um Cliente</h3>
                 </div>
-                <p className="text-slate-600 text-sm mb-4">
-                  Comece adicionando sua primeira empresa/cliente ao sistema
+                <p className="text-slate-200 text-sm mb-6 leading-relaxed">
+                  Adicione sua primeira empresa ao sistema com alguns cliques
                 </p>
-                <Link to={user ? createPageUrl('Clientes') : '#'}>
-                  <Button size="sm" variant="outline" className="w-full">
+                <Link to={user ? createPageUrl('Clientes') : '#'} className="block">
+                  <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
                     Ir para Clientes
                   </Button>
                 </Link>
               </div>
 
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-blue-100">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="h-8 w-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-sm">2</div>
-                  <h3 className="font-semibold text-slate-900">Crie um Caso</h3>
+              <div className="relative rounded-2xl bg-gradient-to-br from-purple-600/20 to-purple-700/20 p-8 border border-purple-500/30 hover:border-purple-500/60 transition-all hover:shadow-xl">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 text-white flex items-center justify-center font-bold text-lg shadow-lg">2</div>
+                  <h3 className="font-bold text-white text-lg">Crie um Caso</h3>
                 </div>
-                <p className="text-slate-600 text-sm mb-4">
-                  Crie um novo caso de revisão de estimativa ou habilitação
+                <p className="text-slate-200 text-sm mb-6 leading-relaxed">
+                  Inicie um novo caso de revisão de estimativa ou habilitação
                 </p>
-                <Link to={user ? createPageUrl('Casos') : '#'}>
-                  <Button size="sm" variant="outline" className="w-full">
+                <Link to={user ? createPageUrl('Casos') : '#'} className="block">
+                  <Button size="sm" className="w-full bg-purple-600 hover:bg-purple-700 text-white">
                     Ir para Casos
                   </Button>
                 </Link>
               </div>
 
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-blue-100">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="h-8 w-8 rounded-full bg-green-600 text-white flex items-center justify-center font-bold text-sm">3</div>
-                  <h3 className="font-semibold text-slate-900">Envie Documentos</h3>
+              <div className="relative rounded-2xl bg-gradient-to-br from-emerald-600/20 to-emerald-700/20 p-8 border border-emerald-500/30 hover:border-emerald-500/60 transition-all hover:shadow-xl">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-white flex items-center justify-center font-bold text-lg shadow-lg">3</div>
+                  <h3 className="font-bold text-white text-lg">Envie Documentos</h3>
                 </div>
-                <p className="text-slate-600 text-sm mb-4">
-                  Carregue os documentos necessários e comece a análise
+                <p className="text-slate-200 text-sm mb-6 leading-relaxed">
+                  Carregue documentos e ative análise automática com IA
                 </p>
-                <Button size="sm" variant="outline" className="w-full" disabled>
+                <Button size="sm" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white" disabled>
                   Criar Caso Primeiro
                 </Button>
               </div>
