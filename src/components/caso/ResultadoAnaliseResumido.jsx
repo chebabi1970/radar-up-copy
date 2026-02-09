@@ -24,11 +24,11 @@ export default function ResultadoAnaliseResumido({ resultado }) {
     <div className="space-y-2 sm:space-y-3">
       {/* Semáforo Principal */}
       <div className={`p-3 sm:p-4 rounded-lg border-2 ${statusGeral.cor}`}>
-        <div className="flex items-start justify-between gap-2 sm:gap-4">
-          <div className="flex-1 min-w-0">
-            <h3 className="text-base sm:text-lg font-bold text-slate-900">{statusGeral.label}</h3>
-            <p className="text-xs sm:text-sm text-slate-600 mt-1 line-clamp-2">{resultado.resumo}</p>
-          </div>
+         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
+           <div className="flex-1 min-w-0">
+             <h3 className="text-base sm:text-lg font-bold text-slate-900">{statusGeral.label}</h3>
+             <p className="text-xs sm:text-sm text-slate-600 mt-1">{resultado.resumo}</p>
+           </div>
           <div className="flex gap-2 sm:gap-3 flex-shrink-0">
             {criticas > 0 && (
               <div className="flex flex-col items-center">
