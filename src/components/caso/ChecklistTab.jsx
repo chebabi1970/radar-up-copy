@@ -52,75 +52,75 @@ export default function ChecklistTab({ casoId, checklistItems, documentos, clien
   return (
     <>
       <div className="space-y-3">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-slate-900">
-            Documentação Instrutória - Anexo Único Portaria Coana 72/2020
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4 pb-4 border-b border-slate-200">
+          <h3 className="font-semibold text-slate-900 text-sm md:text-base">
+            Documentação Instrutória
           </h3>
-          <div className="flex items-center gap-2 text-sm text-slate-500">
-            <span>{checklistItems.filter(i => i.status !== 'pendente').length} de {checklistItems.length} concluídos</span>
+          <div className="text-xs text-slate-500 whitespace-nowrap">
+            {checklistItems.filter(i => i.status !== 'pendente').length} de {checklistItems.length} concluídos
           </div>
         </div>
 
       {checklistItems.length === 0 ? (
-        <div className="text-center py-8 text-slate-500">
+        <div className="text-center py-8 text-slate-500 text-sm">
           Nenhum item no checklist
         </div>
       ) : (
-        <div className="divide-y divide-slate-100">
+        <div className="divide-y divide-slate-100 space-y-0">
           {checklistItems.map((item) => {
             const config = statusConfig[item.status];
             const StatusIcon = config.icon;
             const linkedDoc = getLinkedDocument(item);
 
             return (
-              <div key={item.id} className="py-4 flex items-center justify-between gap-4">
-                <div className="flex items-start gap-3 flex-1">
-                  <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${config.bg}`}>
-                    <StatusIcon className={`h-4 w-4 ${config.color}`} />
+              <div key={item.id} className="py-3 md:py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <div className="flex items-start gap-3 flex-1 min-w-0">
+                  <div className={`h-7 w-7 md:h-8 md:w-8 rounded-lg flex items-center justify-center flex-shrink-0 ${config.bg}`}>
+                    <StatusIcon className={`h-3.5 w-3.5 md:h-4 md:w-4 ${config.color}`} />
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-slate-900">{item.descricao}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start gap-2 flex-wrap">
+                      <span className="font-medium text-slate-900 text-sm break-words">{item.descricao}</span>
                       {item.obrigatorio && (
-                        <Badge variant="outline" className="text-xs">Obrigatório</Badge>
+                        <Badge variant="outline" className="text-xs flex-shrink-0 mt-0.5">Obrigatório</Badge>
                       )}
                     </div>
-                    <div className="flex items-center gap-3 mt-1 text-sm text-slate-500">
+                    <div className="flex items-center gap-2 mt-1 text-xs md:text-sm text-slate-500 flex-wrap">
                       <span>Código: {item.codigo_dda}</span>
-                      <span>•</span>
-                      <span>{item.base_legal}</span>
+                      <span className="hidden md:inline">•</span>
+                      <span className="hidden md:inline">{item.base_legal}</span>
                     </div>
                     {linkedDoc && linkedDoc.file_url && (
                        <a
                          href={linkedDoc.file_url}
                          target="_blank"
                          rel="noopener noreferrer"
-                         className="flex items-center gap-1 mt-2 text-sm text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                         className="flex items-center gap-1 mt-1.5 text-xs text-blue-600 hover:text-blue-800 hover:underline cursor-pointer break-all"
                        >
-                         <FileText className="h-3 w-3" />
-                         <span>{linkedDoc.nome_arquivo}</span>
+                         <FileText className="h-3 w-3 flex-shrink-0" />
+                         <span className="truncate">{linkedDoc.nome_arquivo}</span>
                        </a>
                      )}
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-shrink-0 self-end md:self-auto">
                   {linkedDoc && (
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => handleAnalisar(item)}
-                      className="h-9 px-3 text-xs gap-1"
+                      className="h-8 px-2 md:h-9 md:px-3 text-xs gap-1 flex-shrink-0"
                     >
-                      <Zap className="h-3.5 w-3.5" />
-                      Analisar
+                      <Zap className="h-3 w-3" />
+                      <span className="hidden sm:inline">Analisar</span>
                     </Button>
                   )}
                   <Select 
                     value={item.status} 
                     onValueChange={(value) => updateStatusMutation.mutate({ itemId: item.id, status: value })}
                   >
-                    <SelectTrigger className="w-[140px]">
+                    <SelectTrigger className="w-24 md:w-[140px] h-8 md:h-9 text-xs flex-shrink-0">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
