@@ -152,13 +152,36 @@ export default function DetalheCliente() {
               ) : (
                 <Badge className="bg-red-100 text-red-800">✗ Procuração e-CAC Pendente</Badge>
               )}
+              {cliente.optante_simples_nacional && (
+                <Badge className="bg-cyan-100 text-cyan-800">Simples Nacional</Badge>
+              )}
               <Badge variant="outline">{casos.length} Caso{casos.length !== 1 ? 's' : ''}</Badge>
-            </div>
+              </div>
 
-            {cliente.observacoes && (
-              <div className="pt-3 border-t border-slate-200">
-                <p className="text-xs text-slate-500 uppercase mb-1">Observações</p>
-                <p className="text-sm text-slate-700">{cliente.observacoes}</p>
+            {(cliente.data_abertura_empresa || cliente.observacoes) && (
+              <div className="pt-3 border-t border-slate-200 space-y-3">
+                {cliente.data_abertura_empresa && (
+                  <div>
+                    <p className="text-xs text-slate-500 uppercase mb-1">Data de Abertura</p>
+                    <p className="text-sm text-slate-900 font-medium">
+                      {new Date(cliente.data_abertura_empresa).toLocaleDateString('pt-BR')}
+                    </p>
+                    <p className="text-xs text-slate-500 mt-1">
+                      {(() => {
+                        const dataAbertura = new Date(cliente.data_abertura_empresa);
+                        const hoje = new Date();
+                        const meses = Math.floor((hoje.getFullYear() - dataAbertura.getFullYear()) * 12 + (hoje.getMonth() - dataAbertura.getMonth()));
+                        return `${meses} mês${meses !== 1 ? 'es' : ''} completo${meses !== 1 ? 's' : ''}`;
+                      })()}
+                    </p>
+                  </div>
+                )}
+                {cliente.observacoes && (
+                  <div>
+                    <p className="text-xs text-slate-500 uppercase mb-1">Observações</p>
+                    <p className="text-sm text-slate-700">{cliente.observacoes}</p>
+                  </div>
+                )}
               </div>
             )}
           </CardContent>
