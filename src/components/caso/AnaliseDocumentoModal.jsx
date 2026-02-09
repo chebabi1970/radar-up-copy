@@ -727,6 +727,21 @@ Retorne JSON com:
           )}
         </CardContent>
       </Card>
+
+      {/* Visualizador de Documentos */}
+      {docVisualizar && (
+        <VisualizadorDocumentoAvancado
+          fileUrl={docVisualizar.file_url || (docVisualizar.file_uri ? 
+            base44.integrations.Core.CreateFileSignedUrl({
+              file_uri: docVisualizar.file_uri,
+              expires_in: 3600
+            }).then(r => r.signed_url)
+            : null
+          )}
+          fileName={docVisualizar.nome_arquivo}
+          onClose={() => setDocVisualizar(null)}
+        />
+      )}
     </div>
   );
 }
