@@ -71,11 +71,12 @@ const statusAnaliseConfig = {
   com_ressalvas: { icon: AlertCircle, color: "text-orange-600", bg: "bg-orange-100", label: "Com Ressalvas" }
 };
 
-export default function DocumentosTab({ casoId, documentos, checklistItems }) {
+export default function DocumentosTab({ casoId, documentos, checklistItems, cliente }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [documentoSelecionado, setDocumentoSelecionado] = useState(null);
   const [visualizadorOpen, setVisualizadorOpen] = useState(false);
+  const [docParaVersoes, setDocParaVersoes] = useState(null);
   const [formData, setFormData] = useState({
     tipo_documento: '',
     nome_arquivo: '',
