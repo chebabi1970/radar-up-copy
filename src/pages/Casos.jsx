@@ -416,8 +416,8 @@ export default function Casos() {
 
         {/* Cases List */}
         {isLoading ? (
-          <div className="p-8 text-center">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto text-blue-600" />
+          <div className="p-6 sm:p-8 text-center">
+            <Loader2 className="h-7 w-7 sm:h-8 sm:w-8 animate-spin mx-auto text-blue-600" />
           </div>
         ) : filteredCasos.length === 0 ? (
           <Card className="border-0 shadow-lg shadow-slate-200/50">
