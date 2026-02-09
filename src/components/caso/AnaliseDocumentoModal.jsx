@@ -543,9 +543,10 @@ Retorne JSON com:
       </Card>
 
       {/* Visualizador de Documentos */}
-      {docVisualizar && docVisualizar.file_url && (
+      {docVisualizar && (docVisualizar.file_url || docVisualizar.file_uri) && (
         <VisualizadorDocumentoAvancado
           fileUrl={docVisualizar.file_url}
+          fileUri={docVisualizar.file_uri}
           fileName={docVisualizar.nome_arquivo}
           onClose={() => setDocVisualizar(null)}
         />
