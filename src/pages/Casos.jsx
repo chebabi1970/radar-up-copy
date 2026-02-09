@@ -421,9 +421,9 @@ export default function Casos() {
           </div>
         ) : filteredCasos.length === 0 ? (
           <Card className="border-0 shadow-lg shadow-slate-200/50">
-            <CardContent className="p-8 text-center text-slate-500">
-              <FolderOpen className="h-12 w-12 mx-auto mb-3 text-slate-300" />
-              <p>Nenhum caso encontrado</p>
+            <CardContent className="p-6 sm:p-8 text-center text-slate-500">
+              <FolderOpen className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-2 sm:mb-3 text-slate-300" />
+              <p className="text-sm sm:text-base">Nenhum caso encontrado</p>
             </CardContent>
           </Card>
         ) : (
