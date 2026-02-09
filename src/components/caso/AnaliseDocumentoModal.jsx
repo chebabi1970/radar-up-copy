@@ -285,18 +285,18 @@ Retorne JSON com:
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4">
-      <Card className="w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
-        <CardHeader className="flex flex-row items-center justify-between pb-3 border-b">
-          <CardTitle>Analisar {item.descricao}</CardTitle>
+      <Card className="w-full max-w-2xl max-h-[90vh] sm:max-h-[95vh] overflow-y-auto rounded-xl sm:rounded-2xl">
+        <CardHeader className="flex flex-row items-center justify-between pb-3 border-b px-3 sm:px-6 py-3 sm:py-4">
+          <CardTitle className="text-base sm:text-xl truncate pr-2">Analisar {item.descricao}</CardTitle>
           <button
             onClick={onClose}
-            className="h-8 w-8 rounded-lg hover:bg-slate-100 flex items-center justify-center"
+            className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg hover:bg-slate-100 flex items-center justify-center flex-shrink-0"
           >
             <X className="h-4 w-4" />
           </button>
         </CardHeader>
 
-        <CardContent className="pt-6 space-y-4">
+        <CardContent className="pt-3 sm:pt-6 space-y-3 sm:space-y-4 px-3 sm:px-6">
           {!resultados ? (
             <>
               {/* Lista de documentos com filtro */}
