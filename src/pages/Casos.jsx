@@ -234,11 +234,11 @@ export default function Casos() {
                 <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> <span className="hidden sm:inline">Novo Caso</span><span className="sm:hidden">Novo</span>
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-lg">
+            <DialogContent className="w-[95vw] max-w-lg sm:w-full max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Novo Caso de Revisão de Estimativa</DialogTitle>
+                <DialogTitle className="text-lg sm:text-xl">Novo Caso</DialogTitle>
               </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+              <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
                 <div>
                   <Label htmlFor="cliente_id">Cliente *</Label>
                   <Select
