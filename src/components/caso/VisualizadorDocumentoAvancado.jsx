@@ -11,8 +11,8 @@ export default function VisualizadorDocumentoAvancado({ fileUrl, fileName, onClo
   const handleZoomOut = () => setZoom(prev => Math.max(prev - 10, 50));
   const handleRotate = () => setRotation(prev => (prev + 90) % 360);
 
-  const isPDF = fileUrl?.toLowerCase().endsWith('.pdf');
-  const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(fileUrl?.toLowerCase());
+  const isPDF = fileUrl && typeof fileUrl === 'string' && fileUrl.toLowerCase().endsWith('.pdf');
+  const isImage = fileUrl && typeof fileUrl === 'string' && /\.(jpg|jpeg|png|gif|webp)$/i.test(fileUrl.toLowerCase());
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[100]">
