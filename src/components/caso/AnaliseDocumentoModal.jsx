@@ -276,8 +276,8 @@ Retorne JSON com:
   const isBalancete = item.tipo_documento?.includes('balancete');
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4">
+      <Card className="w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
         <CardHeader className="flex flex-row items-center justify-between pb-3 border-b">
           <CardTitle>Analisar {item.descricao}</CardTitle>
           <button
