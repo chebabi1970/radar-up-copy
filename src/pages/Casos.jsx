@@ -349,8 +349,8 @@ export default function Casos() {
                     onChange={(e) => setFormData({...formData, data_protocolo_ecac: e.target.value})}
                   />
                   {formData.data_protocolo_ecac && (
-                    <p className="text-xs text-amber-600 mt-1">
-                      Prazo RFB: 30 dias após protocolo
+                    <p className="text-xs text-amber-600 mt-0.5 sm:mt-1">
+                      Prazo: 30 dias
                     </p>
                   )}
                 </div>
