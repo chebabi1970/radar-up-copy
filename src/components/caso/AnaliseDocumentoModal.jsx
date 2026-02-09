@@ -442,17 +442,17 @@ Retorne JSON com:
 
               {/* Discrepâncias */}
               {resultados.discrepancias?.length > 0 ? (
-                <div className="space-y-2">
+                <div className="space-y-2 sm:space-y-2">
                   <div className="flex items-center gap-2">
-                    <AlertCircle className="h-4 w-4 text-red-600" />
-                    <h4 className="font-semibold text-slate-900">
-                      {resultados.discrepancias.length} Discrepância(s) Encontrada(s)
+                    <AlertCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-600" />
+                    <h4 className="font-semibold text-slate-900 text-sm sm:text-base">
+                      {resultados.discrepancias.length} Discrepância(s)
                     </h4>
                   </div>
                   {resultados.discrepancias.map((disc, idx) => (
                     <div
                       key={idx}
-                      className={`p-3 rounded-lg border ${
+                      className={`p-2.5 sm:p-3 rounded-lg border ${
                         disc.severidade === 'critica'
                           ? 'bg-red-50 border-red-200'
                           : disc.severidade === 'media'
@@ -461,37 +461,37 @@ Retorne JSON com:
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2">
-                        <div className="text-sm flex-1">
+                        <div className="text-xs sm:text-sm flex-1">
                           <p className="font-semibold text-slate-900">{disc.banco}</p>
                           <p className="text-xs text-slate-600">Conta: {disc.conta}</p>
-                          <p className="text-xs text-slate-600">Período: {disc.periodo}</p>
-                          <div className="mt-2 space-y-0.5 text-xs">
-                            <p>Balancete: <strong>R$ {disc.saldo_balancete.toLocaleString('pt-BR')}</strong></p>
-                            <p>Extrato: <strong>R$ {disc.saldo_extrato.toLocaleString('pt-BR')}</strong></p>
-                            <p className="text-red-600">Diferença: <strong>R$ {disc.diferenca.toLocaleString('pt-BR')}</strong></p>
+                          <p className="text-xs text-slate-600">Per: {disc.periodo}</p>
+                          <div className="mt-1.5 space-y-0.5 text-xs">
+                            <p>Bal: <strong>R$ {disc.saldo_balancete.toLocaleString('pt-BR')}</strong></p>
+                            <p>Extr: <strong>R$ {disc.saldo_extrato.toLocaleString('pt-BR')}</strong></p>
+                            <p className="text-red-600">Dif: <strong>R$ {disc.diferenca.toLocaleString('pt-BR')}</strong></p>
                           </div>
                         </div>
                         <Badge
-                          className={
+                          className={`text-xs sm:text-xs flex-shrink-0 ${
                             disc.severidade === 'critica'
                               ? 'bg-red-100 text-red-800'
                               : disc.severidade === 'media'
                               ? 'bg-yellow-100 text-yellow-800'
                               : 'bg-blue-100 text-blue-800'
-                          }
+                          }`}
                         >
-                          {disc.severidade}
+                          {disc.severidade.substring(0, 3)}
                         </Badge>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" />
+                <div className="p-2.5 sm:p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-2 sm:gap-3">
+                  <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-semibold text-green-800">Sem Discrepâncias</p>
-                    <p className="text-sm text-green-700">Os saldos de caixa estão consistentes entre balancetes e extratos.</p>
+                    <p className="font-semibold text-green-800 text-sm sm:text-base">Sem Discrepâncias</p>
+                    <p className="text-xs sm:text-sm text-green-700">Saldos consistentes.</p>
                   </div>
                 </div>
               )}
