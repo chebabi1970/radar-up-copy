@@ -40,7 +40,8 @@ import {
   Shield,
   Edit2,
   Check,
-  X
+  X,
+  MessageCircle
 } from 'lucide-react';
 
 import ChecklistTab from '@/components/caso/ChecklistTab';
@@ -52,6 +53,7 @@ import AnalisadorAutomatico from '@/components/caso/AnalisadorAutomatico';
 import AnaliseCruzadaPanel from '@/components/caso/AnaliseCruzadaPanel';
 import ConformidadePanel from '@/components/caso/ConformidadePanel';
 import WorkflowGestao from '@/components/caso/WorkflowGestao';
+import ChatContestaçãoAnálise from '@/components/caso/ChatContestaçãoAnálise';
 import PrivacyWarning from '@/components/caso/PrivacyWarning';
 import { Input } from "@/components/ui/input";
 
@@ -456,14 +458,22 @@ export default function CasoDetalhe() {
                     <span className="lg:hidden">Conf</span>
                   </TabsTrigger>
                   <TabsTrigger 
-                    value="workflow" 
-                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
-                  >
-                    <Zap className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-                    <span className="hidden sm:inline">Workflow</span>
-                    <span className="sm:hidden">WF</span>
-                  </TabsTrigger>
-                 </TabsList>
+                     value="workflow" 
+                     className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
+                   >
+                     <Zap className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                     <span className="hidden sm:inline">Workflow</span>
+                     <span className="sm:hidden">WF</span>
+                   </TabsTrigger>
+                   <TabsTrigger 
+                     value="contestacao" 
+                     className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
+                   >
+                     <MessageCircle className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                     <span className="hidden md:inline">Chat IA</span>
+                     <span className="md:hidden">Chat</span>
+                   </TabsTrigger>
+                  </TabsList>
             </CardHeader>
 
             <TabsContent value="checklist" className="p-3 md:p-6 mt-0">
@@ -500,6 +510,10 @@ export default function CasoDetalhe() {
 
             <TabsContent value="workflow" className="p-3 md:p-6 mt-0">
               <WorkflowGestao casoId={casoId} casoData={caso} />
+            </TabsContent>
+
+            <TabsContent value="contestacao" className="p-3 md:p-6 mt-0 h-[600px]">
+              <ChatContestaçãoAnálise casoId={casoId} casoData={caso} documentosAnálise={documentos} />
             </TabsContent>
             </Tabs>
         </Card>
