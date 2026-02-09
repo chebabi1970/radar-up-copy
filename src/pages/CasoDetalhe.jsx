@@ -49,6 +49,7 @@ import DivergenciasTab from '@/components/caso/DivergenciasTab';
 import AnaliseTab from '@/components/caso/AnaliseTab';
 import HistoricoTab from '@/components/caso/HistoricoTab';
 import AnalisadorAutomatico from '@/components/caso/AnalisadorAutomatico';
+import AnaliseCruzadaPanel from '@/components/caso/AnaliseCruzadaPanel';
 import ConformidadePanel from '@/components/caso/ConformidadePanel';
 import PrivacyWarning from '@/components/caso/PrivacyWarning';
 import { Input } from "@/components/ui/input";
