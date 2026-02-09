@@ -190,8 +190,8 @@ export default function Home() {
       </div>
 
       {/* Features Section */}
-      <div className="max-w-6xl mx-auto px-6 py-12">
-        <div className="text-center mb-16">
+      <div className="max-w-6xl mx-auto px-6 py-8">
+        <div className="text-center mb-12">
           <h2 className="text-5xl font-bold text-white mb-6">
             Funcionalidades Poderosas
           </h2>
