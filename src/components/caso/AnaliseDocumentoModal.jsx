@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AlertCircle, CheckCircle2, Loader2, X } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { analysisGuides, getGuide } from './analisisGuides';
 
 export default function AnaliseDocumentoModal({ item, documentos, casoId, cliente, onClose }) {
   const [analisando, setAnalisando] = useState(false);
