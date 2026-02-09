@@ -240,7 +240,7 @@ export default function Casos() {
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
                 <div>
-                  <Label htmlFor="cliente_id">Cliente *</Label>
+                  <Label htmlFor="cliente_id" className="text-xs sm:text-sm">Cliente *</Label>
                   <Select
                     value={formData.cliente_id}
                     onValueChange={(value) => setFormData({...formData, cliente_id: value})}
