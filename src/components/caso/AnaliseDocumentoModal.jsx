@@ -543,15 +543,9 @@ Retorne JSON com:
       </Card>
 
       {/* Visualizador de Documentos */}
-      {docVisualizar && (
+      {docVisualizar && docVisualizar.file_url && (
         <VisualizadorDocumentoAvancado
-          fileUrl={docVisualizar.file_url || (docVisualizar.file_uri ? 
-            base44.integrations.Core.CreateFileSignedUrl({
-              file_uri: docVisualizar.file_uri,
-              expires_in: 3600
-            }).then(r => r.signed_url)
-            : null
-          )}
+          fileUrl={docVisualizar.file_url}
           fileName={docVisualizar.nome_arquivo}
           onClose={() => setDocVisualizar(null)}
         />
