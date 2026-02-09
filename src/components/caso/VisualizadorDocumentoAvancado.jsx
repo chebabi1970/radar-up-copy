@@ -28,8 +28,8 @@ export default function VisualizadorDocumentoAvancado({ fileUrl, fileUri, fileNa
   const handleZoomOut = () => setZoom(prev => Math.max(prev - 10, 50));
   const handleRotate = () => setRotation(prev => (prev + 90) % 360);
 
-  const isPDF = signedUrl && typeof signedUrl === 'string' && signedUrl.toLowerCase?.().endsWith('.pdf');
-  const isImage = signedUrl && typeof signedUrl === 'string' && /\.(jpg|jpeg|png|gif|webp)$/i.test(String(signedUrl).toLowerCase());
+  const isPDF = signedUrl && typeof signedUrl === 'string' && /\.pdf(\?|$)/i.test(String(signedUrl).toLowerCase());
+  const isImage = signedUrl && typeof signedUrl === 'string' && /\.(jpg|jpeg|png|gif|webp)(\?|$)/i.test(String(signedUrl).toLowerCase());
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[100]">
