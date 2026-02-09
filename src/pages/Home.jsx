@@ -254,7 +254,7 @@ export default function Home() {
       </div>
 
       {/* CTA Section */}
-      <div className="max-w-6xl mx-auto px-6 py-20">
+      <div className="max-w-6xl mx-auto px-6 py-12">
         <div className="relative rounded-3xl bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600 p-12 md:p-20 shadow-2xl overflow-hidden">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl" />
