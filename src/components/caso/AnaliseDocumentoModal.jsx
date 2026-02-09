@@ -9,6 +9,8 @@ import { analysisGuides, getGuide } from './analisisGuides';
 import { validarCampo } from './validators/documentValidator';
 import { crossDocumentRules, executarAnaliseCruzada } from './validators/crossDocumentAnalysis';
 import { gerarSugestoesParaDiscrepancia, buildSuggestionsFromValidation } from './validators/suggestionsEngine';
+import ListaDocumentosPaginada from './ListaDocumentosPaginada';
+import VisualizadorDocumentoAvancado from './VisualizadorDocumentoAvancado';
 
 export default function AnaliseDocumentoModal({ item, documentos, casoId, cliente, onClose }) {
   const [analisando, setAnalisando] = useState(false);
