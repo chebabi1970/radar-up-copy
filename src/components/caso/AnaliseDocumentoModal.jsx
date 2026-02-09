@@ -280,7 +280,7 @@ Retorne JSON com:
     }
   };
 
-  const isBalancete = item.tipo_documento?.includes('balancete');
+  const isBalancete = docSelecionado.tipo_documento?.includes('balancete');
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4">
