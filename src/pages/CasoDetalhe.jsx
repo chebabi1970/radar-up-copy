@@ -478,6 +478,10 @@ export default function CasoDetalhe() {
               <AnalisadorAutomatico casoId={casoId} documentos={documentos} checklistItems={checklistItems} />
             </TabsContent>
 
+            <TabsContent value="cruzada" className="p-6 mt-0">
+              <AnaliseCruzadaPanel documentos={documentos} cliente={cliente} />
+            </TabsContent>
+
             <TabsContent value="conformidade" className="p-6 mt-0">
               <ConformidadePanel casoId={casoId} cliente={cliente} />
             </TabsContent>
