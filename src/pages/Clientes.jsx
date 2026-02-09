@@ -175,29 +175,29 @@ export default function Clientes() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4 sm:mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Clientes</h1>
-            <p className="text-slate-500 mt-1">Gerencie seus clientes declarantes de mercadorias</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Clientes</h1>
+            <p className="text-xs sm:text-sm text-slate-500 mt-0.5 sm:mt-1">Gerencie seus clientes</p>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={(open) => {
             setIsDialogOpen(open);
             if (!open) resetForm();
           }}>
             <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200">
-                <Plus className="h-4 w-4 mr-2" /> Novo Cliente
+              <Button className="bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200 w-full sm:w-auto h-9 sm:h-10 text-xs sm:text-sm">
+                <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> <span className="hidden sm:inline">Novo Cliente</span><span className="sm:hidden">Novo</span>
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>
+                <DialogTitle className="text-lg sm:text-xl">
                   {editingCliente ? 'Editar Cliente' : 'Novo Cliente'}
                 </DialogTitle>
               </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+              <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="md:col-span-2">
                     <Label htmlFor="razao_social">Razão Social *</Label>
@@ -346,15 +346,15 @@ export default function Clientes() {
         </div>
 
         {/* Search */}
-        <Card className="border-0 shadow-lg shadow-slate-200/50 mb-6">
-          <CardContent className="p-4">
+        <Card className="border-0 shadow-lg shadow-slate-200/50 mb-4 sm:mb-6">
+          <CardContent className="p-3 sm:p-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-400" />
               <Input
-                placeholder="Buscar por razão social, CNPJ ou nome fantasia..."
+                placeholder="Buscar cliente..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="pl-10 text-xs sm:text-sm h-9 sm:h-10"
               />
             </div>
           </CardContent>
@@ -364,89 +364,90 @@ export default function Clientes() {
         <Card className="border-0 shadow-lg shadow-slate-200/50">
           <CardContent className="p-0">
             {isLoading ? (
-              <div className="p-8 text-center">
-                <Loader2 className="h-8 w-8 animate-spin mx-auto text-blue-600" />
+              <div className="p-6 sm:p-8 text-center">
+                <Loader2 className="h-7 w-7 sm:h-8 sm:w-8 animate-spin mx-auto text-blue-600" />
               </div>
             ) : filteredClientes.length === 0 ? (
-              <div className="p-8 text-center text-slate-500">
-                <Building2 className="h-12 w-12 mx-auto mb-3 text-slate-300" />
-                <p>Nenhum cliente encontrado</p>
+              <div className="p-6 sm:p-8 text-center text-slate-500">
+                <Building2 className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-2 sm:mb-3 text-slate-300" />
+                <p className="text-sm sm:text-base">Nenhum cliente encontrado</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-slate-50">
-                      <TableHead>Cliente</TableHead>
-                      <TableHead>CNPJ</TableHead>
-                      <TableHead>Contato</TableHead>
-                      <TableHead>Modalidade</TableHead>
-                      <TableHead>Procuração</TableHead>
-                      <TableHead>Casos</TableHead>
-                      <TableHead className="text-right">Ações</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Cliente</TableHead>
+                      <TableHead className="text-xs sm:text-sm hidden sm:table-cell">CNPJ</TableHead>
+                      <TableHead className="text-xs sm:text-sm hidden md:table-cell">Contato</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Modalidade</TableHead>
+                      <TableHead className="text-xs sm:text-sm hidden lg:table-cell">Procuração</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Casos</TableHead>
+                      <TableHead className="text-right text-xs sm:text-sm">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredClientes.map((cliente) => (
                       <TableRow key={cliente.id} className="hover:bg-slate-50">
-                        <TableCell>
+                        <TableCell className="text-xs sm:text-sm">
                           <div>
-                            <p className="font-medium text-slate-900">{cliente.razao_social}</p>
+                            <p className="font-medium text-slate-900 truncate">{cliente.razao_social}</p>
                             {cliente.nome_fantasia && (
-                              <p className="text-sm text-slate-500">{cliente.nome_fantasia}</p>
+                              <p className="text-xs text-slate-500 truncate">{cliente.nome_fantasia}</p>
                             )}
                           </div>
                         </TableCell>
-                        <TableCell className="font-mono text-sm">
+                        <TableCell className="font-mono text-xs sm:text-sm hidden sm:table-cell">
                           {formatCNPJ(cliente.cnpj)}
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="text-xs sm:text-sm hidden md:table-cell">
                           <div className="space-y-1">
                             {cliente.email && (
-                              <div className="flex items-center gap-1 text-sm text-slate-600">
-                                <Mail className="h-3 w-3" /> {cliente.email}
+                              <div className="flex items-center gap-1 text-xs text-slate-600 truncate">
+                                <Mail className="h-3 w-3 flex-shrink-0" /> {cliente.email}
                               </div>
                             )}
                             {cliente.telefone && (
-                              <div className="flex items-center gap-1 text-sm text-slate-600">
-                                <Phone className="h-3 w-3" /> {cliente.telefone}
+                              <div className="flex items-center gap-1 text-xs text-slate-600">
+                                <Phone className="h-3 w-3 flex-shrink-0" /> {cliente.telefone}
                               </div>
                             )}
                           </div>
                         </TableCell>
                         <TableCell>
                           {cliente.modalidade_habilitacao && (
-                            <Badge className={modalidadeColors[cliente.modalidade_habilitacao]}>
+                            <Badge className={`${modalidadeColors[cliente.modalidade_habilitacao]} text-xs`}>
                               {cliente.modalidade_habilitacao === 'analise_regularizacao' 
-                                ? 'Análise de Regularização'
+                                ? 'Regulariz.'
                                 : cliente.modalidade_habilitacao.charAt(0).toUpperCase() + cliente.modalidade_habilitacao.slice(1)}
                             </Badge>
                           )}
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="hidden lg:table-cell">
                           {cliente.procuracao_eletronica ? (
-                            <Badge className="bg-green-100 text-green-800 border-green-200">✓ Ativa</Badge>
+                            <Badge className="bg-green-100 text-green-800 border-green-200 text-xs">✓ Ativa</Badge>
                           ) : (
-                            <Badge className="bg-red-100 text-red-800 border-red-200">✗ Pendente</Badge>
+                            <Badge className="bg-red-100 text-red-800 border-red-200 text-xs">✗ Pendente</Badge>
                           )}
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="font-mono">
+                          <Badge variant="outline" className="font-mono text-xs">
                             {getCasosCount(cliente.id)}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
+                          <div className="flex justify-end gap-1">
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => handleEdit(cliente)}
+                              className="h-7 w-7 md:h-8 md:w-8 p-0"
                             >
-                              <Edit className="h-4 w-4" />
+                              <Edit className="h-3.5 w-3.5" />
                             </Button>
                             <Link to={createPageUrl(`Casos?cliente=${cliente.id}`)}>
-                              <Button variant="ghost" size="sm">
-                                <FolderOpen className="h-4 w-4" />
+                              <Button variant="ghost" size="sm" className="h-7 w-7 md:h-8 md:w-8 p-0">
+                                <FolderOpen className="h-3.5 w-3.5" />
                               </Button>
                             </Link>
                             <Button
@@ -457,9 +458,9 @@ export default function Clientes() {
                                   deleteMutation.mutate(cliente.id);
                                 }
                               }}
-                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50 h-7 w-7 md:h-8 md:w-8 p-0"
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 className="h-3.5 w-3.5" />
                             </Button>
                           </div>
                         </TableCell>
