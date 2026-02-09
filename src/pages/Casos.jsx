@@ -303,24 +303,24 @@ export default function Casos() {
                 </div>
 
                 <div>
-                  <Label htmlFor="modalidade_pretendida">Modalidade Pretendida</Label>
+                  <Label htmlFor="modalidade_pretendida" className="text-xs sm:text-sm">Modalidade Pretendida</Label>
                   <Select
                     value={formData.modalidade_pretendida}
                     onValueChange={(value) => setFormData({...formData, modalidade_pretendida: value})}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="text-xs sm:text-sm h-9 sm:h-10">
                       <SelectValue placeholder="Selecione..." />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="limitada">Limitada (até USD 150.000,00)</SelectItem>
+                    <SelectContent className="text-xs sm:text-sm">
+                      <SelectItem value="limitada">Limitada</SelectItem>
                       <SelectItem value="ilimitada">Ilimitada</SelectItem>
-                      <SelectItem value="analise_regularizacao">Análise de Regularização</SelectItem>
+                      <SelectItem value="analise_regularizacao">Regularização</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div>
-                  <Label htmlFor="limite_pretendido">Limite Pretendido (USD)</Label>
+                  <Label htmlFor="limite_pretendido" className="text-xs sm:text-sm">Limite Pretendido (USD)</Label>
                   <Input
                     id="limite_pretendido"
                     type="number"
