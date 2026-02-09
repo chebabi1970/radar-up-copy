@@ -329,9 +329,46 @@ export default function Clientes() {
                         </span>
                       </div>
                     </label>
-                  </div>
-                </div>
-                <div className="flex justify-end gap-3 pt-4">
+
+                    <label className="flex items-start gap-3 cursor-pointer p-3 border border-slate-200 rounded-lg hover:bg-slate-50">
+                     <input
+                       type="checkbox"
+                       checked={formData.optante_simples_nacional || false}
+                       onChange={(e) => setFormData({...formData, optante_simples_nacional: e.target.checked})}
+                       className="mt-1 rounded"
+                     />
+                     <div>
+                       <span className="text-sm font-medium text-slate-900 block">
+                         Optante do Simples Nacional
+                       </span>
+                       <span className="text-xs text-slate-500">
+                         A empresa é optante do Simples Nacional
+                       </span>
+                     </div>
+                    </label>
+                    </div>
+
+                    <div>
+                    <Label htmlFor="data_abertura_empresa">Data de Abertura da Empresa</Label>
+                    <Input
+                     id="data_abertura_empresa"
+                     type="date"
+                     value={formData.data_abertura_empresa}
+                     onChange={(e) => setFormData({...formData, data_abertura_empresa: e.target.value})}
+                    />
+                    {formData.data_abertura_empresa && (
+                     <p className="text-xs text-slate-500 mt-1">
+                       {(() => {
+                         const dataAbertura = new Date(formData.data_abertura_empresa);
+                         const hoje = new Date();
+                         const meses = Math.floor((hoje.getFullYear() - dataAbertura.getFullYear()) * 12 + (hoje.getMonth() - dataAbertura.getMonth()));
+                         return `${meses} mês${meses !== 1 ? 'es' : ''} completo${meses !== 1 ? 's' : ''}`;
+                       })()}
+                     </p>
+                    )}
+                    </div>
+                    </div>
+                    <div className="flex justify-end gap-3 pt-4">
                   <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                     Cancelar
                   </Button>
