@@ -70,13 +70,13 @@ export default function ResultadoAnaliseResumido({ resultado }) {
       )}
 
       {/* Alertas Críticos */}
-      {resultado.indicadores_alerta?.filter(a => a.severidade === 'critica').slice(0, 2).map((alerta, idx) => (
+      {resultado.indicadores_alerta?.filter(a => a.severidade === 'critica').slice(0, 3).map((alerta, idx) => (
         <div key={idx} className="p-2.5 sm:p-3 bg-red-50 border border-red-200 rounded-lg">
           <div className="flex gap-2">
             <span className="text-lg sm:text-xl flex-shrink-0">🔴</span>
             <div className="flex-1 min-w-0">
-              <p className="font-semibold text-xs sm:text-sm text-red-900 line-clamp-1">{alerta.tipo}</p>
-              <p className="text-xs text-red-700 mt-0.5 line-clamp-2">{alerta.descricao}</p>
+              <p className="font-semibold text-xs sm:text-sm text-red-900">{alerta.tipo}</p>
+              <p className="text-xs text-red-700 mt-0.5 whitespace-normal">{alerta.descricao}</p>
             </div>
           </div>
         </div>
