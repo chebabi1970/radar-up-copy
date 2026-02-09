@@ -365,19 +365,20 @@ export default function Casos() {
                   />
                 </div>
 
-                <div className="flex justify-end gap-3 pt-4">
-                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                <div className="flex justify-end gap-2 sm:gap-3 pt-3 sm:pt-4">
+                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} className="text-xs sm:text-sm h-8 sm:h-9">
                     Cancelar
                   </Button>
                   <Button 
                     type="submit" 
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-blue-600 hover:bg-blue-700 text-xs sm:text-sm h-8 sm:h-9"
                     disabled={createMutation.isPending}
                   >
                     {createMutation.isPending && (
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 animate-spin" />
                     )}
-                    Criar Caso
+                    <span className="hidden sm:inline">Criar Caso</span>
+                    <span className="sm:hidden">Criar</span>
                   </Button>
                 </div>
               </form>
