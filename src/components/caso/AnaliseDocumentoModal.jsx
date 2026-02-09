@@ -168,9 +168,35 @@ export default function AnaliseDocumentoModal({ item, documentos, casoId, client
       }
 
       const tipoDoc = item.tipo_documento;
+      const guide = getGuide(tipoDoc);
       
-      // Prompt genérico - guias serão preenchidas depois
-      const prompt = `Extraia dados do documento: ${tipoDoc}
+      // Construir prompt baseado na guia específica
+      const prompt = guide 
+        ? `Você é auditor documental jurídico-contábil especializado em revisão de estimativa (IN RFB 1.984/2020, Portaria Coana 72/2020).
+
+DOCUMENTO: ${guide.nome}
+
+REGRAS ESPECÍFICAS:
+${guide.regras.map(r => `- ${r}`).join('\n')}
+
+CHECKLIST OBRIGATÓRIO:
+${guide.checklist.map(c => `- ${c.item}${c.critico ? ' [CRÍTICO]' : ''}`).join('\n')}
+
+CONTEXTO:
+- Empresa: ${cliente?.razao_social}
+- CNPJ: ${cliente?.cnpj}
+- Endereço CNPJ: ${cliente?.endereco}
+
+Analise o documento e retorne JSON estruturado com:
+{
+  dados_extraidos: {campos relevantes},
+  checklist_verificacao: [{item: string, status: "OK"|"ALERTA"|"CRÍTICO", observacao: string}],
+  indicadores_alerta: [{tipo: string, severidade: "critica"|"media"|"leve", descricao: string}],
+  cruzamentos_necessarios: [lista de docs a comparar],
+  resumo: string,
+  classificacao_final: "APROVADO"|"INCONSISTENTE"|"FALTANTE"
+}`
+        : `Extraia dados do documento: ${tipoDoc}
 
 Retorne JSON com:
 {
