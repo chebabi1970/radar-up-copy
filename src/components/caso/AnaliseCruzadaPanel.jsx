@@ -97,7 +97,7 @@ export default function AnaliseCruzadaPanel({ documentos = [], cliente = {} }) {
 
       setResultadosCruzada({
         regraId,
-        regraNome: regras Disponiveis.find(r => r.id === regraId)?.nome,
+        regraNome: regrasDisponiveis.find(r => r.id === regraId)?.nome,
         ...resultado
       });
     } catch (error) {
