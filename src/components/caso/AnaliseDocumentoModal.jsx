@@ -260,43 +260,51 @@ export default function AnaliseDocumentoModal({ item, documentos, casoId, client
 
       const tipoDoc = item.tipo_documento;
       const guide = getGuide(tipoDoc);
-      
-      // Construir prompt baseado na guia específica
+
+      // Construir prompt baseado na guia específica - SEM contexto genérico
       const prompt = guide 
         ? `Você é auditor documental jurídico-contábil especializado em revisão de estimativa (IN RFB 1.984/2020, Portaria Coana 72/2020).
 
-DOCUMENTO: ${guide.nome}
+      DOCUMENTO: ${guide.nome}
 
-REGRAS ESPECÍFICAS:
-${guide.regras.map(r => `- ${r}`).join('\n')}
+      TASK: Analise APENAS este documento específico. Não misture dados com outros documentos.
 
-CHECKLIST OBRIGATÓRIO:
-${guide.checklist.map(c => `- ${c.item}${c.critico ? ' [CRÍTICO]' : ''}`).join('\n')}
+      REGRAS ESPECÍFICAS PARA ESTE DOCUMENTO:
+      ${guide.regras.map(r => `- ${r}`).join('\n')}
 
-CONTEXTO:
-- Empresa: ${cliente?.razao_social}
-- CNPJ: ${cliente?.cnpj}
-- Endereço CNPJ: ${cliente?.endereco}
+      CHECKLIST OBRIGATÓRIO:
+      ${guide.checklist.map(c => `- ${c.item}${c.critico ? ' [CRÍTICO]' : ''}`).join('\n')}
 
-Analise o documento e retorne JSON estruturado com:
-{
-  dados_extraidos: {campos relevantes},
-  checklist_verificacao: [{item: string, status: "OK"|"ALERTA"|"CRÍTICO", observacao: string}],
-  indicadores_alerta: [{tipo: string, severidade: "critica"|"media"|"leve", descricao: string}],
-  cruzamentos_necessarios: [lista de docs a comparar],
-  resumo: string,
-  classificacao_final: "APROVADO"|"INCONSISTENTE"|"FALTANTE"
-}`
-        : `Extraia dados do documento: ${tipoDoc}
+      CONTEXTO (use APENAS para validações):
+      - Empresa esperada: ${cliente?.razao_social}
+      - CNPJ esperado: ${cliente?.cnpj}
+      - Endereço registrado: ${cliente?.endereco}
 
-Retorne JSON com:
-{
-  dados_extraidos: {},
-  checklist_verificacao: [],
-  indicadores_alerta: [],
-  resumo: "Análise em construção",
-  classificacao_final: "PENDENTE"
-}`;
+      INSTRUÇÕES CRÍTICAS:
+      1. Analise APENAS o conteúdo visível no documento
+      2. Compare dados do documento com contexto QUANDO PERTINENTE AO TIPO
+      3. Não invente dados não encontrados no documento
+      4. Não confunda este documento com outros (não fale sobre procurador se analisando conta de energia)
+
+      Retorne JSON estruturado com:
+      {
+      dados_extraidos: {campos relevantes extraídos do documento},
+      checklist_verificacao: [{item: string, status: "OK"|"ALERTA"|"CRÍTICO", observacao: string}],
+      indicadores_alerta: [{tipo: string, severidade: "critica"|"media"|"leve", descricao: string}],
+      cruzamentos_necessarios: [lista de docs a comparar],
+      resumo: string,
+      classificacao_final: "APROVADO"|"INCONSISTENTE"|"FALTANTE"
+      }`
+        : `Analise APENAS este documento: ${tipoDoc}
+
+      Retorne JSON com:
+      {
+      dados_extraidos: {},
+      checklist_verificacao: [],
+      indicadores_alerta: [],
+      resumo: "Análise em construção",
+      classificacao_final: "PENDENTE"
+      }`;
 
       // Obter URL assinada se for file_uri
       let fileUrl = linkedDoc.file_url;
