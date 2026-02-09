@@ -190,36 +190,33 @@ export default function Home() {
       </div>
 
       {/* Features Section */}
-      <div className="max-w-6xl mx-auto px-6 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-slate-900 mb-4">
-            Funcionalidades Principais
+      <div className="max-w-6xl mx-auto px-6 py-20">
+        <div className="text-center mb-16">
+          <h2 className="text-5xl font-bold text-white mb-6">
+            Funcionalidades Poderosas
           </h2>
-          <p className="text-slate-600">
-            Tudo o que você precisa para gerenciar revisões de habilitação
+          <p className="text-xl text-slate-300 max-w-2xl mx-auto">
+            Tudo o que você precisa para gerenciar revisões de habilitação em um único lugar
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
            {features.map((feature, idx) => (
-              <Card key={idx} className="h-full hover:shadow-lg transition-all duration-300 border-0 bg-white/80 backdrop-blur">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="p-3 rounded-lg bg-slate-100">
-                      {feature.icon}
-                    </div>
+              <div key={idx} className="group relative rounded-2xl bg-gradient-to-br from-slate-800 to-slate-700 p-8 border border-slate-600/50 hover:border-blue-500/50 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/0 to-purple-600/0 group-hover:from-blue-600/10 group-hover:to-purple-600/10 rounded-2xl transition-all duration-300" />
+                <div className="relative">
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 w-fit mb-6 group-hover:from-blue-500/40 group-hover:to-purple-500/40 transition-all">
+                    {feature.icon}
                   </div>
-                  <CardTitle className="text-lg text-slate-900 mt-4">
+                  <h3 className="text-xl font-bold text-white mb-3">
                     {feature.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-slate-600">
+                  </h3>
+                  <p className="text-slate-300 text-sm leading-relaxed">
                     {feature.descricao}
                   </p>
-                </CardContent>
-              </Card>
-          ))}
+                </div>
+              </div>
+           ))}
         </div>
       </div>
 
