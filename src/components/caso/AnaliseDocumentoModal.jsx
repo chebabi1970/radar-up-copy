@@ -36,10 +36,15 @@ export default function AnaliseDocumentoModal({ item, documentos, casoId, client
       const balancetes = documentos.filter(d => d.tipo_documento?.includes('balancete'));
       const extratos = documentos.filter(d => d.tipo_documento?.includes('extrato'));
 
+      console.log('Balancetes encontrados:', balancetes.length);
+      console.log('Extratos encontrados:', extratos.length);
+
       if (balancetes.length === 0 || extratos.length === 0) {
+        const msg = `Documentos necessários não encontrados. Balancetes: ${balancetes.length}, Extratos: ${extratos.length}`;
+        console.error(msg);
         setResultados({
           erro: true,
-          mensagem: 'Balancetes ou extratos não encontrados. Upload ambos os documentos para análise.'
+          mensagem: msg
         });
         setAnalisando(false);
         return;
