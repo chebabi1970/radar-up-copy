@@ -446,41 +446,64 @@ Retorne JSON com:
                 <h4 className="font-semibold text-slate-900 flex items-center gap-2">
                   🚨 Indicadores de Alerta
                 </h4>
-                {resultados.dados.indicadores_alerta.map((alerta, idx) => (
-                  <div key={idx} className={`p-3 rounded-lg border ${
-                    alerta.severidade === 'critica' 
-                      ? 'bg-red-50 border-red-300' 
-                      : alerta.severidade === 'media'
-                      ? 'bg-yellow-50 border-yellow-300'
-                      : 'bg-blue-50 border-blue-300'
-                  }`}>
-                    <div className="flex items-start gap-3">
-                      <span className="text-2xl">
-                        {alerta.severidade === 'critica' ? '🔴' : alerta.severidade === 'media' ? '🟡' : '🟠'}
-                      </span>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <p className="font-bold text-sm text-slate-900">{alerta.tipo}</p>
-                          <Badge className={
-                            alerta.severidade === 'critica' 
-                              ? 'bg-red-600 text-white' 
-                              : alerta.severidade === 'media'
-                              ? 'bg-yellow-600 text-white'
-                              : 'bg-blue-600 text-white'
-                          }>
-                            {alerta.severidade.toUpperCase()}
-                          </Badge>
+                {resultados.dados.indicadores_alerta.map((alerta, idx) => {
+                  const sugestoes = gerarSugestoesParaDiscrepancia(
+                    alerta.tipo?.toLowerCase().replace(/\s+/g, '_') || 'documento_faltante',
+                    alerta
+                  );
+                  
+                  return (
+                    <div key={idx} className={`p-3 rounded-lg border ${
+                      alerta.severidade === 'critica' 
+                        ? 'bg-red-50 border-red-300' 
+                        : alerta.severidade === 'media'
+                        ? 'bg-yellow-50 border-yellow-300'
+                        : 'bg-blue-50 border-blue-300'
+                    }`}>
+                      <div className="flex items-start gap-3">
+                        <span className="text-2xl">
+                          {alerta.severidade === 'critica' ? '🔴' : alerta.severidade === 'media' ? '🟡' : '🟠'}
+                        </span>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="font-bold text-sm text-slate-900">{alerta.tipo}</p>
+                            <Badge className={
+                              alerta.severidade === 'critica' 
+                                ? 'bg-red-600 text-white' 
+                                : alerta.severidade === 'media'
+                                ? 'bg-yellow-600 text-white'
+                                : 'bg-blue-600 text-white'
+                            }>
+                              {alerta.severidade.toUpperCase()}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-slate-700 mb-2">{alerta.descricao}</p>
+                          {alerta.fundamento_normativo && (
+                            <p className="text-xs text-slate-500 italic">
+                              Base legal: {alerta.fundamento_normativo}
+                            </p>
+                          )}
+                          
+                          {/* Sugestões de Correção */}
+                          {sugestoes && (
+                            <div className="mt-3 p-2 bg-white/60 rounded border-l-2 border-amber-300 text-xs space-y-1">
+                              <div className="flex items-center gap-1 font-semibold text-amber-700">
+                                <Lightbulb className="h-3 w-3" />
+                                {sugestoes.titulo}
+                              </div>
+                              {sugestoes.passos?.map((passo, i) => (
+                                <p key={i} className="text-slate-600 ml-4">{passo}</p>
+                              ))}
+                              {sugestoes.acao && (
+                                <p className="text-amber-700 font-semibold mt-2">→ {sugestoes.acao}</p>
+                              )}
+                            </div>
+                          )}
                         </div>
-                        <p className="text-sm text-slate-700 mb-2">{alerta.descricao}</p>
-                        {alerta.fundamento_normativo && (
-                          <p className="text-xs text-slate-500 italic">
-                            Base legal: {alerta.fundamento_normativo}
-                          </p>
-                        )}
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
 
