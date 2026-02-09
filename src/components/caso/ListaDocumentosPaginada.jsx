@@ -127,7 +127,7 @@ export default function ListaDocumentosPaginada({ documentos = [], onSelectDoc, 
                   <span className={`text-xs font-semibold px-2 py-1 rounded ${statusBadgeColor[doc.status_analise] || 'bg-slate-100 text-slate-800'}`}>
                     {statusLabel[doc.status_analise] || 'Desconhecido'}
                   </span>
-                  {doc.file_url || doc.file_uri && (
+                  {(doc.file_url || doc.file_uri) && (
                     <Button
                       variant="ghost"
                       size="icon"
