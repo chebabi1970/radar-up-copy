@@ -9,7 +9,7 @@ import {
   Menu,
   X,
   LogOut,
-  Scale
+  Briefcase
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
@@ -53,7 +53,7 @@ export default function Layout({ children, currentPageName }) {
           <div className="h-16 flex items-center justify-between px-4 border-b border-slate-100">
             <Link to={createPageUrl('Dashboard')} className="flex items-center gap-2">
               <div className="h-8 w-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
-                <Scale className="h-4 w-4 text-white" />
+                <Briefcase className="h-4 w-4 text-white" />
               </div>
               <span className="font-bold text-slate-900">RADAR UP</span>
             </Link>
@@ -122,7 +122,7 @@ export default function Layout({ children, currentPageName }) {
           </Button>
           <div className="flex items-center gap-2 ml-3">
             <div className="h-7 w-7 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
-              <Scale className="h-3.5 w-3.5 text-white" />
+              <Briefcase className="h-3.5 w-3.5 text-white" />
             </div>
             <span className="font-bold text-slate-900">RADAR UP</span>
           </div>
