@@ -154,16 +154,24 @@ export default function AnaliseDocumentoModal({ item, documentos, casoId, client
 
       // Obter URLs assinadas para extratos
       const extratosUrls = await Promise.all(extratos.map(async (e) => {
-        if (e.file_url) return e.file_url;
-        if (e.file_uri) {
-          const signedResult = await base44.integrations.Core.CreateFileSignedUrl({
-            file_uri: e.file_uri,
-            expires_in: 3600
-          });
-          return signedResult.signed_url;
+        try {
+          if (e.file_url) return e.file_url;
+          if (e.file_uri) {
+            const signedResult = await base44.integrations.Core.CreateFileSignedUrl({
+              file_uri: e.file_uri,
+              expires_in: 3600
+            });
+            return signedResult.signed_url;
+          }
+          console.warn('Extrato sem URL:', e.nome_arquivo);
+          return null;
+        } catch (err) {
+          console.error('Erro ao obter URL extrato:', err);
+          return null;
         }
-        return null;
       }));
+
+      console.log('URLs de extratos obtidas:', extratosUrls.filter(u => u).length);
 
       const dadosExtratos = await base44.integrations.Core.InvokeLLM({
         prompt: promptExtratos,
