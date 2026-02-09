@@ -341,7 +341,7 @@ export default function Casos() {
                 </div>
 
                 <div>
-                  <Label htmlFor="data_protocolo_ecac">Data de Protocolo e-CAC (opcional)</Label>
+                  <Label htmlFor="data_protocolo_ecac" className="text-xs sm:text-sm">Data Protocolo (opcional)</Label>
                   <Input
                     id="data_protocolo_ecac"
                     type="date"
