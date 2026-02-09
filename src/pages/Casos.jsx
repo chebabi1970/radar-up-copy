@@ -331,7 +331,7 @@ export default function Casos() {
                 </div>
 
                 <div>
-                  <Label htmlFor="numero_processo_ecac">Número do Processo e-CAC (opcional)</Label>
+                  <Label htmlFor="numero_processo_ecac" className="text-xs sm:text-sm">Processo e-CAC (opcional)</Label>
                   <Input
                     id="numero_processo_ecac"
                     value={formData.numero_processo_ecac}
