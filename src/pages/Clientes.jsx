@@ -69,7 +69,9 @@ export default function Clientes() {
     procuracao_eletronica: false,
     data_procuracao_eletronica: '',
     data_abertura_empresa: '',
-    optante_simples_nacional: false
+    optante_simples_nacional: false,
+    capital_social: '',
+    qsa: ''
   });
 
   const queryClient = useQueryClient();
@@ -124,7 +126,9 @@ export default function Clientes() {
       procuracao_eletronica: false,
       data_procuracao_eletronica: '',
       data_abertura_empresa: '',
-      optante_simples_nacional: false
+      optante_simples_nacional: false,
+      capital_social: '',
+      qsa: ''
     });
     setEditingCliente(null);
   };
@@ -145,7 +149,9 @@ export default function Clientes() {
       procuracao_eletronica: cliente.procuracao_eletronica || false,
       data_procuracao_eletronica: cliente.data_procuracao_eletronica || '',
       data_abertura_empresa: cliente.data_abertura_empresa || '',
-      optante_simples_nacional: cliente.optante_simples_nacional || false
+      optante_simples_nacional: cliente.optante_simples_nacional || false,
+      capital_social: cliente.capital_social || '',
+      qsa: cliente.qsa || ''
     });
     setIsDialogOpen(true);
   };
@@ -357,15 +363,37 @@ export default function Clientes() {
                      onChange={(e) => setFormData({...formData, data_abertura_empresa: e.target.value})}
                     />
                     {formData.data_abertura_empresa && (
-                     <p className="text-xs text-slate-500 mt-1">
-                       {(() => {
-                         const dataAbertura = new Date(formData.data_abertura_empresa);
-                         const hoje = new Date();
-                         const meses = Math.floor((hoje.getFullYear() - dataAbertura.getFullYear()) * 12 + (hoje.getMonth() - dataAbertura.getMonth()));
-                         return `${meses} mês${meses !== 1 ? 'es' : ''} completo${meses !== 1 ? 's' : ''}`;
-                       })()}
-                     </p>
+                      <p className="text-xs text-slate-500 mt-1">
+                        {(() => {
+                          const dataAbertura = new Date(formData.data_abertura_empresa);
+                          const hoje = new Date();
+                          const meses = Math.floor((hoje.getFullYear() - dataAbertura.getFullYear()) * 12 + (hoje.getMonth() - dataAbertura.getMonth()));
+                          return `${meses} mês${meses !== 1 ? 'es' : ''} completo${meses !== 1 ? 's' : ''}`;
+                        })()}
+                      </p>
                     )}
+                    </div>
+
+                    <div>
+                    <Label htmlFor="capital_social">Capital Social (R$)</Label>
+                    <Input
+                      id="capital_social"
+                      type="number"
+                      value={formData.capital_social}
+                      onChange={(e) => setFormData({...formData, capital_social: e.target.value})}
+                      placeholder="0.00"
+                    />
+                    </div>
+
+                    <div className="md:col-span-2">
+                    <Label htmlFor="qsa">QSA - Quadro de Sócios e Administradores</Label>
+                    <Textarea
+                      id="qsa"
+                      value={formData.qsa}
+                      onChange={(e) => setFormData({...formData, qsa: e.target.value})}
+                      placeholder="Nomes e dados dos sócios e administradores"
+                      rows={4}
+                    />
                     </div>
                     </div>
                     <div className="flex justify-end gap-3 pt-4">
