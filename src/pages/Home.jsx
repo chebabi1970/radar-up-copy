@@ -15,7 +15,11 @@ import {
   CheckCircle2,
   DollarSign,
   Shield,
-  Zap
+  Zap,
+  Sparkles,
+  BarChart3,
+  Clock,
+  Rocket
 } from 'lucide-react';
 
 export default function Home() {
