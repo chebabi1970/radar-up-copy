@@ -11,6 +11,7 @@ import { crossDocumentRules, executarAnaliseCruzada } from './validators/crossDo
 import { gerarSugestoesParaDiscrepancia, buildSuggestionsFromValidation } from './validators/suggestionsEngine';
 import ListaDocumentosPaginada from './ListaDocumentosPaginada';
 import VisualizadorDocumentoAvancado from './VisualizadorDocumentoAvancado';
+import ResultadoAnaliseResumido from './ResultadoAnaliseResumido';
 
 export default function AnaliseDocumentoModal({ item, documentos, casoId, cliente, onClose }) {
   const [analisando, setAnalisando] = useState(false);
