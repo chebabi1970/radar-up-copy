@@ -67,7 +67,9 @@ export default function Clientes() {
     limite_atual: '',
     observacoes: '',
     procuracao_eletronica: false,
-    data_procuracao_eletronica: ''
+    data_procuracao_eletronica: '',
+    data_abertura_empresa: '',
+    optante_simples_nacional: false
   });
 
   const queryClient = useQueryClient();
@@ -120,7 +122,9 @@ export default function Clientes() {
       limite_atual: '',
       observacoes: '',
       procuracao_eletronica: false,
-      data_procuracao_eletronica: ''
+      data_procuracao_eletronica: '',
+      data_abertura_empresa: '',
+      optante_simples_nacional: false
     });
     setEditingCliente(null);
   };
@@ -139,7 +143,9 @@ export default function Clientes() {
       limite_atual: cliente.limite_atual || '',
       observacoes: cliente.observacoes || '',
       procuracao_eletronica: cliente.procuracao_eletronica || false,
-      data_procuracao_eletronica: cliente.data_procuracao_eletronica || ''
+      data_procuracao_eletronica: cliente.data_procuracao_eletronica || '',
+      data_abertura_empresa: cliente.data_abertura_empresa || '',
+      optante_simples_nacional: cliente.optante_simples_nacional || false
     });
     setIsDialogOpen(true);
   };
