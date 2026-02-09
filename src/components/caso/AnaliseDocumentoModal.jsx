@@ -46,12 +46,31 @@ export default function AnaliseDocumentoModal({ item, documentos, casoId, client
       }
 
       // Extrair dados dos balancetes
-      const promptBalancete = `Analise este balancete contábil e extraia:
-      - Saldos de caixa e equivalentes de caixa (contas do ativo circulante, grupo Caixa/Bancos)
-      - Data final do período
-      - Valores detalhados por banco/conta
-      
-      Retorne como JSON com estrutura: { data_balancete: string, saldos_caixa: {[banco]: number}, total_caixa: number, contas_detalhadas: {[descricao]: number} }`;
+      const promptBalancete = `Você é contador especializado em análise de balancetes para revisão de estimativa RFB. Analise este/estes balancete(s) contábil(is) com MÁXIMA PRECISÃO:
+
+      **INSTRUÇÕES CRÍTICAS:**
+      1. Extraia APENAS valores do grupo de Caixa/Bancos (ativo circulante)
+      2. Procure por: Caixa, Bancos c/ Movimento, Bancos s/ Movimento, Equivalentes de Caixa
+      3. Identifique cada banco/conta INDIVIDUALMENTE
+      4. Capture a DATA FINAL do período do balancete
+      5. Se houver múltiplos períodos, use o MAIS RECENTE
+      6. Converta todos os valores para NÚMEROS (remova formatação)
+
+      **RETORNE OBRIGATORIAMENTE:**
+      {
+      data_balancete: "YYYY-MM-DD (data final do período)",
+      periodo_referencia: "mês/ano",
+      saldos_caixa: {
+      "Caixa": número,
+      "Banco X - Conta 12345": número,
+      "Banco Y - Aplicação": número
+      },
+      total_caixa: número (soma de todos saldos),
+      contas_detalhadas: {
+      "descrição exata": número
+      },
+      observacoes: "qualquer nota sobre conversão ou dúvida"
+      }`;
 
       // Obter URLs assinadas para balancetes
       const balanceteUrls = await Promise.all(balancetes.map(async (b) => {
@@ -73,20 +92,45 @@ export default function AnaliseDocumentoModal({ item, documentos, casoId, client
           type: 'object',
           properties: {
             data_balancete: { type: 'string' },
+            periodo_referencia: { type: 'string' },
             saldos_caixa: { type: 'object' },
             total_caixa: { type: 'number' },
-            contas_detalhadas: { type: 'object' }
+            contas_detalhadas: { type: 'object' },
+            observacoes: { type: 'string' }
           }
         }
       });
 
       // Extrair dados dos extratos (último dia do mês anterior)
-      const promptExtratos = `Analise estes extratos bancários e para CADA MÊS, extraia:
-      - Saldo final do ÚLTIMO DIA do mês
-      - Nome do banco
-      - Número da conta
-      
-      Retorne como JSON com estrutura: { extratos: [{banco: string, conta: string, mes_ano: string, saldo_final: number, saldo_data: string}] }`;
+      const promptExtratos = `Você é analista bancário especializado em cruzamento de extratos. Analise estes extratos bancários com MÁXIMA PRECISÃO:
+
+      **INSTRUÇÕES CRÍTICAS:**
+      1. Para CADA MÊS diferente no extrato, identifique:
+      - Nome completo do BANCO
+      - Número exato da CONTA (com dígitos)
+      - SALDO FINAL do ÚLTIMO DIA do mês
+      - DATA EXATA do saldo final
+      2. Converta valores para NÚMEROS (remova R$, espaços, vírgulas)
+      3. Se houver múltiplas contas no mesmo banco, liste separadamente
+      4. Ignore valores em outras moedas ou investimentos
+      5. Capture saldos em: 28/fev, 29/fev (ano bissexto), 30, 31 conforme dia final do mês
+
+      **RETORNE OBRIGATORIAMENTE:**
+      {
+      extratos: [
+      {
+      banco: "Nome Banco",
+      conta: "12345-6",
+      mes_ano: "2024-01",
+      saldo_final: número,
+      saldo_data: "2024-01-31",
+      tipo_conta: "corrente|poupança|aplicação"
+      }
+      ],
+      total_extratos: número,
+      datas_cobertas: "YYYY-MM até YYYY-MM",
+      alertas: ["descrição se algo parecer inconsistente"]
+      }`;
 
       // Obter URLs assinadas para extratos
       const extratosUrls = await Promise.all(extratos.map(async (e) => {
@@ -116,10 +160,14 @@ export default function AnaliseDocumentoModal({ item, documentos, casoId, client
                   conta: { type: 'string' },
                   mes_ano: { type: 'string' },
                   saldo_final: { type: 'number' },
-                  saldo_data: { type: 'string' }
+                  saldo_data: { type: 'string' },
+                  tipo_conta: { type: 'string' }
                 }
               }
-            }
+            },
+            total_extratos: { type: 'number' },
+            datas_cobertas: { type: 'string' },
+            alertas: { type: 'array', items: { type: 'string' } }
           }
         }
       });
