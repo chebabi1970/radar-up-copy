@@ -366,15 +366,15 @@ Retorne JSON com:
               </div>
             </>
           ) : resultados.erro ? (
-           <div className="p-4 bg-red-50 border border-red-200 rounded-lg space-y-3">
-             <div className="flex items-start gap-3">
-               <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
-               <p className="text-sm text-red-800">{resultados.mensagem}</p>
+           <div className="p-2.5 sm:p-4 bg-red-50 border border-red-200 rounded-lg space-y-2 sm:space-y-3">
+             <div className="flex items-start gap-2 sm:gap-3">
+               <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-600 flex-shrink-0 mt-0.5" />
+               <p className="text-xs sm:text-sm text-red-800">{resultados.mensagem}</p>
              </div>
              <Button
                variant="outline"
                onClick={() => setResultados(null)}
-               className="w-full"
+               className="w-full h-8 sm:h-9 text-xs sm:text-sm"
              >
                Tentar Novamente
              </Button>
