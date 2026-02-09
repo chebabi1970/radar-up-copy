@@ -173,9 +173,15 @@ export default function AnaliseDocumentoModal({ item, documentos, casoId, client
 
       console.log('URLs de extratos obtidas:', extratosUrls.filter(u => u).length);
 
+      const validExtratosUrls = extratosUrls.filter(url => url);
+      if (validExtratosUrls.length === 0) {
+        throw new Error('Nenhuma URL de extrato disponível para análise');
+      }
+
+      console.log('Iniciando análise de extratos com URLs:', validExtratosUrls.length);
       const dadosExtratos = await base44.integrations.Core.InvokeLLM({
         prompt: promptExtratos,
-        file_urls: extratosUrls.filter(url => url),
+        file_urls: validExtratosUrls,
         response_json_schema: {
           type: 'object',
           properties: {
@@ -199,6 +205,7 @@ export default function AnaliseDocumentoModal({ item, documentos, casoId, client
           }
         }
       });
+      console.log('Análise de extratos concluída:', dadosExtratos);
 
       // Comparar saldos
       const discrepancias = [];
