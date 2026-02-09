@@ -147,45 +147,45 @@ export default function Home() {
           </div>
 
           {/* Stats Grid */}
-          {stats && (
-            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
-              <Card className="border-0 shadow-lg bg-white/80 backdrop-blur">
-                <CardContent className="pt-6">
-                  <div className="text-center">
-                    <p className="text-3xl font-bold text-blue-600">{stats.totalClientes}</p>
-                    <p className="text-sm text-slate-600 mt-2">Clientes</p>
-                  </div>
-                </CardContent>
-              </Card>
+           {stats && (
+             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-16">
+               <div className="rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 p-8 text-white shadow-2xl hover:shadow-3xl transition-shadow">
+                 <div className="text-center">
+                   <p className="text-5xl font-bold mb-2">{stats.totalClientes}</p>
+                   <p className="text-blue-100 text-sm font-medium flex items-center justify-center gap-2">
+                     <Users className="h-4 w-4" /> Clientes
+                   </p>
+                 </div>
+               </div>
 
-              <Card className="border-0 shadow-lg bg-white/80 backdrop-blur">
-                <CardContent className="pt-6">
-                  <div className="text-center">
-                    <p className="text-3xl font-bold text-purple-600">{stats.totalCasos}</p>
-                    <p className="text-sm text-slate-600 mt-2">Casos Totais</p>
-                  </div>
-                </CardContent>
-              </Card>
+               <div className="rounded-2xl bg-gradient-to-br from-purple-600 to-purple-700 p-8 text-white shadow-2xl hover:shadow-3xl transition-shadow">
+                 <div className="text-center">
+                   <p className="text-5xl font-bold mb-2">{stats.totalCasos}</p>
+                   <p className="text-purple-100 text-sm font-medium flex items-center justify-center gap-2">
+                     <FileText className="h-4 w-4" /> Casos
+                   </p>
+                 </div>
+               </div>
 
-              <Card className="border-0 shadow-lg bg-white/80 backdrop-blur">
-                <CardContent className="pt-6">
-                  <div className="text-center">
-                    <p className="text-3xl font-bold text-green-600">{stats.casosAtivos}</p>
-                    <p className="text-sm text-slate-600 mt-2">Casos Ativos</p>
-                  </div>
-                </CardContent>
-              </Card>
+               <div className="rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-700 p-8 text-white shadow-2xl hover:shadow-3xl transition-shadow">
+                 <div className="text-center">
+                   <p className="text-5xl font-bold mb-2">{stats.casosAtivos}</p>
+                   <p className="text-emerald-100 text-sm font-medium flex items-center justify-center gap-2">
+                     <Rocket className="h-4 w-4" /> Ativos
+                   </p>
+                 </div>
+               </div>
 
-              <Card className="border-0 shadow-lg bg-white/80 backdrop-blur">
-                <CardContent className="pt-6">
-                  <div className="text-center">
-                    <p className="text-3xl font-bold text-orange-600">{stats.documentosPendentes}</p>
-                    <p className="text-sm text-slate-600 mt-2">Documentos Pendentes</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
+               <div className="rounded-2xl bg-gradient-to-br from-amber-600 to-amber-700 p-8 text-white shadow-2xl hover:shadow-3xl transition-shadow">
+                 <div className="text-center">
+                   <p className="text-5xl font-bold mb-2">{stats.documentosPendentes}</p>
+                   <p className="text-amber-100 text-sm font-medium flex items-center justify-center gap-2">
+                     <Clock className="h-4 w-4" /> Pendentes
+                   </p>
+                 </div>
+               </div>
+             </div>
+           )}
         </div>
       </div>
 
