@@ -3,16 +3,33 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ZoomIn, ZoomOut, RotateCw, Download, X } from 'lucide-react';
 
-export default function VisualizadorDocumentoAvancado({ fileUrl, fileName, onClose }) {
+export default function VisualizadorDocumentoAvancado({ fileUrl, fileUri, fileName, onClose }) {
   const [zoom, setZoom] = useState(100);
   const [rotation, setRotation] = useState(0);
+  const [signedUrl, setSignedUrl] = useState(fileUrl);
+  const [loading, setLoading] = useState(!!fileUri && !fileUrl);
+
+  // Carregar signed URL se for file_uri
+  React.useEffect(() => {
+    if (fileUri && !fileUrl) {
+      import('@/api/base44Client').then(({ base44 }) => {
+        base44.integrations.Core.CreateFileSignedUrl({
+          file_uri: fileUri,
+          expires_in: 3600
+        }).then(result => {
+          setSignedUrl(result.signed_url);
+          setLoading(false);
+        });
+      });
+    }
+  }, [fileUri, fileUrl]);
 
   const handleZoomIn = () => setZoom(prev => Math.min(prev + 10, 300));
   const handleZoomOut = () => setZoom(prev => Math.max(prev - 10, 50));
   const handleRotate = () => setRotation(prev => (prev + 90) % 360);
 
-  const isPDF = fileUrl && typeof fileUrl === 'string' && fileUrl.toLowerCase().endsWith('.pdf');
-  const isImage = fileUrl && typeof fileUrl === 'string' && /\.(jpg|jpeg|png|gif|webp)$/i.test(fileUrl.toLowerCase());
+  const isPDF = signedUrl && typeof signedUrl === 'string' && signedUrl.toLowerCase().endsWith('.pdf');
+  const isImage = signedUrl && typeof signedUrl === 'string' && /\.(jpg|jpeg|png|gif|webp)$/i.test(signedUrl.toLowerCase());
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[100]">
