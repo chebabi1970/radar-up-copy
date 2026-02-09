@@ -123,15 +123,7 @@ export default function VisualizadorDocumento({ isOpen, onClose, documento, caso
           </div>
         ) : signedUrl ? (
            <div className="space-y-4">
-             <div className="w-full h-[600px] border border-slate-200 rounded-lg overflow-hidden bg-slate-50">
-               <iframe
-                 src={signedUrl}
-                 className="w-full h-full"
-                 title={documento.nome_arquivo}
-                 frameBorder="0"
-                 type="application/pdf"
-               />
-             </div>
+             <VisualizadorPDF url={signedUrl} />
              <div className="flex justify-center gap-2">
                <Button 
                  variant="outline"
