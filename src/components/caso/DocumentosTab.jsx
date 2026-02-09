@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { createPageUrl } from '@/utils';
+import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -319,17 +321,15 @@ export default function DocumentosTab({ casoId, documentos, checklistItems, clie
                   </Select>
 
                   {(doc.file_uri || doc.file_url) && (
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => {
-                        setDocumentoSelecionado(doc);
-                        setVisualizadorOpen(true);
-                      }}
-                      title="Visualizar documento"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
+                    <Link to={`${createPageUrl('DocumentoDetalhe')}?documentoId=${doc.id}&casoId=${casoId}`}>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        title="Abrir detalhes do documento"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </Link>
                   )}
 
                   <Button
