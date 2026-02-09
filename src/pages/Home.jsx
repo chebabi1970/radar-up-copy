@@ -221,26 +221,28 @@ export default function Home() {
       </div>
 
       {/* Highlights Section */}
-      <div className="bg-white/50 backdrop-blur py-16">
+      <div className="py-20 relative">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">
-              Por que usar RevEstimativa?
+          <div className="text-center mb-16">
+            <h2 className="text-5xl font-bold text-white mb-6">
+              Por que escolher RevEstimativa?
             </h2>
+            <p className="text-xl text-slate-300">Desenvolvido por especialistas em conformidade RFB</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {highlights.map((item, idx) => (
-              <div key={idx} className="p-6 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 rounded-lg bg-white text-slate-600">
+              <div key={idx} className="group relative rounded-2xl bg-gradient-to-br from-slate-800 to-slate-700 p-8 border border-slate-600/50 hover:border-emerald-500/50 transition-all duration-300 hover:shadow-2xl">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/0 to-teal-600/0 group-hover:from-emerald-600/10 group-hover:to-teal-600/10 rounded-2xl transition-all duration-300" />
+                <div className="relative flex items-start gap-4">
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 text-emerald-400 flex-shrink-0 group-hover:from-emerald-500/40 group-hover:to-teal-500/40 transition-all">
                     {item.icon}
                   </div>
                   <div>
-                    <h3 className="font-semibold text-slate-900 mb-2">
+                    <h3 className="font-bold text-white mb-2 text-lg">
                       {item.titulo}
                     </h3>
-                    <p className="text-slate-600 text-sm">
+                    <p className="text-slate-300 text-sm leading-relaxed">
                       {item.descricao}
                     </p>
                   </div>
