@@ -298,10 +298,15 @@ Retorne JSON com:
         <CardContent className="pt-6 space-y-4">
           {!resultados ? (
             <>
-              <div className="p-4 bg-slate-50 rounded-lg space-y-2">
-                <p className="font-semibold text-slate-900">Documento selecionado:</p>
-                <p className="text-sm text-slate-600">{linkedDoc?.nome_arquivo}</p>
-              </div>
+              {/* Lista de documentos com filtro */}
+              <ListaDocumentosPaginada
+                documentos={documentos}
+                onSelectDoc={(doc) => {
+                  setDocSelecionado(doc);
+                  setResultados(null);
+                }}
+                onViewDoc={(doc) => setDocVisualizar(doc)}
+              />
 
               {isBalancete && (
                 <>
