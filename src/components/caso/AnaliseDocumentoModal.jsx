@@ -98,9 +98,15 @@ export default function AnaliseDocumentoModal({ item, documentos, casoId, client
 
       console.log('URLs de balancetes obtidas:', balanceteUrls.filter(u => u).length);
 
+      const validUrls = balanceteUrls.filter(url => url);
+      if (validUrls.length === 0) {
+        throw new Error('Nenhuma URL de balancete disponível para análise');
+      }
+
+      console.log('Iniciando análise de balancete com URLs:', validUrls.length);
       const dadosBalancete = await base44.integrations.Core.InvokeLLM({
         prompt: promptBalancete,
-        file_urls: balanceteUrls.filter(url => url),
+        file_urls: validUrls,
         response_json_schema: {
           type: 'object',
           properties: {
@@ -113,6 +119,7 @@ export default function AnaliseDocumentoModal({ item, documentos, casoId, client
           }
         }
       });
+      console.log('Análise de balancete concluída:', dadosBalancete);
 
       // Extrair dados dos extratos (último dia do mês anterior)
       const promptExtratos = `Você é analista bancário especializado em cruzamento de extratos. Analise estes extratos bancários com MÁXIMA PRECISÃO:
