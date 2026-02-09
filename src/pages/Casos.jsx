@@ -427,35 +427,35 @@ export default function Casos() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-4">
+          <div className="grid gap-3 sm:gap-4">
             {filteredCasos.map((caso) => (
               <Card key={caso.id} className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl transition-all">
-                <CardContent className="p-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <Link to={createPageUrl(`CasoDetalhe?id=${caso.id}`)} className="flex items-start gap-4 flex-1 cursor-pointer">
-                      <div className="h-12 w-12 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <FolderOpen className="h-6 w-6 text-blue-600" />
+                <CardContent className="p-3 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+                    <Link to={createPageUrl(`CasoDetalhe?id=${caso.id}`)} className="flex items-start gap-3 sm:gap-4 flex-1 cursor-pointer min-w-0">
+                      <div className="h-10 w-10 sm:h-12 sm:w-12 bg-blue-50 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
+                        <FolderOpen className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
                       </div>
-                      <div>
-                        <h3 className="font-semibold text-slate-900">
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-semibold text-slate-900 text-sm sm:text-base truncate">
                           {caso.numero_caso || `Caso #${caso.id.slice(0, 8)}`}
                         </h3>
-                        <p className="text-slate-600 mt-0.5">
+                        <p className="text-xs sm:text-sm text-slate-600 mt-0.5 truncate">
                           {getClienteName(caso.cliente_id)}
                         </p>
-                        <p className="text-sm text-slate-500 mt-1">
+                        <p className="text-xs text-slate-500 mt-1 line-clamp-2">
                           {hipoteseLabels[caso.hipotese_revisao]}
                         </p>
                       </div>
                     </Link>
-                    <div className="flex items-center gap-3 sm:flex-shrink-0">
+                    <div className="flex items-center gap-2 sm:gap-3 sm:flex-shrink-0 flex-wrap justify-end">
                       {caso.divergencias_encontradas?.some(d => !d.resolvida) && (
-                        <div className="flex items-center gap-1 text-red-600 text-sm">
-                          <AlertTriangle className="h-4 w-4" />
-                          <span>Divergências</span>
+                        <div className="flex items-center gap-1 text-red-600 text-xs sm:text-sm">
+                          <AlertTriangle className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+                          <span className="hidden sm:inline">Divergências</span>
                         </div>
                       )}
-                      <Badge className={`${statusColors[caso.status]} border`}>
+                      <Badge className={`${statusColors[caso.status]} border text-xs sm:text-sm py-1`}>
                         {statusLabels[caso.status]}
                       </Badge>
                       <Button
@@ -466,12 +466,12 @@ export default function Casos() {
                             deleteMutation.mutate(caso.id);
                           }
                         }}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50 h-8 w-8 p-0 flex-shrink-0"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                       </Button>
-                      <Link to={createPageUrl(`CasoDetalhe?id=${caso.id}`)}>
-                        <ArrowRight className="h-5 w-5 text-slate-400" />
+                      <Link to={createPageUrl(`CasoDetalhe?id=${caso.id}`)} className="flex-shrink-0">
+                        <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 text-slate-400" />
                       </Link>
                     </div>
                   </div>
