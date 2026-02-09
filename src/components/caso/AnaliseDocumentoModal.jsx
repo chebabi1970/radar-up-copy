@@ -381,43 +381,8 @@ Retorne JSON com:
            </div>
           ) : !isBalancete && resultados.dados ? (
           <div className="space-y-4">
-            {/* Classificação Final */}
-            <div className={`p-4 rounded-lg border-2 ${
-              resultados.dados.classificacao_final === 'APROVADO' 
-                ? 'bg-green-50 border-green-300' 
-                : resultados.dados.classificacao_final === 'APROVADO_COM_RESSALVAS'
-                ? 'bg-yellow-50 border-yellow-300'
-                : 'bg-red-50 border-red-300'
-            }`}>
-              <div className="flex items-center gap-3">
-                {resultados.dados.classificacao_final === 'APROVADO' ? (
-                  <CheckCircle2 className="h-6 w-6 text-green-600" />
-                ) : (
-                  <AlertCircle className="h-6 w-6 text-red-600" />
-                )}
-                <div>
-                  <h4 className="font-bold text-lg">
-                    {resultados.dados.classificacao_final?.replace(/_/g, ' ')}
-                  </h4>
-                  <p className="text-sm mt-1">{resultados.dados.resumo}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Dados Extraídos */}
-            <div className="p-4 bg-slate-50 rounded-lg">
-              <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
-                📄 Dados Extraídos do Documento
-              </h4>
-              <div className="text-sm space-y-1 text-slate-700">
-                {Object.entries(resultados.dados.dados_extraidos || {}).map(([key, value]) => (
-                  <p key={key}>
-                    <strong className="text-slate-900">{key.replace(/_/g, ' ')}:</strong>{' '}
-                    {typeof value === 'object' ? JSON.stringify(value) : String(value)}
-                  </p>
-                ))}
-              </div>
-            </div>
+            {/* Resumo Visual Simplificado */}
+            <ResultadoAnaliseResumido resultado={resultados.dados} />
 
             {/* Checklist de Verificação */}
             {resultados.dados.checklist_verificacao?.length > 0 && (
