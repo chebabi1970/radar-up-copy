@@ -224,13 +224,18 @@ export default function Casos() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4 sm:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 sm:gap-6 mb-8 sm:mb-10">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Casos</h1>
-            <p className="text-xs sm:text-sm text-slate-500 mt-0.5 sm:mt-1">Gerencie os processos de revisão</p>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="h-8 w-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                <FolderOpen className="h-4 w-4 text-white" />
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">Casos</h1>
+            </div>
+            <p className="text-sm text-slate-600 ml-10">Acompanhe todos os processos de revisão de habilitação</p>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={(open) => {
             setIsDialogOpen(open);
@@ -435,35 +440,35 @@ export default function Casos() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-3 sm:gap-4">
+          <div className="grid gap-4">
             {filteredCasos.map((caso) => (
-              <Card key={caso.id} className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl transition-all">
-                <CardContent className="p-3 sm:p-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-                    <Link to={createPageUrl(`CasoDetalhe?id=${caso.id}`)} className="flex items-start gap-3 sm:gap-4 flex-1 cursor-pointer min-w-0">
-                      <div className="h-10 w-10 sm:h-12 sm:w-12 bg-blue-50 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
-                        <FolderOpen className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
+              <Card key={caso.id} className="border border-slate-100 hover:border-blue-200 shadow-md hover:shadow-lg transition-all duration-300 bg-white">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <Link to={createPageUrl(`CasoDetalhe?id=${caso.id}`)} className="flex items-start gap-4 flex-1 cursor-pointer min-w-0 group">
+                      <div className="h-12 w-12 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:from-blue-100 group-hover:to-blue-200 transition-colors">
+                        <FolderOpen className="h-6 w-6 text-blue-600" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h3 className="font-semibold text-slate-900 text-sm sm:text-base truncate">
+                        <h3 className="font-semibold text-slate-900 text-base group-hover:text-blue-600 transition-colors truncate">
                           {caso.numero_caso || `Caso #${caso.id.slice(0, 8)}`}
                         </h3>
-                        <p className="text-xs sm:text-sm text-slate-600 mt-0.5 truncate">
+                        <p className="text-sm text-slate-500 mt-1 truncate">
                           {getClienteName(caso.cliente_id)}
                         </p>
-                        <p className="text-xs text-slate-500 mt-1 line-clamp-2">
+                        <p className="text-xs text-slate-500 mt-2 line-clamp-2">
                           {hipoteseLabels[caso.hipotese_revisao]}
                         </p>
                       </div>
                     </Link>
-                    <div className="flex items-center gap-2 sm:gap-3 sm:flex-shrink-0 flex-wrap justify-end">
+                    <div className="flex items-center gap-3 sm:flex-shrink-0 flex-wrap justify-end">
                       {caso.divergencias_encontradas?.some(d => !d.resolvida) && (
-                        <div className="flex items-center gap-1 text-red-600 text-xs sm:text-sm">
-                          <AlertTriangle className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+                        <div className="flex items-center gap-1.5 bg-red-50 text-red-700 px-2.5 py-1.5 rounded-lg text-xs font-medium">
+                          <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0" />
                           <span className="hidden sm:inline">Divergências</span>
                         </div>
                       )}
-                      <Badge className={`${statusColors[caso.status]} border text-xs sm:text-sm py-1`}>
+                      <Badge className={`${statusColors[caso.status]} border text-xs font-medium py-1.5 px-2.5`}>
                         {statusLabels[caso.status]}
                       </Badge>
                       <Button
@@ -474,12 +479,12 @@ export default function Casos() {
                             deleteMutation.mutate(caso.id);
                           }
                         }}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50 h-8 w-8 p-0 flex-shrink-0"
+                        className="text-slate-400 hover:text-red-600 hover:bg-red-50 h-9 w-9 p-0 flex-shrink-0 transition-colors"
                       >
-                        <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                       <Link to={createPageUrl(`CasoDetalhe?id=${caso.id}`)} className="flex-shrink-0">
-                        <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 text-slate-400" />
+                        <ArrowRight className="h-5 w-5 text-blue-400 group-hover:text-blue-600 transition-colors" />
                       </Link>
                     </div>
                   </div>
