@@ -126,7 +126,7 @@ export default function Home() {
           <div className="text-center mb-16">
             {/* Logo */}
             <div className="mb-6 flex justify-center">
-              <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69837481d21b7c5da35b451b/71a683b7b_Designsemnome10.png" alt="Radar UP" className="h-32 w-32 object-contain" />
+              <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69837481d21b7c5da35b451b/71a683b7b_Designsemnome10.png" alt="Radar UP" className="h-56 w-56 object-contain" />
             </div>
 
             {/* Badge */}
