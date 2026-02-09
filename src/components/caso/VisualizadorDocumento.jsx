@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Loader2, Lock, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import VisualizadorPDF from './VisualizadorPDF';
 
 export default function VisualizadorDocumento({ isOpen, onClose, documento, casoId }) {
   const [signedUrl, setSignedUrl] = useState(null);
