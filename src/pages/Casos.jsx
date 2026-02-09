@@ -356,7 +356,7 @@ export default function Casos() {
                 </div>
 
                 <div>
-                  <Label htmlFor="observacoes">Observações</Label>
+                  <Label htmlFor="observacoes" className="text-xs sm:text-sm">Observações</Label>
                   <Textarea
                     id="observacoes"
                     value={formData.observacoes}
