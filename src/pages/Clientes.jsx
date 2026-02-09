@@ -445,7 +445,7 @@ export default function Clientes() {
                             >
                               <Edit className="h-3.5 w-3.5" />
                             </Button>
-                            <Link to={createPageUrl(`Casos?cliente=${cliente.id}`)}>
+                            <Link to={createPageUrl(`DetalheCliente?clienteId=${cliente.id}`)}>
                               <Button variant="ghost" size="sm" className="h-7 w-7 md:h-8 md:w-8 p-0">
                                 <FolderOpen className="h-3.5 w-3.5" />
                               </Button>
