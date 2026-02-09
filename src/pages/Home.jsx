@@ -131,7 +131,7 @@ export default function Home() {
             </Badge>
 
             <h1 className="text-7xl md:text-8xl font-black text-white mb-8 leading-tight">
-              RevEstimativa
+              RADAR UP
             </h1>
             <p className="text-2xl md:text-3xl text-blue-100 mb-6 font-light max-w-3xl mx-auto">
               Plataforma de IA para gestão de revisões de capacidade financeira
