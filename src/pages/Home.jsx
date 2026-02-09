@@ -124,6 +124,11 @@ export default function Home() {
       <div className="relative overflow-hidden">
         <div className="relative max-w-6xl mx-auto px-6 py-32">
           <div className="text-center mb-16">
+            {/* Logo */}
+            <div className="mb-6 flex justify-center">
+              <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69837481d21b7c5da35b451b/71a683b7b_Designsemnome10.png" alt="Radar UP" className="h-32 w-32 object-contain" />
+            </div>
+
             {/* Badge */}
             <Badge className="mb-6 bg-blue-600/30 text-blue-300 border border-blue-500 px-4 py-2">
               <Sparkles className="h-3 w-3 mr-2" />
