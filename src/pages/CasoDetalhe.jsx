@@ -431,19 +431,26 @@ export default function CasoDetalhe() {
                   Histórico
                 </TabsTrigger>
                 <TabsTrigger 
-                  value="ia-analise" 
-                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none pb-3 px-1"
-                >
-                  <Zap className="h-4 w-4 mr-2" />
-                  Análise IA
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="conformidade" 
-                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none pb-3 px-1"
-                >
-                  <Shield className="h-4 w-4 mr-2" />
-                  Conformidade
-                </TabsTrigger>
+                   value="ia-analise" 
+                   className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none pb-3 px-1"
+                 >
+                   <Zap className="h-4 w-4 mr-2" />
+                   Análise IA
+                 </TabsTrigger>
+                 <TabsTrigger 
+                   value="cruzada" 
+                   className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none pb-3 px-1"
+                 >
+                   <Shield className="h-4 w-4 mr-2" />
+                   Análise Cruzada
+                 </TabsTrigger>
+                 <TabsTrigger 
+                   value="conformidade" 
+                   className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none pb-3 px-1"
+                 >
+                   <Shield className="h-4 w-4 mr-2" />
+                   Conformidade
+                 </TabsTrigger>
               </TabsList>
             </CardHeader>
 
