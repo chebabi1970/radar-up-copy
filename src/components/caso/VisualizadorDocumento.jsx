@@ -121,25 +121,26 @@ export default function VisualizadorDocumento({ isOpen, onClose, documento, caso
             </Button>
           </div>
         ) : signedUrl ? (
-          <div className="space-y-4">
-            <div className="w-full h-[600px] border border-slate-200 rounded-lg overflow-hidden bg-slate-50">
-              <iframe
-                src={`https://docs.google.com/viewer?url=${encodeURIComponent(signedUrl)}&embedded=true`}
-                className="w-full h-full"
-                title={documento.nome_arquivo}
-                frameBorder="0"
-              />
-            </div>
-            <div className="flex justify-center gap-2">
-              <Button 
-                variant="outline"
-                onClick={() => window.open(signedUrl, '_blank')}
-                size="sm"
-              >
-                Abrir em Nova Aba
-              </Button>
-            </div>
-          </div>
+           <div className="space-y-4">
+             <div className="w-full h-[600px] border border-slate-200 rounded-lg overflow-hidden bg-slate-50">
+               <iframe
+                 src={signedUrl}
+                 className="w-full h-full"
+                 title={documento.nome_arquivo}
+                 frameBorder="0"
+                 type="application/pdf"
+               />
+             </div>
+             <div className="flex justify-center gap-2">
+               <Button 
+                 variant="outline"
+                 onClick={() => window.open(signedUrl, '_blank')}
+                 size="sm"
+               >
+                 Abrir em Nova Aba
+               </Button>
+             </div>
+           </div>
         ) : (
           <div className="flex items-center justify-center py-8">
             <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
