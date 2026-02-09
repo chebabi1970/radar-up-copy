@@ -459,7 +459,7 @@ export default function CasoDetalhe() {
             </TabsContent>
 
             <TabsContent value="documentos" className="p-6 mt-0">
-              <DocumentosTab casoId={casoId} documentos={documentos} checklistItems={checklistItems} />
+              <DocumentosTab casoId={casoId} documentos={documentos} checklistItems={checklistItems} cliente={cliente} />
             </TabsContent>
 
             <TabsContent value="divergencias" className="p-6 mt-0">
