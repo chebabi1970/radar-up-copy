@@ -213,22 +213,22 @@ export default function CasoDetalhe() {
         </div>
 
         {/* Header */}
-        <div className="mb-6">
+        <div className="mb-4 md:mb-6">
           <Link to={createPageUrl('Casos')}>
-            <Button variant="ghost" className="mb-4 text-slate-600 hover:text-slate-900">
-              <ArrowLeft className="h-4 w-4 mr-2" /> Voltar aos Casos
+            <Button variant="ghost" className="mb-3 md:mb-4 text-slate-600 hover:text-slate-900 px-2 md:px-4 h-8 md:h-10">
+              <ArrowLeft className="h-3.5 w-3.5 md:h-4 md:w-4 mr-1.5 md:mr-2" /> <span className="hidden sm:inline">Voltar aos Casos</span><span className="sm:hidden">Voltar</span>
             </Button>
           </Link>
-          
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+
+          <div className="flex flex-col gap-3 md:gap-4">
             <div className="flex-1">
               {editandoNome ? (
-                <div className="flex items-center gap-2 mb-4">
+                <div className="flex items-center gap-1.5 md:gap-2 mb-3 md:mb-4">
                   <Input
                     value={novoNome}
                     onChange={(e) => setNovoNome(e.target.value)}
                     placeholder="Digite o nome do caso"
-                    className="text-3xl font-bold"
+                    className="text-xl md:text-3xl font-bold h-9 md:h-10"
                     autoFocus
                   />
                   <Button
@@ -236,50 +236,52 @@ export default function CasoDetalhe() {
                     variant="ghost"
                     onClick={handleSalvarNome}
                     disabled={updateNomeMutation.isPending}
+                    className="h-9 w-9 md:h-10 md:w-10"
                   >
-                    <Check className="h-5 w-5 text-green-600" />
+                    <Check className="h-4 w-4 md:h-5 md:w-5 text-green-600" />
                   </Button>
                   <Button
                     size="icon"
                     variant="ghost"
                     onClick={() => setEditandoNome(false)}
+                    className="h-9 w-9 md:h-10 md:w-10"
                   >
-                    <X className="h-5 w-5 text-red-600" />
+                    <X className="h-4 w-4 md:h-5 md:w-5 text-red-600" />
                   </Button>
                 </div>
               ) : (
-                <div className="flex items-center gap-2 mb-2">
-                  <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+                <div className="flex items-center gap-1.5 md:gap-2 mb-1 md:mb-2 flex-wrap">
+                  <h1 className="text-xl md:text-3xl font-bold text-slate-900 tracking-tight break-words">
                     {caso.numero_caso || `Caso #${caso.id.slice(0, 8)}`}
                   </h1>
                   <Button
                     size="icon"
                     variant="ghost"
-                    className="text-slate-400 hover:text-slate-600"
+                    className="text-slate-400 hover:text-slate-600 h-8 w-8 md:h-10 md:w-10 flex-shrink-0"
                     onClick={() => {
                       setNovoNome(caso.numero_caso || `Caso #${caso.id.slice(0, 8)}`);
                       setEditandoNome(true);
                     }}
                   >
-                    <Edit2 className="h-4 w-4" />
+                    <Edit2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
                   </Button>
                 </div>
               )}
-              <div className="flex items-center gap-2 mt-2">
-                <Building2 className="h-4 w-4 text-slate-400" />
-                <span className="text-slate-600">{cliente?.razao_social}</span>
+              <div className="flex items-center gap-1.5 md:gap-2 mt-1.5 md:mt-2 flex-wrap">
+                <Building2 className="h-3.5 w-3.5 md:h-4 md:w-4 text-slate-400 flex-shrink-0" />
+                <span className="text-xs md:text-sm text-slate-600 break-words">{cliente?.razao_social}</span>
               </div>
-              <p className="text-sm text-slate-500 mt-1">
+              <p className="text-xs md:text-sm text-slate-500 mt-1 md:mt-1.5 line-clamp-2">
                 {hipoteseLabels[caso.hipotese_revisao]}
               </p>
             </div>
-            
-            <div className="flex items-center gap-3">
+
+            <div className="flex items-center gap-2 md:gap-3 flex-wrap">
               <Select 
                 value={caso.status} 
                 onValueChange={handleStatusChange}
               >
-                <SelectTrigger className="w-[200px]">
+                <SelectTrigger className="w-full md:w-[200px] h-9 md:h-10 text-xs md:text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -288,7 +290,7 @@ export default function CasoDetalhe() {
                   ))}
                 </SelectContent>
               </Select>
-              <Badge className={`${statusColors[caso.status]} border text-sm py-1.5 px-3`}>
+              <Badge className={`${statusColors[caso.status]} border text-xs md:text-sm py-1 md:py-1.5 px-2 md:px-3 flex-shrink-0`}>
                 {statusLabels[caso.status]}
               </Badge>
             </div>
@@ -324,165 +326,173 @@ export default function CasoDetalhe() {
         </Dialog>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <Card className="border-0 shadow-md">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 bg-blue-50 rounded-lg flex items-center justify-center">
-                  <FileText className="h-5 w-5 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-slate-500">Documentos</p>
-                  <p className="text-xl font-bold text-slate-900">{documentos.length}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 mb-4 md:mb-6">
+           <Card className="border-0 shadow-md">
+             <CardContent className="p-2.5 md:p-4">
+               <div className="flex items-center gap-2 md:gap-3">
+                 <div className="h-8 w-8 md:h-10 md:w-10 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                   <FileText className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
+                 </div>
+                 <div className="min-w-0">
+                   <p className="text-xs md:text-sm text-slate-500">Documentos</p>
+                   <p className="text-lg md:text-xl font-bold text-slate-900">{documentos.length}</p>
+                 </div>
+               </div>
+             </CardContent>
+           </Card>
 
-          <Card className="border-0 shadow-md">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 bg-green-50 rounded-lg flex items-center justify-center">
-                  <CheckSquare className="h-5 w-5 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-slate-500">Checklist</p>
-                  <p className="text-xl font-bold text-slate-900">{completedItems}/{checklistItems.length}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+           <Card className="border-0 shadow-md">
+             <CardContent className="p-2.5 md:p-4">
+               <div className="flex items-center gap-2 md:gap-3">
+                 <div className="h-8 w-8 md:h-10 md:w-10 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                   <CheckSquare className="h-4 w-4 md:h-5 md:w-5 text-green-600" />
+                 </div>
+                 <div className="min-w-0">
+                   <p className="text-xs md:text-sm text-slate-500">Checklist</p>
+                   <p className="text-lg md:text-xl font-bold text-slate-900">{completedItems}/{checklistItems.length}</p>
+                 </div>
+               </div>
+             </CardContent>
+           </Card>
 
-          <Card className="border-0 shadow-md">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${unresolvedDivergencias > 0 ? 'bg-red-50' : 'bg-green-50'}`}>
-                  <AlertTriangle className={`h-5 w-5 ${unresolvedDivergencias > 0 ? 'text-red-600' : 'text-green-600'}`} />
-                </div>
-                <div>
-                  <p className="text-sm text-slate-500">Divergências</p>
-                  <p className="text-xl font-bold text-slate-900">{unresolvedDivergencias}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+           <Card className="border-0 shadow-md">
+             <CardContent className="p-2.5 md:p-4">
+               <div className="flex items-center gap-2 md:gap-3">
+                 <div className={`h-8 w-8 md:h-10 md:w-10 rounded-lg flex items-center justify-center flex-shrink-0 ${unresolvedDivergencias > 0 ? 'bg-red-50' : 'bg-green-50'}`}>
+                   <AlertTriangle className={`h-4 w-4 md:h-5 md:w-5 ${unresolvedDivergencias > 0 ? 'text-red-600' : 'text-green-600'}`} />
+                 </div>
+                 <div className="min-w-0">
+                   <p className="text-xs md:text-sm text-slate-500">Divergências</p>
+                   <p className="text-lg md:text-xl font-bold text-slate-900">{unresolvedDivergencias}</p>
+                 </div>
+               </div>
+             </CardContent>
+           </Card>
 
-          <Card className="border-0 shadow-md">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 bg-purple-50 rounded-lg flex items-center justify-center">
-                  <Calculator className="h-5 w-5 text-purple-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-slate-500">Estimativa</p>
-                  <p className="text-xl font-bold text-slate-900">
-                    {caso.estimativa_calculada ? `$${caso.estimativa_calculada.toLocaleString()}` : 'Pendente'}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+           <Card className="border-0 shadow-md">
+             <CardContent className="p-2.5 md:p-4">
+               <div className="flex items-center gap-2 md:gap-3">
+                 <div className="h-8 w-8 md:h-10 md:w-10 bg-purple-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                   <Calculator className="h-4 w-4 md:h-5 md:w-5 text-purple-600" />
+                 </div>
+                 <div className="min-w-0">
+                   <p className="text-xs md:text-sm text-slate-500">Estimativa</p>
+                   <p className="text-xs md:text-lg lg:text-xl font-bold text-slate-900 truncate">
+                     {caso.estimativa_calculada ? `$${caso.estimativa_calculada.toLocaleString()}` : 'Pendente'}
+                   </p>
+                 </div>
+               </div>
+             </CardContent>
+           </Card>
+         </div>
 
         {/* Tabs */}
         <Card className="border-0 shadow-lg shadow-slate-200/50">
           <Tabs defaultValue="checklist" className="w-full">
-            <CardHeader className="border-b border-slate-100 pb-0">
-              <TabsList className="bg-transparent h-auto p-0 gap-4">
+            <CardHeader className="border-b border-slate-100 pb-0 px-3 md:px-6 py-3 md:py-4">
+              <TabsList className="bg-transparent h-auto p-0 gap-0 sm:gap-2 overflow-x-auto pb-3 flex-nowrap">
                 <TabsTrigger 
                   value="checklist" 
-                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none pb-3 px-1"
+                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
                 >
-                  <CheckSquare className="h-4 w-4 mr-2" />
-                  Checklist
+                  <CheckSquare className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                  <span className="hidden sm:inline">Checklist</span>
+                  <span className="sm:hidden">Check</span>
                   {pendingItems > 0 && (
-                    <Badge className="ml-2 bg-orange-100 text-orange-700">{pendingItems}</Badge>
+                    <Badge className="ml-1 md:ml-2 bg-orange-100 text-orange-700 text-xs px-1.5">{pendingItems}</Badge>
                   )}
                 </TabsTrigger>
                 <TabsTrigger 
                   value="documentos" 
-                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none pb-3 px-1"
+                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
                 >
-                  <FileText className="h-4 w-4 mr-2" />
-                  Documentos
+                  <FileText className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                  <span className="hidden sm:inline">Documentos</span>
+                  <span className="sm:hidden">Docs</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="divergencias" 
-                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none pb-3 px-1"
+                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
                 >
-                  <AlertTriangle className="h-4 w-4 mr-2" />
-                  Divergências
+                  <AlertTriangle className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                  <span className="hidden sm:inline">Divergências</span>
+                  <span className="sm:hidden">Div</span>
                   {unresolvedDivergencias > 0 && (
-                    <Badge className="ml-2 bg-red-100 text-red-700">{unresolvedDivergencias}</Badge>
+                    <Badge className="ml-1 md:ml-2 bg-red-100 text-red-700 text-xs px-1.5">{unresolvedDivergencias}</Badge>
                   )}
                 </TabsTrigger>
                 <TabsTrigger 
                   value="analise" 
-                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none pb-3 px-1"
+                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
                 >
-                  <Calculator className="h-4 w-4 mr-2" />
-                  Análise
+                  <Calculator className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                  <span className="hidden sm:inline">Análise</span>
+                  <span className="sm:hidden">Anál</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="historico" 
-                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none pb-3 px-1"
+                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
                 >
-                  <History className="h-4 w-4 mr-2" />
-                  Histórico
+                  <History className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                  <span className="hidden sm:inline">Histórico</span>
+                  <span className="sm:hidden">Hist</span>
                 </TabsTrigger>
                 <TabsTrigger 
                    value="ia-analise" 
-                   className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none pb-3 px-1"
+                   className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
                  >
-                   <Zap className="h-4 w-4 mr-2" />
-                   Análise IA
+                   <Zap className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                   <span className="hidden md:inline">IA</span>
+                   <span className="md:hidden">IA</span>
                  </TabsTrigger>
                  <TabsTrigger 
                    value="cruzada" 
-                   className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none pb-3 px-1"
+                   className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
                  >
-                   <Shield className="h-4 w-4 mr-2" />
-                   Análise Cruzada
+                   <Shield className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                   <span className="hidden lg:inline">Cruzada</span>
+                   <span className="lg:hidden">Cruz</span>
                  </TabsTrigger>
                  <TabsTrigger 
                    value="conformidade" 
-                   className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none pb-3 px-1"
+                   className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
                  >
-                   <Shield className="h-4 w-4 mr-2" />
-                   Conformidade
+                   <Shield className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                   <span className="hidden lg:inline">Conformidade</span>
+                   <span className="lg:hidden">Conf</span>
                  </TabsTrigger>
               </TabsList>
             </CardHeader>
 
-            <TabsContent value="checklist" className="p-6 mt-0">
+            <TabsContent value="checklist" className="p-3 md:p-6 mt-0">
               <ChecklistTab casoId={casoId} checklistItems={checklistItems} documentos={documentos} cliente={cliente} />
             </TabsContent>
 
-            <TabsContent value="documentos" className="p-6 mt-0">
+            <TabsContent value="documentos" className="p-3 md:p-6 mt-0">
               <DocumentosTab casoId={casoId} documentos={documentos} checklistItems={checklistItems} cliente={cliente} />
             </TabsContent>
 
-            <TabsContent value="divergencias" className="p-6 mt-0">
+            <TabsContent value="divergencias" className="p-3 md:p-6 mt-0">
               <DivergenciasTab caso={caso} documentos={documentos} />
             </TabsContent>
 
-            <TabsContent value="analise" className="p-6 mt-0">
+            <TabsContent value="analise" className="p-3 md:p-6 mt-0">
               <AnaliseTab caso={caso} cliente={cliente} documentos={documentos} />
             </TabsContent>
 
-            <TabsContent value="historico" className="p-6 mt-0">
+            <TabsContent value="historico" className="p-3 md:p-6 mt-0">
               <HistoricoTab casoId={casoId} />
             </TabsContent>
 
-            <TabsContent value="ia-analise" className="p-6 mt-0">
+            <TabsContent value="ia-analise" className="p-3 md:p-6 mt-0">
               <AnalisadorAutomatico casoId={casoId} documentos={documentos} checklistItems={checklistItems} />
             </TabsContent>
 
-            <TabsContent value="cruzada" className="p-6 mt-0">
+            <TabsContent value="cruzada" className="p-3 md:p-6 mt-0">
               <AnaliseCruzadaPanel documentos={documentos} cliente={cliente} />
             </TabsContent>
 
-            <TabsContent value="conformidade" className="p-6 mt-0">
+            <TabsContent value="conformidade" className="p-3 md:p-6 mt-0">
               <ConformidadePanel casoId={casoId} cliente={cliente} />
             </TabsContent>
           </Tabs>
