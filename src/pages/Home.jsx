@@ -254,20 +254,21 @@ export default function Home() {
       </div>
 
       {/* CTA Section */}
-      <div className="max-w-6xl mx-auto px-6 py-16">
-        <Card className="border-0 bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-xl">
-          <CardHeader className="text-center">
-            <CardTitle className="text-3xl mb-4">
-              Pronto para começar?
-            </CardTitle>
-            <p className="text-blue-100 mb-8">
-              Crie seu primeiro caso e comece a gerenciar suas revisões de estimativa
+      <div className="max-w-6xl mx-auto px-6 py-20">
+        <div className="relative rounded-3xl bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600 p-12 md:p-20 shadow-2xl overflow-hidden">
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl" />
+          </div>
+          <div className="relative text-center">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              Pronto para transformar sua gestão?
+            </h2>
+            <p className="text-lg text-blue-50 mb-10 max-w-2xl mx-auto">
+              Crie seu primeiro caso e comece a utilizar IA para análise automática de documentos
             </p>
-          </CardHeader>
-          <CardContent className="text-center">
             {user ? (
               <Link to={createPageUrl('Casos')}>
-                <Button size="lg" className="bg-white text-blue-600 hover:bg-slate-100">
+                <Button size="lg" className="bg-white text-blue-600 hover:bg-slate-50 shadow-lg hover:shadow-xl text-base px-8">
                   Criar Novo Caso
                   <ArrowRight className="h-5 w-5 ml-2" />
                 </Button>
@@ -275,15 +276,15 @@ export default function Home() {
             ) : (
               <Button 
                 size="lg" 
-                className="bg-white text-blue-600 hover:bg-slate-100"
+                className="bg-white text-blue-600 hover:bg-slate-50 shadow-lg hover:shadow-xl text-base px-8"
                 onClick={() => base44.auth.redirectToLogin()}
               >
                 Fazer Login
                 <ArrowRight className="h-5 w-5 ml-2" />
               </Button>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* Onboarding Section */}
