@@ -51,10 +51,8 @@ export default function Layout({ children, currentPageName }) {
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="h-16 flex items-center justify-between px-4 border-b border-slate-100">
-            <Link to={createPageUrl('Dashboard')} className="flex items-center gap-2">
-              <div className="h-8 w-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
-                <Briefcase className="h-4 w-4 text-white" />
-              </div>
+            <Link to={createPageUrl('Home')} className="flex items-center gap-2">
+              <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69837481d21b7c5da35b451b/71a683b7b_Designsemnome10.png" alt="Radar UP" className="h-10 w-10 object-contain" />
               <span className="font-bold text-slate-900">RADAR UP</span>
             </Link>
             <Button 
@@ -121,9 +119,7 @@ export default function Layout({ children, currentPageName }) {
             <Menu className="h-5 w-5" />
           </Button>
           <div className="flex items-center gap-2 ml-3">
-            <div className="h-7 w-7 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
-              <Briefcase className="h-3.5 w-3.5 text-white" />
-            </div>
+            <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69837481d21b7c5da35b451b/71a683b7b_Designsemnome10.png" alt="Radar UP" className="h-8 w-8 object-contain" />
             <span className="font-bold text-slate-900">RADAR UP</span>
           </div>
         </header>
