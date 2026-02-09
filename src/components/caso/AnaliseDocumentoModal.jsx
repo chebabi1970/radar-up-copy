@@ -15,6 +15,8 @@ import VisualizadorDocumentoAvancado from './VisualizadorDocumentoAvancado';
 export default function AnaliseDocumentoModal({ item, documentos, casoId, cliente, onClose }) {
   const [analisando, setAnalisando] = useState(false);
   const [resultados, setResultados] = useState(null);
+  const [docSelecionado, setDocSelecionado] = useState(item);
+  const [docVisualizar, setDocVisualizar] = useState(null);
   const queryClient = useQueryClient();
 
   const linkedDoc = documentos.find(d => d.tipo_documento === item.tipo_documento);
