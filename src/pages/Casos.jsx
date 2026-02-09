@@ -279,26 +279,26 @@ export default function Casos() {
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione a hipótese..." />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="recursos_financeiros_livres">
-                        I - Recursos Financeiros de Livre Movimentação
-                      </SelectItem>
-                      <SelectItem value="fruicao_desoneracao_tributaria">
-                        II - Fruição de Desonerações Tributárias
-                      </SelectItem>
-                      <SelectItem value="recolhimento_tributos_das">
-                        III - Recolhimento Tributos via DAS
-                      </SelectItem>
-                      <SelectItem value="recolhimento_tributos_cprb">
-                        IV - Recolhimento CPRB
-                      </SelectItem>
-                      <SelectItem value="retomada_atividades">
-                        V - Retomada de Atividades
-                      </SelectItem>
-                      <SelectItem value="inicio_retomada_atividades_5anos">
-                        Início/Retomada de Atividades há menos de 5 anos
-                      </SelectItem>
-                    </SelectContent>
+                    <SelectContent className="text-xs sm:text-sm">
+                       <SelectItem value="recursos_financeiros_livres">
+                         Recursos Financeiros Livres
+                       </SelectItem>
+                       <SelectItem value="fruicao_desoneracao_tributaria">
+                         Desonerações Tributárias
+                       </SelectItem>
+                       <SelectItem value="recolhimento_tributos_das">
+                         Recolhimento Tributos DAS
+                       </SelectItem>
+                       <SelectItem value="recolhimento_tributos_cprb">
+                         Recolhimento CPRB
+                       </SelectItem>
+                       <SelectItem value="retomada_atividades">
+                         Retomada de Atividades
+                       </SelectItem>
+                       <SelectItem value="inicio_retomada_atividades_5anos">
+                         Início/Retomada &lt;5 anos
+                       </SelectItem>
+                     </SelectContent>
                   </Select>
                 </div>
 
