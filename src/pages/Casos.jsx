@@ -260,7 +260,7 @@ export default function Casos() {
                 </div>
 
                 <div>
-                  <Label htmlFor="numero_caso">Número do Caso</Label>
+                  <Label htmlFor="numero_caso" className="text-xs sm:text-sm">Número do Caso</Label>
                   <Input
                     id="numero_caso"
                     value={formData.numero_caso}
