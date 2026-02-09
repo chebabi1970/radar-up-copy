@@ -496,13 +496,13 @@ Retorne JSON com:
                 </div>
               )}
 
-              <div className="flex gap-2">
+              <div className="flex gap-2 sm:gap-3">
                 <Button
                   onClick={() => setResultados(null)}
-                  className="flex-1"
+                  className="flex-1 h-8 sm:h-9 text-xs sm:text-sm"
                   variant="outline"
                 >
-                  Nova Análise
+                  Nova
                 </Button>
                 <Button
                   onClick={async () => {
@@ -524,15 +524,16 @@ Retorne JSON com:
                     onClose();
                   }}
                   disabled={saveMutation.isPending}
-                  className="flex-1 bg-green-600 hover:bg-green-700"
+                  className="flex-1 bg-green-600 hover:bg-green-700 h-8 sm:h-9 text-xs sm:text-sm"
                 >
                   {saveMutation.isPending ? (
                     <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Salvando...
+                      <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 animate-spin" />
+                      <span className="hidden sm:inline">Salvando...</span>
+                      <span className="sm:hidden">Salv...</span>
                     </>
                   ) : (
-                    'Salvar Análise'
+                    <span>Salvar</span>
                   )}
                 </Button>
               </div>
