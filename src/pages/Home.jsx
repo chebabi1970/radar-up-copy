@@ -113,24 +113,35 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
+      {/* Animated Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl animate-pulse" />
+      </div>
+
       {/* Hero Section */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10" />
-        <div className="relative max-w-6xl mx-auto px-6 py-20">
-          <div className="text-center mb-12">
-            <h1 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6">
+        <div className="relative max-w-6xl mx-auto px-6 py-32">
+          <div className="text-center mb-16">
+            {/* Badge */}
+            <Badge className="mb-6 bg-blue-600/30 text-blue-300 border border-blue-500 px-4 py-2">
+              <Sparkles className="h-3 w-3 mr-2" />
+              Powered by AI
+            </Badge>
+
+            <h1 className="text-7xl md:text-8xl font-black text-white mb-8 leading-tight">
               RevEstimativa
             </h1>
-            <p className="text-xl text-slate-600 mb-4">
-              Plataforma completa para gestão de revisões de estimativa de capacidade financeira
+            <p className="text-2xl md:text-3xl text-blue-100 mb-6 font-light max-w-3xl mx-auto">
+              Plataforma de IA para gestão de revisões de capacidade financeira
             </p>
-            <p className="text-slate-500 mb-8">
-              Conforme IN RFB 1984/2020 e Portaria Coana 72/2020
+            <p className="text-lg text-slate-300 mb-12 max-w-2xl mx-auto">
+              Análise automática, conforme IN RFB 1984/2020 e Portaria Coana 72/2020
             </p>
             {user && (
-              <p className="text-sm text-slate-500 mb-8">
-                Bem-vindo, <strong>{user.full_name}</strong>
+              <p className="text-base text-blue-200 mb-8 font-medium">
+                🎉 Bem-vindo, <strong>{user.full_name}</strong>
               </p>
             )}
           </div>
