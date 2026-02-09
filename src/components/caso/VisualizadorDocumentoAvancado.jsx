@@ -97,41 +97,45 @@ export default function VisualizadorDocumentoAvancado({ fileUrl, fileUri, fileNa
         </div>
 
         {/* Viewer Content */}
-        <div className="flex-1 overflow-auto bg-slate-100 flex items-center justify-center p-4">
-          {isPDF ? (
-            <iframe
-              src={fileUrl}
-              className="h-full w-full rounded"
-              style={{
-                transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
-                transformOrigin: 'top center'
-              }}
-            />
-          ) : isImage ? (
-            <img
-              src={fileUrl}
-              alt={fileName}
-              className="max-h-full max-w-full rounded"
-              style={{
-                transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
-                transformOrigin: 'center'
-              }}
-            />
-          ) : (
-            <div className="text-center text-slate-500">
-              <p className="text-sm mb-2">Tipo de arquivo não suportado</p>
-              <a
-                href={fileUrl}
-                download
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline text-sm"
-              >
-                Baixar arquivo
-              </a>
-            </div>
-          )}
-        </div>
+         <div className="flex-1 overflow-auto bg-slate-100 flex items-center justify-center p-4">
+           {loading ? (
+             <p className="text-slate-500">Carregando documento...</p>
+           ) : isPDF ? (
+             <iframe
+               src={signedUrl}
+               className="h-full w-full rounded"
+               style={{
+                 transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
+                 transformOrigin: 'top center'
+               }}
+             />
+           ) : isImage ? (
+             <img
+               src={signedUrl}
+               alt={fileName}
+               className="max-h-full max-w-full rounded"
+               style={{
+                 transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
+                 transformOrigin: 'center'
+               }}
+             />
+           ) : (
+             <div className="text-center text-slate-500">
+               <p className="text-sm mb-2">Tipo de arquivo não suportado</p>
+               {signedUrl && (
+                 <a
+                   href={signedUrl}
+                   download
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   className="text-blue-600 hover:underline text-sm"
+                 >
+                   Baixar arquivo
+                 </a>
+               )}
+             </div>
+           )}
+         </div>
       </Card>
     </div>
   );
