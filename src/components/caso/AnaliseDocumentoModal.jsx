@@ -308,53 +308,61 @@ Retorne JSON com:
                 onViewDoc={(doc) => setDocVisualizar(doc)}
               />
 
-              {isBalancete && (
-                <>
-                   <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
-                    <p className="font-semibold mb-1">Análise Automática:</p>
-                    <p>Serão comparados os saldos de caixa/bancos do balancete com os saldos dos extratos bancários do último dia de cada mês.</p>
-                  </div>
+              <div className="border-t pt-4">
+                <p className="font-semibold text-slate-900 mb-3">Documento selecionado:</p>
+                <div className="p-3 bg-blue-50 rounded-lg border border-blue-200 mb-3">
+                  <p className="text-sm font-medium text-blue-900">{docSelecionado?.nome_arquivo}</p>
+                  <p className="text-xs text-blue-700 mt-1">{docSelecionado?.tipo_documento?.replace(/_/g, ' ')}</p>
+                </div>
 
-                  <Button
-                    onClick={analisarBalanceteVsExtrato}
-                    disabled={analisando}
-                    className="w-full bg-blue-600 hover:bg-blue-700"
-                  >
-                    {analisando ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Analisando...
-                      </>
-                    ) : (
-                      'Iniciar Análise de Balancete vs Extratos'
-                    )}
-                  </Button>
-                </>
-              )}
+                {isBalancete && (
+                  <>
+                    <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800 mb-3">
+                      <p className="font-semibold mb-1">Análise Automática:</p>
+                      <p>Serão comparados os saldos de caixa/bancos do balancete com os saldos dos extratos bancários do último dia de cada mês.</p>
+                    </div>
 
-              {!isBalancete && (
-                <>
-                  <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
-                    <p className="font-semibold mb-1">Análise Automática:</p>
-                    <p>Serão extraídas informações do documento e comparadas com os dados cadastrais da empresa.</p>
-                  </div>
+                    <Button
+                      onClick={analisarBalanceteVsExtrato}
+                      disabled={analisando}
+                      className="w-full bg-blue-600 hover:bg-blue-700"
+                    >
+                      {analisando ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Analisando...
+                        </>
+                      ) : (
+                        'Iniciar Análise de Balancete vs Extratos'
+                      )}
+                    </Button>
+                  </>
+                )}
 
-                  <Button
-                    onClick={analisarDocumentoSimples}
-                    disabled={analisando}
-                    className="w-full bg-blue-600 hover:bg-blue-700"
-                  >
-                    {analisando ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Analisando...
-                      </>
-                    ) : (
-                      'Iniciar Análise'
-                    )}
-                  </Button>
-                </>
-              )}
+                {!isBalancete && (
+                  <>
+                    <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800 mb-3">
+                      <p className="font-semibold mb-1">Análise Automática:</p>
+                      <p>Serão extraídas informações do documento e comparadas com os dados cadastrais da empresa.</p>
+                    </div>
+
+                    <Button
+                      onClick={analisarDocumentoSimples}
+                      disabled={analisando}
+                      className="w-full bg-blue-600 hover:bg-blue-700"
+                    >
+                      {analisando ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Analisando...
+                        </>
+                      ) : (
+                        'Iniciar Análise'
+                      )}
+                    </Button>
+                  </>
+                )}
+              </div>
             </>
           ) : resultados.erro ? (
            <div className="p-4 bg-red-50 border border-red-200 rounded-lg space-y-3">
