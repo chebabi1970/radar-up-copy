@@ -106,10 +106,13 @@ export default function CasoDetalhe() {
   });
 
   const { data: cliente } = useQuery({
-    queryKey: ['cliente', caso?.cliente_id],
-    queryFn: () => base44.entities.Cliente.filter({ id: caso.cliente_id }).then(res => res[0]),
-    enabled: !!caso?.cliente_id
-  });
+     queryKey: ['cliente', caso?.cliente_id],
+     queryFn: () => {
+       if (!caso?.cliente_id) return null;
+       return base44.entities.Cliente.filter({ id: caso.cliente_id }).then(res => res[0]);
+     },
+     enabled: !!caso?.cliente_id
+   });
 
   const { data: checklistItems = [] } = useQuery({
     queryKey: ['checklist', casoId],
@@ -129,26 +132,16 @@ export default function CasoDetalhe() {
       
       // Enviar email se autorizado
       if (enviarEmail && cliente?.email) {
-        try {
-          await base44.integrations.Core.SendEmail({
-            to: cliente.email,
-            subject: `Status do Caso ${caso.numero_caso || casoId.slice(0, 8)} Atualizado`,
-            body: `
-              <h2>Atualização de Status</h2>
-              <p>Olá,</p>
-              <p>O status do seu caso <strong>${caso.numero_caso || `#${casoId.slice(0, 8)}`}</strong> foi atualizado para:</p>
-              <h3 style="color: #3b82f6;">${statusLabels[newStatus]}</h3>
-              <p><strong>Cliente:</strong> ${cliente.razao_social}<br/>
-              <strong>CNPJ:</strong> ${cliente.cnpj}</p>
-              <p>Para mais detalhes, acesse o sistema RevEstimativa.</p>
-              <br/>
-              <p>Atenciosamente,<br/>Equipe RevEstimativa</p>
-            `
-          });
-        } catch (error) {
-          console.error('Erro ao enviar email:', error);
-        }
-      }
+         try {
+           await base44.integrations.Core.SendEmail({
+             to: cliente.email,
+             subject: `Status do Caso ${caso.numero_caso || casoId.slice(0, 8)} Atualizado`,
+             body: `<h2>Atualização de Status</h2><p>Olá,</p><p>O status do seu caso <strong>${caso.numero_caso || `#${casoId.slice(0, 8)}`}</strong> foi atualizado para:</p><h3 style="color: #3b82f6;">${statusLabels[newStatus]}</h3><p><strong>Cliente:</strong> ${cliente.razao_social}<br/><strong>CNPJ:</strong> ${cliente.cnpj}</p><p>Para mais detalhes, acesse o sistema RevEstimativa.</p><p>Atenciosamente,<br/>Equipe RevEstimativa</p>`
+           });
+         } catch (error) {
+           console.error('Erro ao enviar email:', error);
+         }
+       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['caso', casoId] });

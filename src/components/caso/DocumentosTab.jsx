@@ -89,40 +89,35 @@ export default function DocumentosTab({ casoId, documentos, checklistItems, clie
   const queryClient = useQueryClient();
 
   const createMutation = useMutation({
-    mutationFn: async (data) => {
-      setUploading(true);
-      const documentsToCreate = [];
-      
-      for (const file of files) {
-        let fileUri = '';
-        
-        if (file) {
-          const uploadResult = await base44.integrations.Core.UploadPrivateFile({ file });
-          fileUri = uploadResult.file_uri;
-        }
-        
-        documentsToCreate.push({
-          ...data,
-          caso_id: casoId,
-          file_uri: fileUri,
-          nome_arquivo: file.name,
-          status_analise: 'pendente'
-        });
-      }
-      
-      // Criar todos os documentos
-      return Promise.all(documentsToCreate.map(doc => base44.entities.Documento.create(doc)));
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['documentos', casoId] });
-      setIsDialogOpen(false);
-      resetForm();
-      setUploading(false);
-    },
-    onError: () => {
-      setUploading(false);
-    }
-  });
+     mutationFn: async (data) => {
+       const documentsToCreate = [];
+
+       for (const file of files) {
+         let fileUri = '';
+
+         if (file) {
+           const uploadResult = await base44.integrations.Core.UploadPrivateFile({ file });
+           fileUri = uploadResult.file_uri;
+         }
+
+         documentsToCreate.push({
+           ...data,
+           caso_id: casoId,
+           file_uri: fileUri,
+           nome_arquivo: file.name,
+           status_analise: 'pendente'
+         });
+       }
+
+       return Promise.all(documentsToCreate.map(doc => base44.entities.Documento.create(doc)));
+     },
+     onSuccess: () => {
+       queryClient.invalidateQueries({ queryKey: ['documentos', casoId] });
+       queryClient.invalidateQueries({ queryKey: ['checklist', casoId] });
+       setIsDialogOpen(false);
+       resetForm();
+     }
+   });
 
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.Documento.delete(id),
@@ -150,20 +145,35 @@ export default function DocumentosTab({ casoId, documentos, checklistItems, clie
   };
 
   const handleFileChange = (e) => {
-    const selectedFiles = Array.from(e.target.files || []);
-    if (selectedFiles.length > 0) {
-      setFiles(selectedFiles);
-    }
-  };
+     const selectedFiles = Array.from(e.target.files || []);
+     const validFiles = selectedFiles.filter(f => {
+       const validExtensions = ['.pdf', '.jpg', '.jpeg', '.png', '.gif', '.webp', '.doc', '.docx', '.xlsx'];
+       const ext = '.' + f.name.split('.').pop().toLowerCase();
+       return validExtensions.includes(ext) && f.size < 50 * 1024 * 1024;
+     });
+
+     if (validFiles.length === 0) {
+       alert('Selecione arquivos válidos (PDF, imagens ou documentos Office). Tamanho máximo: 50MB');
+       return;
+     }
+     if (validFiles.length < selectedFiles.length) {
+       alert(`${selectedFiles.length - validFiles.length} arquivo(s) rejeitado(s)`);
+     }
+     setFiles(validFiles);
+   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    if (files.length === 0) {
-      alert('Selecione pelo menos um arquivo');
-      return;
-    }
-    createMutation.mutate(formData);
-  };
+     e.preventDefault();
+     if (files.length === 0) {
+       alert('Selecione pelo menos um arquivo');
+       return;
+     }
+     if (!formData.tipo_documento) {
+       alert('Selecione o tipo de documento');
+       return;
+     }
+     createMutation.mutate(formData);
+   };
 
   return (
     <div className="space-y-4">
