@@ -230,8 +230,8 @@ export default function Casos() {
             if (!open) resetForm();
           }}>
             <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200">
-                <Plus className="h-4 w-4 mr-2" /> Novo Caso
+              <Button className="bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200 w-full sm:w-auto h-9 sm:h-10 text-xs sm:text-sm">
+                <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> <span className="hidden sm:inline">Novo Caso</span><span className="sm:hidden">Novo</span>
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-lg">
