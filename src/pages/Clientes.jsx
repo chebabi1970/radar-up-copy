@@ -55,6 +55,7 @@ export default function Clientes() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [editingCliente, setEditingCliente] = useState(null);
+  const [cepLoading, setCepLoading] = useState(false);
   const [formData, setFormData] = useState({
     razao_social: '',
     cnpj: '',
@@ -71,7 +72,8 @@ export default function Clientes() {
     data_abertura_empresa: '',
     optante_simples_nacional: false,
     capital_social: '',
-    qsa: ''
+    qsa: '',
+    cep: ''
   });
 
   const queryClient = useQueryClient();
@@ -128,7 +130,8 @@ export default function Clientes() {
       data_abertura_empresa: '',
       optante_simples_nacional: false,
       capital_social: '',
-      qsa: ''
+      qsa: '',
+      cep: ''
     });
     setEditingCliente(null);
   };
@@ -151,7 +154,8 @@ export default function Clientes() {
       data_abertura_empresa: cliente.data_abertura_empresa || '',
       optante_simples_nacional: cliente.optante_simples_nacional || false,
       capital_social: cliente.capital_social || '',
-      qsa: cliente.qsa || ''
+      qsa: cliente.qsa || '',
+      cep: cliente.cep || ''
     });
     setIsDialogOpen(true);
   };
@@ -177,6 +181,28 @@ export default function Clientes() {
 
   const getCasosCount = (clienteId) => {
     return casos.filter(c => c.cliente_id === clienteId).length;
+  };
+
+  const handleCepChange = async (cep) => {
+    const cleanCep = cep.replace(/\D/g, '');
+    setFormData({...formData, endereco: ''});
+    
+    if (cleanCep.length === 8) {
+      setCepLoading(true);
+      try {
+        const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+        const data = await response.json();
+        
+        if (!data.erro) {
+          const endereco = `${data.logradouro}, ${data.bairro}, ${data.localidade}, ${data.uf}`;
+          setFormData(prev => ({...prev, endereco}));
+        }
+      } catch (error) {
+        console.error('Erro ao buscar CEP:', error);
+      } finally {
+        setCepLoading(false);
+      }
+    }
   };
 
   const filteredClientes = clientes.filter(c => 
@@ -265,13 +291,30 @@ export default function Clientes() {
                       onChange={(e) => setFormData({...formData, responsavel: e.target.value})}
                     />
                   </div>
+                  <div>
+                    <Label htmlFor="cep">CEP</Label>
+                    <Input
+                      id="cep"
+                      value={formData.cep || ''}
+                      onChange={(e) => {
+                        const cep = e.target.value.replace(/\D/g, '').slice(0, 8);
+                        setFormData({...formData, cep});
+                        handleCepChange(cep);
+                      }}
+                      placeholder="00000-000"
+                      maxLength="9"
+                    />
+                    {cepLoading && (
+                      <p className="text-xs text-slate-500 mt-1">Buscando endereço...</p>
+                    )}
+                  </div>
                   <div className="md:col-span-2">
                     <Label htmlFor="endereco">Endereço *</Label>
                     <Input
                       id="endereco"
                       value={formData.endereco}
                       onChange={(e) => setFormData({...formData, endereco: e.target.value})}
-                      placeholder="Rua, número, complemento, cidade, estado, CEP"
+                      placeholder="Rua, número, complemento, cidade, estado"
                       required
                     />
                   </div>
