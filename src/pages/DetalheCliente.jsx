@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Users, FolderOpen, Mail, Phone, MapPin, Building2, Loader2 } from 'lucide-react';
-import AnaliseCruzadaProativa from '../components/cliente/AnaliseCruzadaProativa';
+
 
 const modalidadeColors = {
   limitada: "bg-blue-100 text-blue-800",
@@ -163,12 +163,6 @@ export default function DetalheCliente() {
             )}
           </CardContent>
         </Card>
-
-        {/* Análise Cruzada Proativa */}
-        <div className="mb-6">
-          <h2 className="text-xl font-bold text-slate-900 mb-4">Análise Cruzada Proativa</h2>
-          <AnaliseCruzadaProativa clienteId={cliente.id} clienteData={cliente} />
-        </div>
 
         {/* Casos do Cliente */}
         <div>
