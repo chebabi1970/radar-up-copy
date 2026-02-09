@@ -211,13 +211,18 @@ export default function Clientes() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50/30 to-emerald-50">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4 sm:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 sm:gap-6 mb-8 sm:mb-10">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Clientes</h1>
-            <p className="text-xs sm:text-sm text-slate-500 mt-0.5 sm:mt-1">Gerencie seus clientes</p>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="h-8 w-8 bg-gradient-to-br from-emerald-500 to-green-600 rounded-lg flex items-center justify-center">
+                <Building2 className="h-4 w-4 text-white" />
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">Clientes</h1>
+            </div>
+            <p className="text-sm text-slate-600 ml-10">Administre sua carteira de clientes</p>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={(open) => {
             setIsDialogOpen(open);
@@ -460,22 +465,22 @@ export default function Clientes() {
         </div>
 
         {/* Search */}
-        <Card className="border-0 shadow-lg shadow-slate-200/50 mb-4 sm:mb-6">
-          <CardContent className="p-3 sm:p-4">
+        <Card className="border border-slate-100 shadow-md mb-6">
+          <CardContent className="p-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input
-                placeholder="Buscar cliente..."
+                placeholder="Buscar cliente por razão social, CNPJ ou fantasia..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 text-xs sm:text-sm h-9 sm:h-10"
+                className="pl-10 text-sm h-10"
               />
             </div>
           </CardContent>
         </Card>
 
         {/* Table */}
-        <Card className="border-0 shadow-lg shadow-slate-200/50">
+        <Card className="border border-slate-100 shadow-md hover:shadow-lg transition-shadow">
           <CardContent className="p-0">
             {isLoading ? (
               <div className="p-6 sm:p-8 text-center">
@@ -489,25 +494,25 @@ export default function Clientes() {
             ) : (
               <div className="overflow-x-auto">
                 <Table>
-                  <TableHeader>
-                    <TableRow className="bg-slate-50">
-                      <TableHead className="text-xs sm:text-sm">Cliente</TableHead>
-                      <TableHead className="text-xs sm:text-sm hidden sm:table-cell">CNPJ</TableHead>
-                      <TableHead className="text-xs sm:text-sm hidden md:table-cell">Contato</TableHead>
-                      <TableHead className="text-xs sm:text-sm">Modalidade</TableHead>
-                      <TableHead className="text-xs sm:text-sm hidden lg:table-cell">Procuração</TableHead>
-                      <TableHead className="text-xs sm:text-sm">Casos</TableHead>
-                      <TableHead className="text-right text-xs sm:text-sm">Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredClientes.map((cliente) => (
-                      <TableRow key={cliente.id} className="hover:bg-slate-50">
-                        <TableCell className="text-xs sm:text-sm">
-                          <div>
-                            <p className="font-medium text-slate-900 truncate">{cliente.razao_social}</p>
+                   <TableHeader>
+                     <TableRow className="bg-gradient-to-r from-slate-50 to-green-50/30 border-b-2 border-slate-200">
+                       <TableHead className="text-sm font-semibold text-slate-700">Cliente</TableHead>
+                       <TableHead className="text-sm font-semibold text-slate-700 hidden sm:table-cell">CNPJ</TableHead>
+                       <TableHead className="text-sm font-semibold text-slate-700 hidden md:table-cell">Contato</TableHead>
+                       <TableHead className="text-sm font-semibold text-slate-700">Modalidade</TableHead>
+                       <TableHead className="text-sm font-semibold text-slate-700 hidden lg:table-cell">Procuração</TableHead>
+                       <TableHead className="text-sm font-semibold text-slate-700">Casos</TableHead>
+                       <TableHead className="text-right text-sm font-semibold text-slate-700">Ações</TableHead>
+                     </TableRow>
+                   </TableHeader>
+                   <TableBody>
+                     {filteredClientes.map((cliente) => (
+                       <TableRow key={cliente.id} className="hover:bg-green-50/50 transition-colors border-b border-slate-100">
+                        <TableCell className="text-sm py-4">
+                          <div className="group">
+                            <p className="font-semibold text-slate-900 truncate group-hover:text-emerald-700 transition-colors">{cliente.razao_social}</p>
                             {cliente.nome_fantasia && (
-                              <p className="text-xs text-slate-500 truncate">{cliente.nome_fantasia}</p>
+                              <p className="text-xs text-slate-500 truncate mt-0.5">{cliente.nome_fantasia}</p>
                             )}
                           </div>
                         </TableCell>
@@ -549,19 +554,20 @@ export default function Clientes() {
                             {getCasosCount(cliente.id)}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-1">
+                        <TableCell className="text-right py-4">
+                          <div className="flex justify-end gap-2">
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => handleEdit(cliente)}
-                              className="h-7 w-7 md:h-8 md:w-8 p-0"
+                              className="h-8 w-8 p-0 text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                              title="Editar"
                             >
-                              <Edit className="h-3.5 w-3.5" />
+                              <Edit className="h-4 w-4" />
                             </Button>
                             <Link to={createPageUrl(`DetalheCliente?clienteId=${cliente.id}`)}>
-                              <Button variant="ghost" size="sm" className="h-7 w-7 md:h-8 md:w-8 p-0">
-                                <FolderOpen className="h-3.5 w-3.5" />
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 transition-colors" title="Ver detalhes">
+                                <FolderOpen className="h-4 w-4" />
                               </Button>
                             </Link>
                             <Button
@@ -572,9 +578,10 @@ export default function Clientes() {
                                   deleteMutation.mutate(cliente.id);
                                 }
                               }}
-                              className="text-red-600 hover:text-red-700 hover:bg-red-50 h-7 w-7 md:h-8 md:w-8 p-0"
+                              className="h-8 w-8 p-0 text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                              title="Deletar"
                             >
-                              <Trash2 className="h-3.5 w-3.5" />
+                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         </TableCell>
