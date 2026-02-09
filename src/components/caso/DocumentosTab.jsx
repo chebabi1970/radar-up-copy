@@ -354,6 +354,33 @@ export default function DocumentosTab({ casoId, documentos, checklistItems, clie
         documento={documentoSelecionado}
         casoId={casoId}
       />
+
+      {/* Histórico de Versões */}
+      {docParaVersoes && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-lg w-full max-w-2xl my-8">
+            <button
+              onClick={() => setDocParaVersoes(null)}
+              className="absolute top-4 right-4 h-8 w-8 rounded-lg hover:bg-slate-100 flex items-center justify-center"
+            >
+              ✕
+            </button>
+            <div className="max-h-[85vh] overflow-y-auto">
+              <VersionHistoricoPanel
+                documentoId={docParaVersoes.id}
+                casoId={casoId}
+                cliente={cliente}
+                onSelectVersion={() => setDocParaVersoes(null)}
+                onViewDoc={(doc) => {
+                  setDocumentoSelecionado(doc);
+                  setVisualizadorOpen(true);
+                  setDocParaVersoes(null);
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
