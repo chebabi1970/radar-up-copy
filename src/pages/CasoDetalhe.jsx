@@ -504,7 +504,11 @@ export default function CasoDetalhe() {
             <TabsContent value="conformidade" className="p-3 md:p-6 mt-0">
               <ConformidadePanel casoId={casoId} cliente={cliente} />
             </TabsContent>
-          </Tabs>
+
+            <TabsContent value="workflow" className="p-3 md:p-6 mt-0">
+              <WorkflowGestao casoId={casoId} casoData={caso} />
+            </TabsContent>
+            </Tabs>
         </Card>
       </div>
     </div>
