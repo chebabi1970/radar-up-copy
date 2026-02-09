@@ -273,13 +273,6 @@ Retorne JSON com:
     }
   };
 
-  // TODO: Reconstruir guias de análise uma a uma esta semana
-  const getAnalysisGuideForType = (tipoDoc) => {
-    return `ANÁLISE DE: ${tipoDoc}
-
-Guia em construção - será preenchido nesta semana.`;
-  };
-
   const isBalancete = item.tipo_documento?.includes('balancete');
 
   return (
