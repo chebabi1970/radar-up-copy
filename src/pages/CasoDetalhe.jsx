@@ -51,6 +51,7 @@ import HistoricoTab from '@/components/caso/HistoricoTab';
 import AnalisadorAutomatico from '@/components/caso/AnalisadorAutomatico';
 import AnaliseCruzadaPanel from '@/components/caso/AnaliseCruzadaPanel';
 import ConformidadePanel from '@/components/caso/ConformidadePanel';
+import WorkflowGestao from '@/components/caso/WorkflowGestao';
 import PrivacyWarning from '@/components/caso/PrivacyWarning';
 import { Input } from "@/components/ui/input";
 
