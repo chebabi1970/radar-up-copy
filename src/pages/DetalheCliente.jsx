@@ -17,14 +17,17 @@ const modalidadeColors = {
 };
 
 export default function DetalheCliente() {
-  const { clienteId } = useParams();
+  const params = new URLSearchParams(window.location.search);
+  const clienteId = params.get('clienteId');
 
   const { data: cliente, isLoading } = useQuery({
     queryKey: ['cliente', clienteId],
     queryFn: async () => {
+      if (!clienteId) return null;
       const clientes = await base44.entities.Cliente.list();
       return clientes.find(c => c.id === clienteId);
-    }
+    },
+    enabled: !!clienteId
   });
 
   const { data: casos = [] } = useQuery({

@@ -52,9 +52,9 @@ import CasoDetalhe from './pages/CasoDetalhe';
 import Casos from './pages/Casos';
 import Clientes from './pages/Clientes';
 import Dashboard from './pages/Dashboard';
+import DetalheCliente from './pages/DetalheCliente';
 import Home from './pages/Home';
 import Reports from './pages/Reports';
-import DetalheCliente from './pages/DetalheCliente';
 import __Layout from './Layout.jsx';
 
 
@@ -64,9 +64,9 @@ export const PAGES = {
     "Casos": Casos,
     "Clientes": Clientes,
     "Dashboard": Dashboard,
+    "DetalheCliente": DetalheCliente,
     "Home": Home,
     "Reports": Reports,
-    "DetalheCliente": DetalheCliente,
 }
 
 export const pagesConfig = {
