@@ -270,7 +270,7 @@ export default function Casos() {
                 </div>
 
                 <div>
-                  <Label htmlFor="hipotese_revisao">Hipótese de Revisão (Art. 4º) *</Label>
+                  <Label htmlFor="hipotese_revisao" className="text-xs sm:text-sm">Hipótese de Revisão *</Label>
                   <Select
                     value={formData.hipotese_revisao}
                     onValueChange={(value) => setFormData({...formData, hipotese_revisao: value})}
