@@ -183,9 +183,8 @@ export default function Clientes() {
     return casos.filter(c => c.cliente_id === clienteId).length;
   };
 
-  const handleCepChange = async (cep) => {
-    const cleanCep = cep.replace(/\D/g, '');
-    setFormData({...formData, endereco: ''});
+  const handleCepChange = async (cepValue) => {
+    const cleanCep = cepValue.replace(/\D/g, '');
     
     if (cleanCep.length === 8) {
       setCepLoading(true);
@@ -297,12 +296,13 @@ export default function Clientes() {
                       id="cep"
                       value={formData.cep || ''}
                       onChange={(e) => {
-                        const cep = e.target.value.replace(/\D/g, '').slice(0, 8);
-                        setFormData({...formData, cep});
-                        handleCepChange(cep);
+                        const value = e.target.value;
+                        const cleanCep = value.replace(/\D/g, '').slice(0, 8);
+                        const formattedCep = cleanCep.length > 5 ? `${cleanCep.slice(0, 5)}-${cleanCep.slice(5)}` : cleanCep;
+                        setFormData({...formData, cep: formattedCep});
+                        handleCepChange(cleanCep);
                       }}
                       placeholder="00000-000"
-                      maxLength="9"
                     />
                     {cepLoading && (
                       <p className="text-xs text-slate-500 mt-1">Buscando endereço...</p>
