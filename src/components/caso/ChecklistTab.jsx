@@ -90,17 +90,17 @@ export default function ChecklistTab({ casoId, checklistItems, documentos, clien
                       <span>•</span>
                       <span>{item.base_legal}</span>
                     </div>
-                    {linkedDoc && (
-                      <a
-                        href={linkedDoc.file_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 mt-2 text-sm text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
-                      >
-                        <FileText className="h-3 w-3" />
-                        <span>{linkedDoc.nome_arquivo}</span>
-                      </a>
-                    )}
+                    {linkedDoc && linkedDoc.file_url && (
+                       <a
+                         href={linkedDoc.file_url}
+                         target="_blank"
+                         rel="noopener noreferrer"
+                         className="flex items-center gap-1 mt-2 text-sm text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                       >
+                         <FileText className="h-3 w-3" />
+                         <span>{linkedDoc.nome_arquivo}</span>
+                       </a>
+                     )}
                   </div>
                 </div>
 
