@@ -79,16 +79,24 @@ export default function AnaliseDocumentoModal({ item, documentos, casoId, client
 
       // Obter URLs assinadas para balancetes
       const balanceteUrls = await Promise.all(balancetes.map(async (b) => {
-        if (b.file_url) return b.file_url;
-        if (b.file_uri) {
-          const signedResult = await base44.integrations.Core.CreateFileSignedUrl({
-            file_uri: b.file_uri,
-            expires_in: 3600
-          });
-          return signedResult.signed_url;
+        try {
+          if (b.file_url) return b.file_url;
+          if (b.file_uri) {
+            const signedResult = await base44.integrations.Core.CreateFileSignedUrl({
+              file_uri: b.file_uri,
+              expires_in: 3600
+            });
+            return signedResult.signed_url;
+          }
+          console.warn('Balancete sem URL:', b.nome_arquivo);
+          return null;
+        } catch (err) {
+          console.error('Erro ao obter URL balancete:', err);
+          return null;
         }
-        return null;
       }));
+
+      console.log('URLs de balancetes obtidas:', balanceteUrls.filter(u => u).length);
 
       const dadosBalancete = await base44.integrations.Core.InvokeLLM({
         prompt: promptBalancete,
