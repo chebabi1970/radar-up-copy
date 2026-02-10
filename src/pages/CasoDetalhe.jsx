@@ -35,6 +35,7 @@ import {
   Check,
   X
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 import ChecklistTab from '@/components/caso/ChecklistTab';
 import DocumentosTab from '@/components/caso/DocumentosTab';
@@ -85,8 +86,13 @@ export default function CasoDetalhe() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    setCasoId(params.get('id'));
-  }, []);
+    const id = params.get('id');
+    if (!id || id.trim() === '') {
+      setCasoId(null);
+      return;
+    }
+    setCasoId(id.trim());
+  }, [window.location.search]);
 
   const { data: caso, isLoading: casoLoading } = useQuery({
     queryKey: ['caso', casoId],
@@ -117,6 +123,22 @@ export default function CasoDetalhe() {
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ newStatus, enviarEmail }) => {
+      // Validar transição de estado
+      const transicoes_validas = {
+        novo: ['em_analise', 'aguardando_documentos'],
+        em_analise: ['aguardando_documentos', 'documentacao_completa'],
+        aguardando_documentos: ['em_analise', 'documentacao_completa'],
+        documentacao_completa: ['protocolado', 'indeferido'],
+        protocolado: ['deferido', 'indeferido', 'arquivado'],
+        deferido: ['arquivado'],
+        indeferido: ['arquivado'],
+        arquivado: []
+      };
+
+      if (!transicoes_validas[caso.status]?.includes(newStatus)) {
+        throw new Error(`Transição inválida de ${statusLabels[caso.status]} para ${statusLabels[newStatus]}`);
+      }
+
       await base44.entities.Caso.update(casoId, { status: newStatus });
       
       // Enviar email se autorizado
@@ -127,8 +149,10 @@ export default function CasoDetalhe() {
              subject: `Status do Caso ${caso.numero_caso || casoId.slice(0, 8)} Atualizado`,
              body: `<h2>Atualização de Status</h2><p>Olá,</p><p>O status do seu caso <strong>${caso.numero_caso || `#${casoId.slice(0, 8)}`}</strong> foi atualizado para:</p><h3 style="color: #3b82f6;">${statusLabels[newStatus]}</h3><p><strong>Cliente:</strong> ${cliente.razao_social}<br/><strong>CNPJ:</strong> ${cliente.cnpj}</p><p>Para mais detalhes, acesse o sistema RevEstimativa.</p><p>Atenciosamente,<br/>Equipe RevEstimativa</p>`
            });
+           toast.success('Email enviado com sucesso');
          } catch (error) {
            console.error('Erro ao enviar email:', error);
+           toast.error('Erro ao enviar email de notificação');
          }
        }
     },
@@ -136,9 +160,10 @@ export default function CasoDetalhe() {
       queryClient.invalidateQueries({ queryKey: ['caso', casoId] });
       setDialogEmail(false);
       setNovoStatus(null);
+      toast.success('Status atualizado');
     },
     onError: (error) => {
-      alert('Erro ao atualizar status: ' + error.message);
+      toast.error(`Erro ao atualizar status: ${error.message}`);
     }
   });
 
@@ -369,7 +394,9 @@ export default function CasoDetalhe() {
                  <div className="min-w-0">
                    <p className="text-xs md:text-sm text-slate-500">Estimativa</p>
                    <p className="text-xs md:text-lg lg:text-xl font-bold text-slate-900 truncate">
-                     {caso.estimativa_calculada ? `$${caso.estimativa_calculada.toLocaleString()}` : 'Pendente'}
+                     {caso.estimativa_calculada && typeof caso.estimativa_calculada === 'number' && caso.estimativa_calculada > 0 
+                       ? `R$ ${caso.estimativa_calculada.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` 
+                       : 'Pendente'}
                    </p>
                  </div>
                </div>
