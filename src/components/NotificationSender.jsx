@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Send } from 'lucide-react';
 import { toast } from 'sonner';
-import { maskEmail, validateInputSize, secureLog, createRateLimiter } from '@/components/SecurityUtils';
+import { maskEmail, validateInputSize, secureLog, createRateLimiter } from '@/components/SecurityUtils.js';
 
 export default function NotificationSender({ usuarios = [], open = false, onOpenChange }) {
   const [usuariosSelecionados, setUsuariosSelecionados] = useState(new Set());

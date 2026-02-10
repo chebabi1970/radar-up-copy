@@ -13,7 +13,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { formatDateBrasilia, formatDateTimeBrasilia } from '@/components/utils/dateFormatter';
 import { toast } from 'sonner';
 import NotificationSender from '@/components/NotificationSender';
-import { maskEmail, maskId, validateEmailRequest, validateInputSize, secureLog, createRateLimiter } from '@/components/SecurityUtils';
+import { maskEmail, maskId, validateEmailRequest, validateInputSize, secureLog, createRateLimiter } from '@/components/SecurityUtils.js';
 
 export default function Admin() {
   const [user, setUser] = useState(null);
