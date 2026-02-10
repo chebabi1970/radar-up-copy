@@ -670,7 +670,3 @@ export default function Calculadora() {
     </div>
   );
 }
-      </div>
-    </div>
-  );
-}
