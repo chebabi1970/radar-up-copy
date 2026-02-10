@@ -9,25 +9,38 @@ import { toast } from 'sonner';
 
 export default function NotificationBell() {
   const [user, setUser] = useState(null);
+  const [unsubscribeRef, setUnsubscribeRef] = useState(null);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
   const { data: notificacoes = [], refetch } = useQuery({
-    queryKey: ['notificacoes'],
-    queryFn: () => base44.entities.Notificacao.filter({ usuario_email: user?.email }, '-created_date', 50),
+    queryKey: ['notificacoes', user?.email],
+    queryFn: () => base44.entities.Notificacao.filter({ usuario_email: user?.email }, '-created_date', 100),
     enabled: !!user?.email,
+    staleTime: 30000 // 30 segundos
   });
 
   useEffect(() => {
     if (!user?.email) return;
+    
+    // Cleanup anterior subscription se houver
+    if (unsubscribeRef) {
+      unsubscribeRef();
+    }
+
     const unsubscribe = base44.entities.Notificacao.subscribe((event) => {
       if (event.data?.usuario_email === user.email) {
         refetch();
       }
     });
-    return unsubscribe;
+    
+    setUnsubscribeRef(() => unsubscribe);
+    
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, [user?.email, refetch]);
 
   const naoLidas = notificacoes.filter(n => !n.lida);
