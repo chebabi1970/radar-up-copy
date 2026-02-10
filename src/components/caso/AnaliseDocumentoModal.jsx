@@ -261,59 +261,39 @@ export default function AnaliseDocumentoModal({ item, documentos, casoId, client
       const tipoDoc = item.tipo_documento;
       const guide = getGuide(tipoDoc);
 
-      // Construir prompt baseado na guia específica - SEM contexto genérico
+      // Construir prompt OTIMIZADO E CONCISO
       const prompt = guide 
-        ? `Você é auditor documental jurídico-contábil especializado em revisão de estimativa (IN RFB 1.984/2020, Portaria Coana 72/2020).
+        ? `Analise RÁPIDO este documento RFB: ${guide.nome}
 
-      DOCUMENTO: ${guide.nome}
+REGRAS: ${guide.regras.slice(0, 3).join(' | ')}
+CRÍTICOS: ${guide.checklist.filter(c => c.critico).map(c => c.item).join(' | ')}
 
-      TASK: Analise APENAS este documento específico. Não misture dados com outros documentos.
+EMPRESA: ${cliente?.razao_social} | CNPJ: ${cliente?.cnpj}
 
-      REGRAS ESPECÍFICAS PARA ESTE DOCUMENTO:
-      ${guide.regras.map(r => `- ${r}`).join('\n')}
+RESPONDA EM JSON APENAS:
+{
+  "dados_extraidos": {},
+  "checklist_verificacao": [{"item": "", "status": "OK|ALERTA|CRÍTICO", "observacao": ""}],
+  "indicadores_alerta": [{"tipo": "", "severidade": "critica|media|leve", "descricao": ""}],
+  "resumo": "análise breve",
+  "classificacao_final": "APROVADO|INCONSISTENTE"
+}`
+        : `Analise rapidamente documento: ${tipoDoc}
 
-      CHECKLIST OBRIGATÓRIO:
-      ${guide.checklist.map(c => `- ${c.item}${c.critico ? ' [CRÍTICO]' : ''}`).join('\n')}
+1. Dados principais
+2. Período de referência
+3. Legibilidade
+4. Alertas críticos
+5. Aprovável?
 
-      CONTEXTO (use APENAS para validações):
-      - Empresa esperada: ${cliente?.razao_social}
-      - CNPJ esperado: ${cliente?.cnpj}
-      - Endereço registrado: ${cliente?.endereco}
-
-      INSTRUÇÕES CRÍTICAS:
-      1. Analise APENAS o conteúdo visível no documento
-      2. Compare dados do documento com contexto QUANDO PERTINENTE AO TIPO
-      3. Não invente dados não encontrados no documento
-      4. Não confunda este documento com outros (não fale sobre procurador se analisando conta de energia)
-
-      Retorne JSON estruturado com:
-      {
-      dados_extraidos: {campos relevantes extraídos do documento},
-      checklist_verificacao: [{item: string, status: "OK"|"ALERTA"|"CRÍTICO", observacao: string}],
-      indicadores_alerta: [{tipo: string, severidade: "critica"|"media"|"leve", descricao: string}],
-      cruzamentos_necessarios: [lista de docs a comparar],
-      resumo: string,
-      classificacao_final: "APROVADO"|"INCONSISTENTE"|"FALTANTE"
-      }`
-        : `Você é analista de conformidade especializado em validação de documentos para processos RFB.
-
-      DOCUMENTO A ANALISAR: ${tipoDoc}
-
-      ANÁLISE GENÉRICA:
-      1. Extraia os dados principais visíveis no documento
-      2. Identifique o período de referência
-      3. Verifique se o documento está legível e completo
-      4. Liste alertas ou inconsistências encontradas
-      5. Determine se o documento é aprovável para protocolo
-
-      Retorne JSON estruturado:
-      {
-      dados_extraidos: {informações principais extraídas},
-      checklist_verificacao: [{item: string, status: "OK"|"ALERTA"|"CRÍTICO", observacao: string}],
-      indicadores_alerta: [{tipo: string, severidade: "critica"|"media"|"leve", descricao: string}],
-      resumo: "resumo breve da análise",
-      classificacao_final: "APROVADO"|"INCONSISTENTE"|"PENDENTE"
-      }`;
+RESPONDA EM JSON:
+{
+  "dados_extraidos": {},
+  "checklist_verificacao": [{"item": "", "status": "OK|ALERTA|CRÍTICO"}],
+  "indicadores_alerta": [{"tipo": "", "severidade": "critica|media|leve", "descricao": ""}],
+  "resumo": "breve",
+  "classificacao_final": "APROVADO|INCONSISTENTE"
+}`;
 
       // Obter URL assinada se for file_uri
       let fileUrl = linkedDoc.file_url;
