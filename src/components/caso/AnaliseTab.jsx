@@ -56,12 +56,11 @@ export default function AnaliseTab({ caso, cliente, documentos }) {
   
   const queryClient = useQueryClient();
 
-  // Cálculo automático de capacidade financeira (50% conforme livro)
+  // Cálculo automático de capacidade financeira
   const calcularCapacidadeAutomatica = () => {
     const totalRecursos = saldosBancarios + aplicacoesFinanceiras;
-    const capacidadeReais = totalRecursos * 0.5;
     const taxaDolar = 5.3076; // Portaria Coana 180/2026
-    return capacidadeReais / taxaDolar;
+    return totalRecursos / taxaDolar;
   };
 
 
@@ -102,16 +101,16 @@ DADOS DO CASO:
 - Hipótese de Revisão: ${hipoteseLabels[caso.hipotese_revisao]}
 - Saldos Bancários: R$ ${saldosBancarios.toLocaleString('pt-BR')}
 - Aplicações Financeiras: R$ ${aplicacoesFinanceiras.toLocaleString('pt-BR')}
-- Capacidade Calculada (50% regra geral): USD ${capacidadeAutomatica.toLocaleString('en-US', {maximumFractionDigits: 2})}
+- Capacidade Calculada: USD ${capacidadeAutomatica.toLocaleString('en-US', {maximumFractionDigits: 2})}
 
 DOCUMENTOS DISPONÍVEIS:
 ${documentos.map(d => `- ${d.nome_arquivo} (${d.tipo_documento})`).join('\n')}
 
 Com base no Livro RADAR 2025 e na legislação vigente, forneça:
-1. Validação da estimativa calculada (50% dos recursos conforme Art. 6º Portaria Coana 72)
+1. Validação da estimativa calculada conforme Art. 6º Portaria Coana 72
 2. Modalidade de habilitação apropriada:
    - Limitada: até USD 150.000 por operação
-   - Ilimitada: sem limites
+   - Ilimitada: acima de USD 150.000 (sem limites)
 3. Recomendações sobre documentação adicional necessária
 4. Alertas sobre possíveis inconsistências ou pontos de atenção
 
@@ -226,7 +225,7 @@ Justifique sua análise citando os artigos relevantes da IN 1984/2020 e Portaria
       <Card className="border border-green-200 bg-green-50/30">
         <CardHeader>
           <CardTitle className="text-lg">Cálculo da Capacidade Financeira</CardTitle>
-          <p className="text-sm text-slate-500">Fórmula: 50% dos (Saldos Bancários + Aplicações) ÷ Taxa Dólar</p>
+          <p className="text-sm text-slate-500">Fórmula: (Saldos Bancários + Aplicações) ÷ Taxa Dólar</p>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -370,7 +369,7 @@ Justifique sua análise citando os artigos relevantes da IN 1984/2020 e Portaria
               <div className="text-sm text-slate-700">
                 <p className="font-medium text-slate-900 mb-2">Regras de Cálculo (Livro RADAR 2025)</p>
                 <ul className="list-disc list-inside space-y-1">
-                  <li><strong>Recursos Financeiros (Art. 4º, I):</strong> 50% dos saldos bancários + aplicações (Art. 6º, I)</li>
+                  <li><strong>Recursos Financeiros (Art. 4º, I):</strong> Saldos bancários + aplicações ÷ taxa dólar (Art. 6º, I)</li>
                   <li><strong>DAS (Art. 4º, III):</strong> Soma dos DAS dos últimos 60 meses ÷ cotação média do dólar</li>
                   <li><strong>CPRB (Art. 4º, IV):</strong> Soma dos DARF CPRB dos últimos 60 meses ÷ cotação média</li>
                   <li><strong>Taxa vigente:</strong> R$ 5,3076 (Portaria Coana 180/2026)</li>
