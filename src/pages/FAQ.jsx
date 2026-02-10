@@ -206,6 +206,8 @@ function FAQSection({ titulo, pontos, tipo = 'documento' }) {
 export default function FAQ() {
   const [abaDocs, setAbaDocs] = useState(true);
 
+  // FAQ é acessível para todos - sem autenticação necessária
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 p-4 sm:p-6">
       <div className="max-w-4xl mx-auto">
