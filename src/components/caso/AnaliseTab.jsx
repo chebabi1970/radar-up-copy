@@ -369,7 +369,7 @@ Justifique sua análise citando os artigos relevantes da IN 1984/2020 e Portaria
               <div className="text-sm text-slate-700">
                 <p className="font-medium text-slate-900 mb-2">Regras de Cálculo (Livro RADAR 2025)</p>
                 <ul className="list-disc list-inside space-y-1">
-                  <li><strong>Recursos Financeiros (Art. 4º, I):</strong> Saldos bancários + aplicações ÷ taxa dólar (Art. 6º, I)</li>
+                  <li><strong>Recursos Financeiros (Art. 4º, I):</strong> 100% dos saldos bancários + aplicações ÷ taxa dólar (Art. 6º, I)</li>
                   <li><strong>DAS (Art. 4º, III):</strong> Soma dos DAS dos últimos 60 meses ÷ cotação média do dólar</li>
                   <li><strong>CPRB (Art. 4º, IV):</strong> Soma dos DARF CPRB dos últimos 60 meses ÷ cotação média</li>
                   <li><strong>Taxa vigente:</strong> R$ 5,3076 (Portaria Coana 180/2026)</li>
