@@ -97,6 +97,53 @@ export default function ResultadoAnaliseResumido({ resultado }) {
         </div>
       )}
 
+      {/* Checklist com Status */}
+      {checklistItens.length > 0 && (
+        <div className="space-y-1.5">
+          <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wide">Checklist Verificado</h4>
+          {checklistItens.map((item, idx) => (
+            <div 
+              key={idx} 
+              className={`p-2 sm:p-2.5 rounded-lg border text-xs sm:text-sm ${
+                item.status === 'OK' 
+                  ? 'bg-green-50 border-green-200' 
+                  : item.status === 'ALERTA'
+                  ? 'bg-yellow-50 border-yellow-200'
+                  : 'bg-red-50 border-red-200'
+              }`}
+            >
+              <div className="flex gap-2 items-start">
+                <span className="flex-shrink-0 mt-0.5">
+                  {item.status === 'OK' ? '✓' : item.status === 'ALERTA' ? '⚠' : '✗'}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className={`font-semibold ${
+                    item.status === 'OK' 
+                      ? 'text-green-900' 
+                      : item.status === 'ALERTA'
+                      ? 'text-yellow-900'
+                      : 'text-red-900'
+                  }`}>
+                    {item.item}
+                  </p>
+                  {item.observacao && (
+                    <p className={`text-xs mt-0.5 ${
+                      item.status === 'OK' 
+                        ? 'text-green-700' 
+                        : item.status === 'ALERTA'
+                        ? 'text-yellow-700'
+                        : 'text-red-700'
+                    }`}>
+                      {item.observacao}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Alertas Críticos */}
       {resultado.indicadores_alerta?.filter(a => a.severidade === 'critica').slice(0, 3).map((alerta, idx) => (
         <div key={idx} className="p-2.5 sm:p-3 bg-red-50 border border-red-200 rounded-lg">
