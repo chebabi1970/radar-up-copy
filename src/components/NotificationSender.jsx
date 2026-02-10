@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -6,18 +6,42 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Send } from 'lucide-react';
 import { toast } from 'sonner';
+import { maskEmail, validateInputSize, secureLog, createRateLimiter } from '@/components/SecurityUtils';
 
 export default function NotificationSender({ usuarios = [], open = false, onOpenChange }) {
   const [usuariosSelecionados, setUsuariosSelecionados] = useState(new Set());
   const [busca, setBusca] = useState('');
   const [notificationData, setNotificationData] = useState({ titulo: '', mensagem: '' });
   const [sending, setSending] = useState(false);
+  
+  // ========== SEGURANÇA: Rate Limiter ==========
+  const notifRateLimiter = useRef(createRateLimiter(10, 60000)); // 10 notificações por minuto
 
   const handleSendNotifications = async () => {
+    // ========== SEGURANÇA: Rate Limiting ==========
+    if (!notifRateLimiter.current.allow()) {
+      toast.error('Muitas notificações. Aguarde 1 minuto antes de tentar novamente');
+      return;
+    }
+
+    // ========== SEGURANÇA: Validação de Entrada ==========
+    const tituloSize = validateInputSize(notificationData.titulo, 100);
+    const mensagemSize = validateInputSize(notificationData.mensagem, 5000);
+    
+    if (!tituloSize.valid) {
+      toast.error('Título muito longo (máx 100 caracteres)');
+      return;
+    }
+    if (!mensagemSize.valid) {
+      toast.error('Mensagem muito longa (máx 5000 caracteres)');
+      return;
+    }
+
     if (!notificationData.titulo.trim() || !notificationData.mensagem.trim()) {
       toast.error('Preencha o título e a mensagem');
       return;
     }
+    
     if (usuariosSelecionados.size === 0) {
       toast.error('Selecione pelo menos um usuário');
       return;
@@ -26,23 +50,35 @@ export default function NotificationSender({ usuarios = [], open = false, onOpen
     setSending(true);
     const usuariosParaNotificar = usuarios.filter(u => usuariosSelecionados.has(u.id));
     let enviadas = 0;
+    const failedCount = usuariosParaNotificar.length;
 
     for (const u of usuariosParaNotificar) {
       try {
         await base44.entities.Notificacao.create({
           usuario_email: u.email,
-          titulo: notificationData.titulo,
-          mensagem: notificationData.mensagem,
+          titulo: notificationData.titulo.substring(0, 100),
+          mensagem: notificationData.mensagem.substring(0, 5000),
           tipo: 'info'
         });
         enviadas++;
       } catch (error) {
-        console.error(`Erro ao notificar ${u.email}:`, error);
+        // Log seguro: mascarar dados sensíveis
+        secureLog('notification_error', {
+          recipientMasked: maskEmail(u.email),
+          error: error.message
+        }, 'error');
       }
     }
 
     setSending(false);
     toast.success(`Notificações enviadas: ${enviadas}/${usuariosParaNotificar.length}`);
+    
+    // Log de auditoria
+    secureLog('notifications_sent', {
+      count: enviadas,
+      totalAttempted: usuariosParaNotificar.length
+    }, 'warning');
+    
     onOpenChange(false);
     setNotificationData({ titulo: '', mensagem: '' });
     setUsuariosSelecionados(new Set());
