@@ -99,8 +99,8 @@ export default function Layout({ children, currentPageName }) {
           </nav>
 
           {/* Notification Bell - Desktop Sidebar */}
-          <div className="p-4 border-t border-slate-100 hidden lg:flex">
-            <NotificationBell />
+          <div className="p-4 border-t border-slate-100 hidden lg:block">
+           <NotificationBell />
           </div>
 
           {/* Footer */}
