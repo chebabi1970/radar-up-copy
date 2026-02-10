@@ -102,36 +102,16 @@ Retorne EM JSON APENAS:
       });
       console.log('Análise de balancete concluída:', dadosBalancete);
 
-      // Extrair dados dos extratos (último dia do mês anterior)
-      const promptExtratos = `Você é analista bancário especializado em cruzamento de extratos. Analise estes extratos bancários com MÁXIMA PRECISÃO:
+      // Extrair dados dos extratos - PROMPT OTIMIZADO
+      const promptExtratos = `Extraia RÁPIDO saldos finais dos extratos.
 
-      **INSTRUÇÕES CRÍTICAS:**
-      1. Para CADA MÊS diferente no extrato, identifique:
-      - Nome completo do BANCO
-      - Número exato da CONTA (com dígitos)
-      - SALDO FINAL do ÚLTIMO DIA do mês
-      - DATA EXATA do saldo final
-      2. Converta valores para NÚMEROS (remova R$, espaços, vírgulas)
-      3. Se houver múltiplas contas no mesmo banco, liste separadamente
-      4. Ignore valores em outras moedas ou investimentos
-      5. Capture saldos em: 28/fev, 29/fev (ano bissexto), 30, 31 conforme dia final do mês
-
-      **RETORNE OBRIGATORIAMENTE:**
-      {
-      extratos: [
-      {
-      banco: "Nome Banco",
-      conta: "12345-6",
-      mes_ano: "2024-01",
-      saldo_final: número,
-      saldo_data: "2024-01-31",
-      tipo_conta: "corrente|poupança|aplicação"
-      }
-      ],
-      total_extratos: número,
-      datas_cobertas: "YYYY-MM até YYYY-MM",
-      alertas: ["descrição se algo parecer inconsistente"]
-      }`;
+Para cada mês: banco, conta, saldo_final, data
+RETORNE EM JSON APENAS:
+{
+  "extratos": [{"banco": "", "conta": "", "mes_ano": "", "saldo_final": 0, "saldo_data": ""}],
+  "total_extratos": 0,
+  "alertas": []
+}`;
 
       // Obter URLs assinadas para extratos
       const extratosUrls = await Promise.all(extratos.map(async (e) => {
