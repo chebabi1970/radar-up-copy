@@ -256,17 +256,11 @@ Justifique sua análise citando os artigos relevantes da IN 1984/2020 e Portaria
 
           {(saldosBancarios > 0 || aplicacoesFinanceiras > 0) && (
             <div className="p-4 bg-white border border-green-300 rounded-xl">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-slate-500">Total de Recursos</p>
                   <p className="text-xl font-bold text-slate-900">
                     R$ {(saldosBancarios + aplicacoesFinanceiras).toLocaleString('pt-BR', {minimumFractionDigits: 2})}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-500">50% dos Recursos</p>
-                  <p className="text-xl font-bold text-slate-900">
-                    R$ {((saldosBancarios + aplicacoesFinanceiras) * 0.5).toLocaleString('pt-BR', {minimumFractionDigits: 2})}
                   </p>
                 </div>
                 <div>
