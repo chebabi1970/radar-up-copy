@@ -73,7 +73,6 @@ const statusAnaliseConfig = {
 
 export default function DocumentosTab({ casoId, documentos, checklistItems, cliente }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [documentoSelecionado, setDocumentoSelecionado] = useState(null);
   const [visualizadorOpen, setVisualizadorOpen] = useState(false);
   const [docParaVersoes, setDocParaVersoes] = useState(null);
@@ -116,6 +115,9 @@ export default function DocumentosTab({ casoId, documentos, checklistItems, clie
        queryClient.invalidateQueries({ queryKey: ['checklist', casoId] });
        setIsDialogOpen(false);
        resetForm();
+     },
+     onError: (error) => {
+       alert('Erro ao enviar documento: ' + error.message);
      }
    });
 
@@ -264,9 +266,9 @@ export default function DocumentosTab({ casoId, documentos, checklistItems, clie
                 <Button 
                   type="submit" 
                   className="bg-blue-600 hover:bg-blue-700"
-                  disabled={uploading}
+                  disabled={createMutation.isPending}
                 >
-                  {uploading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  {createMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                   Enviar
                 </Button>
               </div>

@@ -28,20 +28,12 @@ import {
   FileText,
   CheckSquare,
   AlertTriangle,
-  Upload,
-  Clock,
-  CheckCircle2,
-  XCircle,
   Loader2,
-  RefreshCw,
   Calculator,
-  History,
-  Zap,
   Shield,
   Edit2,
   Check,
-  X,
-  MessageCircle
+  X
 } from 'lucide-react';
 
 import ChecklistTab from '@/components/caso/ChecklistTab';
@@ -143,6 +135,9 @@ export default function CasoDetalhe() {
       queryClient.invalidateQueries({ queryKey: ['caso', casoId] });
       setDialogEmail(false);
       setNovoStatus(null);
+    },
+    onError: (error) => {
+      alert('Erro ao atualizar status: ' + error.message);
     }
   });
 
@@ -192,7 +187,6 @@ export default function CasoDetalhe() {
 
   const pendingItems = checklistItems.filter(i => i.status === 'pendente').length;
   const completedItems = checklistItems.filter(i => i.status !== 'pendente').length;
-  const unresolvedDivergencias = caso.divergencias_encontradas?.filter(d => !d.resolvida).length || 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
@@ -348,12 +342,12 @@ export default function CasoDetalhe() {
            <Card className="border-0 shadow-md">
              <CardContent className="p-2.5 md:p-4">
                <div className="flex items-center gap-2 md:gap-3">
-                 <div className={`h-8 w-8 md:h-10 md:w-10 rounded-lg flex items-center justify-center flex-shrink-0 ${unresolvedDivergencias > 0 ? 'bg-red-50' : 'bg-green-50'}`}>
-                   <AlertTriangle className={`h-4 w-4 md:h-5 md:w-5 ${unresolvedDivergencias > 0 ? 'text-red-600' : 'text-green-600'}`} />
+                 <div className="h-8 w-8 md:h-10 md:w-10 bg-slate-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                   <CheckSquare className="h-4 w-4 md:h-5 md:w-5 text-slate-600" />
                  </div>
                  <div className="min-w-0">
-                   <p className="text-xs md:text-sm text-slate-500">Divergências</p>
-                   <p className="text-lg md:text-xl font-bold text-slate-900">{unresolvedDivergencias}</p>
+                   <p className="text-xs md:text-sm text-slate-500">Pendentes</p>
+                   <p className="text-lg md:text-xl font-bold text-slate-900">{pendingItems}</p>
                  </div>
                </div>
              </CardContent>

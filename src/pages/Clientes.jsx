@@ -89,20 +89,42 @@ export default function Clientes() {
   });
 
   const createMutation = useMutation({
-    mutationFn: (data) => base44.entities.Cliente.create(data),
+    mutationFn: async (data) => {
+      // Validar CNPJ duplicado
+      const cnpjLimpo = data.cnpj.replace(/\D/g, '');
+      const existente = clientes.find(c => c.cnpj.replace(/\D/g, '') === cnpjLimpo);
+      if (existente) {
+        throw new Error('CNPJ já cadastrado no sistema');
+      }
+      return base44.entities.Cliente.create(data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clientes'] });
       setIsDialogOpen(false);
       resetForm();
+    },
+    onError: (error) => {
+      alert('Erro: ' + error.message);
     }
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.Cliente.update(id, data),
+    mutationFn: async ({ id, data }) => {
+      // Validar CNPJ duplicado (exceto o próprio cliente)
+      const cnpjLimpo = data.cnpj.replace(/\D/g, '');
+      const existente = clientes.find(c => c.id !== id && c.cnpj.replace(/\D/g, '') === cnpjLimpo);
+      if (existente) {
+        throw new Error('CNPJ já cadastrado para outro cliente');
+      }
+      return base44.entities.Cliente.update(id, data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clientes'] });
       setIsDialogOpen(false);
       resetForm();
+    },
+    onError: (error) => {
+      alert('Erro: ' + error.message);
     }
   });
 

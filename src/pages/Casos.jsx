@@ -120,9 +120,23 @@ export default function Casos() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.Caso.delete(id),
+    mutationFn: async (id) => {
+      // Deletar registros relacionados primeiro
+      const docs = await base44.entities.Documento.filter({ caso_id: id });
+      const checklist = await base44.entities.ChecklistItem.filter({ caso_id: id });
+      
+      await Promise.all([
+        ...docs.map(d => base44.entities.Documento.delete(d.id)),
+        ...checklist.map(c => base44.entities.ChecklistItem.delete(c.id))
+      ]);
+      
+      return base44.entities.Caso.delete(id);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['casos'] });
+    },
+    onError: (error) => {
+      alert('Erro ao deletar caso: ' + error.message);
     }
   });
 
