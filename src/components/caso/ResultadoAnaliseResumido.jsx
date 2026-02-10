@@ -12,13 +12,18 @@ export default function ResultadoAnaliseResumido({ resultado }) {
     if (resultado.indicadores_alerta?.some(a => a.severidade === 'media')) {
       return { tipo: 'media', label: '🟡 ATENÇÃO', cor: 'bg-yellow-50 border-yellow-300' };
     }
-    return { tipo: 'ok', label: '🟢 OK', cor: 'bg-green-50 border-green-300' };
+    return { tipo: 'ok', label: '🟢 APROVADO', cor: 'bg-green-50 border-green-300' };
   };
 
   const statusGeral = getStatusGeral();
   const criticas = resultado.indicadores_alerta?.filter(a => a.severidade === 'critica').length || 0;
   const medias = resultado.indicadores_alerta?.filter(a => a.severidade === 'media').length || 0;
   const leves = resultado.indicadores_alerta?.filter(a => a.severidade === 'leve').length || 0;
+
+  // Contar itens do checklist que passaram/falharam
+  const checklistItens = resultado.checklist_verificacao || [];
+  const passaram = checklistItens.filter(c => c.status === 'OK').length;
+  const falharam = checklistItens.filter(c => c.status === 'CRÍTICO' || c.status === 'ALERTA').length;
 
   return (
     <div className="space-y-2 sm:space-y-3">
