@@ -103,7 +103,7 @@ export default function Home() {
     {
       icon: <Lightbulb className="h-6 w-6" />,
       titulo: "Inteligência",
-      descricao: "IA baseada no Livro RADAR 2025 para análise completa"
+      descricao: "Análise automatizada com validação de documentos e cálculos"
     },
     {
       icon: <CheckCircle2 className="h-6 w-6" />,
