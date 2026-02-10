@@ -129,9 +129,19 @@ export default function Clientes() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.Cliente.delete(id),
+    mutationFn: async (id) => {
+      // Verificar se há casos ativos
+      const casosDoCliente = casos.filter(c => c.cliente_id === id);
+      if (casosDoCliente.length > 0) {
+        throw new Error(`Não é possível excluir este cliente pois existem ${casosDoCliente.length} caso(s) associado(s). Exclua os casos primeiro.`);
+      }
+      return base44.entities.Cliente.delete(id);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clientes'] });
+    },
+    onError: (error) => {
+      alert('Erro ao excluir: ' + error.message);
     }
   });
 
