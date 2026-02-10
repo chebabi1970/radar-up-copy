@@ -92,11 +92,11 @@ export default function Calculadora() {
     let limiteOperacao = 0;
     let corModalidade = '';
 
-    if (valorUSD < 50000) {
+    if (valorUSD <= 50000) {
       modalidade = 'Radar Limitado';
       limiteOperacao = 50000;
       corModalidade = 'text-amber-700';
-    } else if (valorUSD >= 50000 && valorUSD < 150000) {
+    } else if (valorUSD > 50000 && valorUSD <= 150000) {
       modalidade = 'Radar Limitado';
       limiteOperacao = 150000;
       corModalidade = 'text-blue-700';
@@ -637,9 +637,9 @@ export default function Calculadora() {
               <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-sm text-slate-700">
                 <p className="font-medium text-slate-900 mb-2">📋 Critérios de Classificação</p>
                 <ul className="space-y-1 text-xs">
-                  <li>• Menor que USD 50.000,00 → Radar Limitado USD 50.000,00</li>
-                  <li>• Entre USD 50.000,00 e USD 149.999,99 → Radar Limitado USD 150.000,00</li>
-                  <li>• Igual ou maior que USD 150.000,00 → Habilitação Ilimitada</li>
+                  <li>• Até USD 50.000,00 → Radar Limitado USD 50.000,00</li>
+                  <li>• Entre USD 50.000,01 e USD 150.000,00 → Radar Limitado USD 150.000,00</li>
+                  <li>• Igual ou maior que USD 150.000,01 → Habilitação Ilimitada</li>
                 </ul>
               </div>
             </CardContent>
