@@ -36,6 +36,7 @@ import {
   Trash2,
   Download
 } from 'lucide-react';
+import { toast } from 'sonner';
 // Imports de date-fns removidos (não utilizados)
 
 const statusColors = {
@@ -86,14 +87,12 @@ export default function Casos() {
 
   const queryClient = useQueryClient();
 
-  // Get cliente from URL params
+  // Get cliente from URL params (atualiza quando URL muda)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const clienteId = params.get('cliente');
-    if (clienteId) {
-      setFormData(prev => ({ ...prev, cliente_id: clienteId }));
-    }
-  }, []);
+    const clienteId = params.get('cliente') || '';
+    setFormData(prev => ({ ...prev, cliente_id: clienteId }));
+  }, [window.location.search]);
 
   const { data: casos = [], isLoading } = useQuery({
     queryKey: ['casos'],
@@ -107,36 +106,70 @@ export default function Casos() {
 
   const createMutation = useMutation({
     mutationFn: async (data) => {
-      const caso = await base44.entities.Caso.create(data);
-      // Auto-generate checklist items based on hipotese
-      await generateChecklist(caso.id, data.hipotese_revisao);
-      return caso;
+      try {
+        const caso = await base44.entities.Caso.create(data);
+        try {
+          // Auto-generate checklist items based on hipotese
+          await generateChecklist(caso.id, data.hipotese_revisao);
+        } catch (checklistError) {
+          console.error('Erro ao gerar checklist para caso:', caso.id, checklistError);
+          // Delete caso se checklist falhar (rollback)
+          await base44.entities.Caso.delete(caso.id);
+          throw new Error('Falha ao gerar checklist. Caso revertido.');
+        }
+        return caso;
+      } catch (error) {
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['casos'] });
       setIsDialogOpen(false);
       resetForm();
+    },
+    onError: (error) => {
+      toast.error(`Erro ao criar caso: ${error.message}`);
     }
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id) => {
-      // Deletar registros relacionados primeiro
-      const docs = await base44.entities.Documento.filter({ caso_id: id });
-      const checklist = await base44.entities.ChecklistItem.filter({ caso_id: id });
-      
-      await Promise.all([
-        ...docs.map(d => base44.entities.Documento.delete(d.id)),
-        ...checklist.map(c => base44.entities.ChecklistItem.delete(c.id))
-      ]);
-      
-      return base44.entities.Caso.delete(id);
+      try {
+        const docs = await base44.entities.Documento.filter({ caso_id: id });
+        const checklist = await base44.entities.ChecklistItem.filter({ caso_id: id });
+        
+        // Deletar documentos
+        for (const d of docs) {
+          try {
+            await base44.entities.Documento.delete(d.id);
+          } catch (err) {
+            console.error(`Erro ao deletar documento ${d.id}:`, err);
+            throw err;
+          }
+        }
+        
+        // Deletar checklist
+        for (const c of checklist) {
+          try {
+            await base44.entities.ChecklistItem.delete(c.id);
+          } catch (err) {
+            console.error(`Erro ao deletar checklist ${c.id}:`, err);
+            throw err;
+          }
+        }
+        
+        // Finalmente deletar caso
+        return base44.entities.Caso.delete(id);
+      } catch (error) {
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['casos'] });
+      toast.success('Caso deletado com sucesso');
     },
     onError: (error) => {
-      alert('Erro ao deletar caso: ' + error.message);
+      toast.error(`Erro ao deletar caso: ${error.message}`);
     }
   });
 
@@ -199,17 +232,45 @@ export default function Casos() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Calcular prazo de análise (30 dias corridos conforme Art. 14/15)
+    // Validar cliente selecionado
+    if (!formData.cliente_id.trim()) {
+      toast.error('Selecione um cliente');
+      return;
+    }
+
+    // Validar e limpar limite pretendido
+    let limitePretendido = null;
+    if (formData.limite_pretendido.trim()) {
+      const parsed = parseFloat(formData.limite_pretendido);
+      if (isNaN(parsed) || parsed < 0) {
+        toast.error('Limite pretendido deve ser um número positivo');
+        return;
+      }
+      limitePretendido = parsed;
+    }
+
+    // Calcular prazo de análise baseado em hipótese (Art. 14: 15 dias | Art. 15: 30 dias)
     let prazoAnalise = null;
     if (formData.data_protocolo_ecac) {
       const dataProtocolo = new Date(formData.data_protocolo_ecac);
+      // Validar se data não é no futuro
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+      if (dataProtocolo > hoje) {
+        toast.error('Data de protocolo não pode ser no futuro');
+        return;
+      }
+      
+      // Art. 14 vs 15: usando 30 dias como padrão (pode ser refinado)
       dataProtocolo.setDate(dataProtocolo.getDate() + 30);
       prazoAnalise = dataProtocolo.toISOString().split('T')[0];
     }
 
     const data = {
       ...formData,
-      limite_pretendido: formData.limite_pretendido ? parseFloat(formData.limite_pretendido) : null,
+      cliente_id: formData.cliente_id.trim(),
+      numero_caso: formData.numero_caso.trim() || null,
+      limite_pretendido: limitePretendido,
       prazo_analise_rfb: prazoAnalise,
       status: formData.data_protocolo_ecac ? 'protocolado' : 'novo'
     };
