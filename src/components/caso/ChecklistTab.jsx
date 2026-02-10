@@ -84,6 +84,12 @@ export default function ChecklistTab({ casoId, checklistItems, documentos, clien
                       {item.obrigatorio && (
                         <Badge variant="outline" className="text-xs flex-shrink-0 mt-0.5">Obrigatório</Badge>
                       )}
+                      {linkedDoc && (
+                        <Badge className="bg-green-100 text-green-700 text-xs flex-shrink-0 mt-0.5 flex items-center gap-1">
+                          <FileText className="h-3 w-3" />
+                          Anexado
+                        </Badge>
+                      )}
                     </div>
                     <div className="flex items-center gap-2 mt-1 text-xs md:text-sm text-slate-500 flex-wrap">
                       <span>Código: {item.codigo_dda}</span>
