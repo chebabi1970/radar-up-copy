@@ -30,10 +30,11 @@ export default function Admin() {
 
   useEffect(() => {
     base44.auth.me().then(u => {
-      setUser(u);
-      if (u?.role !== 'admin') {
+      if (!u || u?.role !== 'admin') {
         window.location.href = '/';
+        return;
       }
+      setUser(u);
     }).catch(() => window.location.href = '/');
   }, []);
 
@@ -89,32 +90,34 @@ export default function Admin() {
     setSendingEmail(true);
     const usuariosParaEnviar = users.filter(u => usuariosEmailSelecionados.has(u.id));
     let sent = 0;
-    let failed = 0;
     const sentEmails = [];
+    const failedEmails = [];
 
     for (const u of usuariosParaEnviar) {
-      if (!u?.email?.trim()) {
-        failed++;
+      const emailTrimmed = u?.email?.trim();
+      if (!emailTrimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrimmed)) {
+        failedEmails.push(u.email || 'email inválido');
         continue;
       }
       try {
         await base44.integrations.Core.SendEmail({
-          to: u.email,
+          to: emailTrimmed,
           subject: emailData.subject,
           body: emailData.body + '\n\n---',
           from_name: 'RADAR UP Admin'
         });
-        sentEmails.push(u.email);
+        sentEmails.push(emailTrimmed);
         sent++;
+        toast.success(`Email enviado para ${emailTrimmed}`, { duration: 1000 });
       } catch (error) {
-        console.error(`Erro ao enviar para ${u.email}:`, error);
-        failed++;
+        console.error(`Erro ao enviar para ${emailTrimmed}:`, error);
+        failedEmails.push(emailTrimmed);
       }
     }
 
     if (sent > 0) {
       try {
-        console.warn(`[AUDIT] Admin ${user?.email} enviou email a ${sent} usuários em ${new Date().toISOString()}`);
+        // Log no servidor (não console - confidencial)
         await base44.entities.HistoricoEmail.create({
           assunto: emailData.subject,
           resumo: emailData.body.substring(0, 200) + (emailData.body.length > 200 ? '...' : ''),
@@ -128,9 +131,9 @@ export default function Admin() {
     }
 
     setSendingEmail(false);
-    toast.success(`Emails enviados: ${sent}/${usuariosParaEnviar.length}`);
-    if (failed > 0) {
-      toast.error(`Falharam: ${failed}`);
+    toast.success(`Emails enviados com sucesso: ${sent}/${usuariosParaEnviar.length}`);
+    if (failedEmails.length > 0) {
+      toast.error(`Falharam: ${failedEmails.length} (${failedEmails.slice(0, 2).join(', ')}${failedEmails.length > 2 ? '...' : ''})`);
     }
     setShowEmailDialog(false);
     setEmailData({ subject: '', body: '' });
@@ -151,9 +154,25 @@ export default function Admin() {
 
   const handleExportEmails = () => {
     try {
-      const usuariosFiltrados = users.filter(u => u.email.toLowerCase().includes(searchUser.toLowerCase()) || (u.full_name && u.full_name.toLowerCase().includes(searchUser.toLowerCase())));
-      const csv = usuariosFiltrados.map(u => `${u.full_name || ''};${u.email}`).join('\n');
-      const cabecalho = 'Nome;Email\n';
+      const usuariosFiltrados = users.filter(u => 
+        u.email?.toLowerCase().includes(searchUser.toLowerCase()) || 
+        (u.full_name && u.full_name.toLowerCase().includes(searchUser.toLowerCase()))
+      );
+      
+      if (usuariosFiltrados.length === 0) {
+        toast.error('Nenhum usuário para exportar');
+        return;
+      }
+
+      const csv = usuariosFiltrados
+        .filter(u => u.email && u.email.trim()) // Filtrar emails vazios
+        .map(u => {
+          const name = (u.full_name || '').replace(/"/g, '""'); // Escapar aspas
+          return `"${name}";"${u.email.trim()}"`;
+        })
+        .join('\n');
+      
+      const cabecalho = '"Nome";"Email"\n';
       const blob = new Blob([cabecalho + csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
@@ -161,6 +180,7 @@ export default function Admin() {
       link.setAttribute('download', `emails_usuarios_${new Date().toISOString().split('T')[0]}.csv`);
       link.click();
       URL.revokeObjectURL(url);
+      toast.success(`${usuariosFiltrados.length} emails exportados`);
     } catch (error) {
       console.error('Export error:', error);
       toast.error('Erro ao exportar emails');
