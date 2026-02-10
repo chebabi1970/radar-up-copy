@@ -6,7 +6,41 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Send } from 'lucide-react';
 import { toast } from 'sonner';
-import { maskEmail, validateInputSize, secureLog, createRateLimiter } from '@/components/SecurityUtils.js';
+
+// ========== FUNÇÕES DE SEGURANÇA INLINE ==========
+const maskEmail = (email) => {
+  if (!email || typeof email !== 'string') return '[EMAIL_INVÁLIDO]';
+  const [name, domain] = email.split('@');
+  if (!name || !domain) return '[EMAIL_INVÁLIDO]';
+  return name.charAt(0) + '*'.repeat(Math.max(name.length - 2, 1)) + '@' + domain;
+};
+
+const validateInputSize = (input, maxLength = 5000) => {
+  if (typeof input === 'string' && input.length > maxLength) {
+    return { valid: false, error: `Entrada excede limite de ${maxLength} caracteres` };
+  }
+  return { valid: true };
+};
+
+const secureLog = (action, data, severity = 'info') => {
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`[${severity.toUpperCase()}] ${action}`, data);
+  }
+};
+
+const createRateLimiter = (maxAttempts = 5, windowMs = 60000) => {
+  let attempts = [];
+  return {
+    allow: () => {
+      const now = Date.now();
+      attempts = attempts.filter(time => now - time < windowMs);
+      if (attempts.length >= maxAttempts) return false;
+      attempts.push(now);
+      return true;
+    },
+    reset: () => { attempts = []; }
+  };
+};
 
 export default function NotificationSender({ usuarios = [], open = false, onOpenChange }) {
   const [usuariosSelecionados, setUsuariosSelecionados] = useState(new Set());

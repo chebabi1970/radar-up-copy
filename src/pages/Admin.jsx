@@ -13,7 +13,70 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { formatDateBrasilia, formatDateTimeBrasilia } from '@/components/utils/dateFormatter';
 import { toast } from 'sonner';
 import NotificationSender from '@/components/NotificationSender';
-import { maskEmail, maskId, validateEmailRequest, validateInputSize, secureLog, createRateLimiter } from '@/components/SecurityUtils.js';
+
+// ========== FUNÇÕES DE SEGURANÇA INLINE ==========
+const maskEmail = (email) => {
+  if (!email || typeof email !== 'string') return '[EMAIL_INVÁLIDO]';
+  const [name, domain] = email.split('@');
+  if (!name || !domain) return '[EMAIL_INVÁLIDO]';
+  return name.charAt(0) + '*'.repeat(Math.max(name.length - 2, 1)) + '@' + domain;
+};
+
+const maskId = (id) => {
+  if (!id || typeof id !== 'string') return '[ID_INVÁLIDO]';
+  if (id.length < 6) return '[ID_CURTO]';
+  return id.substring(0, 3) + '*'.repeat(id.length - 6) + id.substring(id.length - 3);
+};
+
+const validateInputSize = (input, maxLength = 5000) => {
+  if (typeof input === 'string' && input.length > maxLength) {
+    return { valid: false, error: `Entrada excede limite de ${maxLength} caracteres` };
+  }
+  return { valid: true };
+};
+
+const validateEmailRequest = (emailData) => {
+  const errors = [];
+  if (!emailData.subject || emailData.subject.trim().length === 0) {
+    errors.push('Assunto vazio');
+  } else if (emailData.subject.length > 200) {
+    errors.push('Assunto muito longo (máx 200 caracteres)');
+  }
+  if (!emailData.body || emailData.body.trim().length === 0) {
+    errors.push('Mensagem vazia');
+  } else if (emailData.body.length > 50000) {
+    errors.push('Mensagem muito longa (máx 50KB)');
+  }
+  const suspiciousPatterns = [/<script/i, /javascript:/i, /onclick=/i, /onerror=/i, /eval\(/i];
+  const fullText = (emailData.subject + emailData.body).toLowerCase();
+  for (const pattern of suspiciousPatterns) {
+    if (pattern.test(fullText)) {
+      errors.push('Conteúdo suspeito detectado (possível injection)');
+      break;
+    }
+  }
+  return { valid: errors.length === 0, errors };
+};
+
+const secureLog = (action, data, severity = 'info') => {
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`[${severity.toUpperCase()}] ${action}`, data);
+  }
+};
+
+const createRateLimiter = (maxAttempts = 5, windowMs = 60000) => {
+  let attempts = [];
+  return {
+    allow: () => {
+      const now = Date.now();
+      attempts = attempts.filter(time => now - time < windowMs);
+      if (attempts.length >= maxAttempts) return false;
+      attempts.push(now);
+      return true;
+    },
+    reset: () => { attempts = []; }
+  };
+};
 
 export default function Admin() {
   const [user, setUser] = useState(null);
