@@ -9,8 +9,7 @@ import {
   Menu,
   X,
   LogOut,
-  Briefcase,
-  MessageCircle
+  Briefcase
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
@@ -19,10 +18,8 @@ const navigation = [
   { name: 'Clientes', href: 'Clientes', icon: Users },
   { name: 'Casos', href: 'Casos', icon: FolderOpen },
 ];
-
 const WHATSAPP_NUMBER = '+5511999999999'; // Atualize com seu número
 const WHATSAPP_MESSAGE = 'Olá! Preciso de suporte com a plataforma RADAR UP.';
-
 export default function Layout({ children, currentPageName }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState(null);
@@ -133,17 +130,6 @@ export default function Layout({ children, currentPageName }) {
           {children}
         </main>
       </div>
-
-      {/* Floating Support Button */}
-      <a 
-        href={`https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, '')}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-all duration-200 z-40 flex items-center justify-center"
-        title="Suporte via WhatsApp"
-      >
-        <MessageCircle className="h-6 w-6" />
-      </a>
     </div>
   );
 }
