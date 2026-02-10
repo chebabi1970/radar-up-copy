@@ -35,8 +35,7 @@ import {
   Filter,
   Trash2
 } from 'lucide-react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+// Imports de date-fns removidos (não utilizados)
 
 const statusColors = {
   novo: "bg-blue-100 text-blue-800 border-blue-200",

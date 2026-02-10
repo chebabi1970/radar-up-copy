@@ -19,7 +19,6 @@ import {
   Info
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 
 const hipoteseLabels = {
   recursos_financeiros_livres: "I - Recursos Financeiros de Livre Movimentação",
