@@ -29,30 +29,53 @@ export default function ResultadoAnaliseResumido({ resultado }) {
     <div className="space-y-2 sm:space-y-3">
       {/* Semáforo Principal */}
       <div className={`p-3 sm:p-4 rounded-lg border-2 ${statusGeral.cor}`}>
-         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
+         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
            <div className="flex-1 min-w-0">
              <h3 className="text-base sm:text-lg font-bold text-slate-900">{statusGeral.label}</h3>
              <p className="text-xs sm:text-sm text-slate-600 mt-1">{resultado.resumo}</p>
+             
+             {/* Resumo de Análise */}
+             <div className="mt-2.5 pt-2.5 border-t border-current border-opacity-20">
+               <p className="text-xs font-semibold text-slate-700 mb-1">O que foi analisado:</p>
+               <p className="text-xs text-slate-600">
+                 {Object.keys(resultado.dados_extraidos || {}).length} dado(s) extraído(s) • {checklistItens.length} item(ns) verificado(s)
+               </p>
+             </div>
            </div>
-          <div className="flex gap-2 sm:gap-3 flex-shrink-0">
-            {criticas > 0 && (
-              <div className="flex flex-col items-center">
-                <span className="text-lg sm:text-2xl">🔴</span>
-                <span className="text-xs sm:text-sm font-semibold text-red-600">{criticas}</span>
+          <div className="flex flex-col gap-2 flex-shrink-0">
+            {/* Passou */}
+            <div className="flex items-center gap-1.5 px-2 py-1.5 bg-green-100 rounded-lg">
+              <span className="text-sm">✓</span>
+              <span className="text-xs font-semibold text-green-700">{passaram} Passou</span>
+            </div>
+            {/* Não passou */}
+            {falharam > 0 && (
+              <div className="flex items-center gap-1.5 px-2 py-1.5 bg-red-100 rounded-lg">
+                <span className="text-sm">✗</span>
+                <span className="text-xs font-semibold text-red-700">{falharam} Falhou</span>
               </div>
             )}
-            {medias > 0 && (
-              <div className="flex flex-col items-center">
-                <span className="text-lg sm:text-2xl">🟡</span>
-                <span className="text-xs sm:text-sm font-semibold text-yellow-600">{medias}</span>
-              </div>
-            )}
-            {leves > 0 && (
-              <div className="flex flex-col items-center">
-                <span className="text-lg sm:text-2xl">🟠</span>
-                <span className="text-xs sm:text-sm font-semibold text-blue-600">{leves}</span>
-              </div>
-            )}
+            {/* Alertas por severidade */}
+            <div className="flex gap-2 flex-wrap justify-end">
+              {criticas > 0 && (
+                <div className="flex flex-col items-center">
+                  <span className="text-lg">🔴</span>
+                  <span className="text-xs font-semibold text-red-600">{criticas}</span>
+                </div>
+              )}
+              {medias > 0 && (
+                <div className="flex flex-col items-center">
+                  <span className="text-lg">🟡</span>
+                  <span className="text-xs font-semibold text-yellow-600">{medias}</span>
+                </div>
+              )}
+              {leves > 0 && (
+                <div className="flex flex-col items-center">
+                  <span className="text-lg">🟠</span>
+                  <span className="text-xs font-semibold text-blue-600">{leves}</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
