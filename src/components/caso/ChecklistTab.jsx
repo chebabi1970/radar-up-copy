@@ -84,29 +84,28 @@ export default function ChecklistTab({ casoId, checklistItems, documentos, clien
                       {item.obrigatorio && (
                         <Badge variant="outline" className="text-xs flex-shrink-0 mt-0.5">Obrigatório</Badge>
                       )}
-                      {linkedDoc && (
-                        <Badge className="bg-green-100 text-green-700 text-xs flex-shrink-0 mt-0.5 flex items-center gap-1">
-                          <FileText className="h-3 w-3" />
-                          Anexado
-                        </Badge>
-                      )}
                     </div>
                     <div className="flex items-center gap-2 mt-1 text-xs md:text-sm text-slate-500 flex-wrap">
                       <span>Código: {item.codigo_dda}</span>
                       <span className="hidden md:inline">•</span>
                       <span className="hidden md:inline">{item.base_legal}</span>
                     </div>
-                    {linkedDoc && linkedDoc.file_url && (
-                       <a
-                         href={linkedDoc.file_url}
-                         target="_blank"
-                         rel="noopener noreferrer"
-                         className="flex items-center gap-1 mt-1.5 text-xs text-blue-600 hover:text-blue-800 hover:underline cursor-pointer break-all"
-                       >
-                         <FileText className="h-3 w-3 flex-shrink-0" />
-                         <span className="truncate">{linkedDoc.nome_arquivo}</span>
-                       </a>
-                     )}
+                    {linkedDoc ? (
+                      <div className="flex items-center gap-2 mt-2">
+                        <Badge className="bg-green-100 text-green-700 text-xs flex items-center gap-1">
+                          <FileText className="h-3 w-3" />
+                          Anexado
+                        </Badge>
+                        <a
+                          href={linkedDoc.file_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-blue-600 hover:text-blue-800 hover:underline font-medium truncate"
+                        >
+                          {linkedDoc.nome_arquivo}
+                        </a>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
 
