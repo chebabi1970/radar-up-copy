@@ -13,6 +13,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { formatDateBrasilia, formatDateTimeBrasilia } from '@/components/utils/dateFormatter';
 import { toast } from 'sonner';
 import NotificationSender from '@/components/NotificationSender';
+import { maskEmail, maskId, validateEmailRequest, validateInputSize, secureLog, createRateLimiter } from '@/lib/securityUtils';
 
 export default function Admin() {
   const [user, setUser] = useState(null);
@@ -27,6 +28,10 @@ export default function Admin() {
   const [usuariosPagina, setUsuariosPagina] = useState(1);
   const usuariosPorPagina = 10;
   const [showNotificationSender, setShowNotificationSender] = useState(false);
+  
+  // Rate limiters para operações críticas (previne abuso)
+  const emailRateLimiter = React.useRef(createRateLimiter(5, 60000)); // 5 envios por minuto
+  const deleteRateLimiter = React.useRef(createRateLimiter(3, 60000)); // 3 deletes por minuto
 
   useEffect(() => {
     base44.auth.me().then(u => {
@@ -78,10 +83,27 @@ export default function Admin() {
   const errosPendentes = erros.filter(e => e.status === 'novo' || e.status === 'em_analise').length;
 
   const handleSendEmails = async () => {
-    if (!emailData.subject.trim() || !emailData.body.trim()) {
-      toast.error('Preencha o assunto e a mensagem');
+    // ========== SEGURANÇA: Rate Limiting ==========
+    if (!emailRateLimiter.current.allow()) {
+      toast.error('Muitos envios. Aguarde 1 minuto antes de tentar novamente');
       return;
     }
+
+    // ========== SEGURANÇA: Validação de Entrada ==========
+    const emailValidation = validateEmailRequest(emailData);
+    if (!emailValidation.valid) {
+      toast.error(emailValidation.errors[0]);
+      return;
+    }
+
+    // ========== SEGURANÇA: Validação de Tamanho ==========
+    const subjectSize = validateInputSize(emailData.subject, 200);
+    const bodySize = validateInputSize(emailData.body, 50000);
+    if (!subjectSize.valid || !bodySize.valid) {
+      toast.error(subjectSize.valid ? bodySize.error : subjectSize.error);
+      return;
+    }
+
     if (usuariosEmailSelecionados.size === 0) {
       toast.error('Selecione pelo menos um usuário');
       return;
@@ -95,8 +117,9 @@ export default function Admin() {
 
     for (const u of usuariosParaEnviar) {
       const emailTrimmed = u?.email?.trim();
-      if (!emailTrimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrimmed)) {
-        failedEmails.push(u.email || 'email inválido');
+      // Validação com regex mais rigorosa
+      if (!emailTrimmed || !/^[^\s@]{1,64}@[^\s@]{1,255}$/.test(emailTrimmed)) {
+        failedEmails.push(maskEmail(u.email || 'inválido'));
         continue;
       }
       try {
@@ -108,16 +131,22 @@ export default function Admin() {
         });
         sentEmails.push(emailTrimmed);
         sent++;
-        toast.success(`Email enviado para ${emailTrimmed}`, { duration: 1000 });
+        // Não mostrar email completo ao usuário
+        toast.success('Email enviado', { duration: 800 });
       } catch (error) {
-        console.error(`Erro ao enviar para ${emailTrimmed}:`, error);
-        failedEmails.push(emailTrimmed);
+        // Logging seguro: mascarar dados sensíveis
+        secureLog('email_send_failed', { 
+          recipientMasked: maskEmail(emailTrimmed),
+          error: error.message 
+        }, 'error');
+        failedEmails.push(maskEmail(emailTrimmed));
       }
     }
 
     if (sent > 0) {
       try {
         // Log no servidor (não console - confidencial)
+        // IMPORTANTE: Armazenar apenas quantidade, não lista de emails
         await base44.entities.HistoricoEmail.create({
           assunto: emailData.subject,
           resumo: emailData.body.substring(0, 200) + (emailData.body.length > 200 ? '...' : ''),
@@ -125,15 +154,22 @@ export default function Admin() {
           total_enviados: sent,
           data_envio: new Date().toISOString()
         });
+        
+        // Log de auditoria seguro
+        secureLog('emails_sent_batch', { 
+          count: sent,
+          totalAttempted: usuariosParaEnviar.length,
+          admin: maskEmail(user?.email)
+        }, 'warning');
       } catch (error) {
-        console.error('Erro ao registrar histórico:', error);
+        secureLog('historico_email_error', { error: error.message }, 'error');
       }
     }
 
     setSendingEmail(false);
-    toast.success(`Emails enviados com sucesso: ${sent}/${usuariosParaEnviar.length}`);
+    toast.success(`Emails enviados: ${sent}/${usuariosParaEnviar.length}`);
     if (failedEmails.length > 0) {
-      toast.error(`Falharam: ${failedEmails.length} (${failedEmails.slice(0, 2).join(', ')}${failedEmails.length > 2 ? '...' : ''})`);
+      toast.error(`Falharam: ${failedEmails.length}`);
     }
     setShowEmailDialog(false);
     setEmailData({ subject: '', body: '' });
@@ -142,12 +178,30 @@ export default function Admin() {
   };
 
   const handleDeleteUsuario = async (id, email) => {
+    // ========== SEGURANÇA: Rate Limiting ==========
+    if (!deleteRateLimiter.current.allow()) {
+      toast.error('Muitas exclusões. Aguarde 1 minuto antes de tentar novamente');
+      return;
+    }
+
     try {
       await base44.entities.User.delete(id);
-      toast.success(`Usuário ${email} deletado`);
+      
+      // Log de auditoria seguro
+      secureLog('user_deleted', {
+        idMasked: maskId(id),
+        emailMasked: maskEmail(email),
+        admin: maskEmail(user?.email)
+      }, 'warning');
+      
+      toast.success('Usuário deletado com sucesso');
       setShowDeleteDialog(null);
     } catch (error) {
-      console.error('Delete usuario error:', error);
+      // Não expor detalhes técnicos do erro
+      secureLog('user_delete_error', { 
+        error: error.message,
+        idMasked: maskId(id)
+      }, 'error');
       toast.error('Erro ao deletar usuário');
     }
   };
@@ -164,14 +218,28 @@ export default function Admin() {
         return;
       }
 
+      // ========== SEGURANÇA: Validação de Tamanho ==========
+      // Previne DoS via export excessivamente grande
+      if (usuariosFiltrados.length > 10000) {
+        toast.error('Limite de 10.000 usuários por export. Refine sua busca.');
+        return;
+      }
+
       const csv = usuariosFiltrados
-        .filter(u => u.email && u.email.trim()) // Filtrar emails vazios
+        .filter(u => u.email && u.email.trim())
         .map(u => {
-          const name = (u.full_name || '').replace(/"/g, '""'); // Escapar aspas
+          const name = (u.full_name || '').replace(/"/g, '""'); // CSV escape
           return `"${name}";"${u.email.trim()}"`;
         })
         .join('\n');
       
+      // ========== SEGURANÇA: Validação de Tamanho Final ==========
+      const csvSize = new Blob([csv]).size;
+      if (csvSize > 10 * 1024 * 1024) { // 10MB limit
+        toast.error('Arquivo muito grande. Refine sua busca.');
+        return;
+      }
+
       const cabecalho = '"Nome";"Email"\n';
       const blob = new Blob([cabecalho + csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
@@ -180,9 +248,16 @@ export default function Admin() {
       link.setAttribute('download', `emails_usuarios_${new Date().toISOString().split('T')[0]}.csv`);
       link.click();
       URL.revokeObjectURL(url);
+      
+      // Log de auditoria seguro
+      secureLog('emails_exported', {
+        count: usuariosFiltrados.length,
+        admin: maskEmail(user?.email)
+      }, 'warning');
+      
       toast.success(`${usuariosFiltrados.length} emails exportados`);
     } catch (error) {
-      console.error('Export error:', error);
+      secureLog('export_error', { error: error.message }, 'error');
       toast.error('Erro ao exportar emails');
     }
   };
