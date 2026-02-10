@@ -91,20 +91,12 @@ export default function DocumentoDetalhe() {
     navigate(`${createPageUrl('DocumentoDetalhe')}?documentoId=${docId}&casoId=${casoId}`);
   };
 
-  if (docLoading) {
+  const statusConfig = documento ? statusAnaliseConfig[documento.status_analise] : null;
+  const analisesFiltradas = documento ? analiseHistorico.filter(a => a.documento_tipo === documento.tipo_documento) : [];
+
+  if (docLoading || !documento) {
     return <div className="p-6 text-center text-slate-600">Carregando...</div>;
   }
-
-  if (!documento) {
-    return (
-      <div className="p-6">
-        <div className="text-center text-slate-600">Documento não encontrado</div>
-      </div>
-    );
-  }
-
-  const statusConfig = statusAnaliseConfig[documento.status_analise];
-  const analisesFiltradas = analiseHistorico.filter(a => a.documento_tipo === documento.tipo_documento);
 
   return (
     <div className="min-h-screen bg-slate-50">
