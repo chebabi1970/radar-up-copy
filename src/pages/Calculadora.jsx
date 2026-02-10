@@ -83,10 +83,38 @@ export default function Calculadora() {
         return;
     }
 
+    // Converter para USD
+    const cotacaoDolar = 5.3067;
+    const valorUSD = numerador / cotacaoDolar;
+
+    // Determinar modalidade
+    let modalidade = '';
+    let limiteOperacao = 0;
+    let corModalidade = '';
+
+    if (valorUSD < 50000) {
+      modalidade = 'Radar Limitado';
+      limiteOperacao = 50000;
+      corModalidade = 'text-amber-700';
+    } else if (valorUSD >= 50000 && valorUSD < 150000) {
+      modalidade = 'Radar Limitado';
+      limiteOperacao = 150000;
+      corModalidade = 'text-blue-700';
+    } else {
+      modalidade = 'Habilitação Ilimitada';
+      limiteOperacao = 0;
+      corModalidade = 'text-green-700';
+    }
+
     setResultado({
       valor: numerador,
       formula: formula,
-      valorFormatado: numerador.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+      valorFormatado: numerador.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+      valorUSD: valorUSD,
+      valorUSDFormatado: valorUSD.toLocaleString('en-US', { style: 'currency', currency: 'USD' }),
+      modalidade: modalidade,
+      limiteOperacao: limiteOperacao,
+      corModalidade: corModalidade
     });
   };
 
@@ -562,11 +590,38 @@ export default function Calculadora() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="bg-white rounded-lg p-6 border border-green-200">
-                <div className="text-sm text-slate-600 mb-1">Capacidade Financeira Estimada</div>
-                <div className="text-4xl font-bold text-green-700 mb-2">{resultado.valorFormatado}</div>
-                <div className="text-sm text-slate-600">
+                <div className="text-sm text-slate-600 mb-1">Capacidade Financeira Estimada (BRL)</div>
+                <div className="text-3xl font-bold text-green-700 mb-4">{resultado.valorFormatado}</div>
+                
+                <div className="border-t border-slate-200 pt-4 mb-4">
+                  <div className="text-sm text-slate-600 mb-1">Valor em USD (Cotação: R$ 5,3067)</div>
+                  <div className="text-4xl font-bold text-blue-700 mb-2">{resultado.valorUSDFormatado}</div>
+                </div>
+
+                <div className="text-sm text-slate-600 mb-3">
                   <span className="font-medium">Fórmula aplicada:</span> {resultado.formula}
                 </div>
+              </div>
+
+              <div className={`bg-white rounded-lg p-6 border-2 ${
+                resultado.modalidade === 'Habilitação Ilimitada' 
+                  ? 'border-green-500' 
+                  : 'border-blue-500'
+              }`}>
+                <div className="text-sm text-slate-600 mb-2">Modalidade de Habilitação</div>
+                <div className={`text-3xl font-bold mb-3 ${resultado.corModalidade}`}>
+                  {resultado.modalidade}
+                </div>
+                {resultado.limiteOperacao > 0 && (
+                  <div className="text-lg font-semibold text-slate-700">
+                    Limite: USD {resultado.limiteOperacao.toLocaleString('en-US')}
+                  </div>
+                )}
+                {resultado.modalidade === 'Habilitação Ilimitada' && (
+                  <div className="text-lg font-semibold text-green-700">
+                    ✓ Sem limite de operação
+                  </div>
+                )}
               </div>
 
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm">
@@ -579,12 +634,13 @@ export default function Calculadora() {
                 </p>
               </div>
 
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-900">
-                <p className="font-medium mb-1">⚠️ Observação Importante</p>
-                <p>
-                  Este é apenas o numerador da fórmula. O valor final da capacidade financeira deve considerar 
-                  também o denominador conforme § 3º do art. 2º da Portaria COANA 72/2020.
-                </p>
+              <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-sm text-slate-700">
+                <p className="font-medium text-slate-900 mb-2">📋 Critérios de Classificação</p>
+                <ul className="space-y-1 text-xs">
+                  <li>• Menor que USD 50.000,00 → Radar Limitado USD 50.000,00</li>
+                  <li>• Entre USD 50.000,00 e USD 149.999,99 → Radar Limitado USD 150.000,00</li>
+                  <li>• Igual ou maior que USD 150.000,00 → Habilitação Ilimitada</li>
+                </ul>
               </div>
             </CardContent>
           </Card>
