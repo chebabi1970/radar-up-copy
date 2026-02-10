@@ -174,6 +174,15 @@ export default function Casos() {
   });
 
   const generateChecklist = async (casoId, hipotese) => {
+     const hipoteseMap = {
+       'recursos_financeiros_livres': ['1100', '2100', '2110', '2120', '3100', '3110', '4100', '4110', '5100', '6100'],
+       'fruicao_desoneracao_tributaria': ['1100', '2100', '2110', '2120', '3100', '3110', '4100', '4110', '5100', '6100'],
+       'recolhimento_tributos_das': ['1100', '2100', '2110', '2120', '3100', '3110', '4100', '4110', '5100', '6100'],
+       'recolhimento_tributos_cprb': ['1100', '2100', '2110', '2120', '3100', '3110', '4100', '4110', '5100', '6100'],
+       'retomada_atividades': ['1100', '2100', '2110', '2120', '3100', '3110', '4100', '4110', '5100', '6100'],
+       'inicio_retomada_atividades_5anos': ['1100', '2100', '2110', '2120', '3100', '3110', '4100', '4110', '5100', '6100'],
+     };
+
      const items = [
        { codigo_dda: "1100", tipo_documento: "requerimento_das", descricao: "Requerimento Disponibilidade Ativo Circulante", base_legal: "Art. 5º", obrigatorio: true },
        { codigo_dda: "2100", tipo_documento: "documento_identificacao_responsavel", descricao: "Documento de identificação do responsável", base_legal: "Art. 5º, § 2º", obrigatorio: true },
@@ -200,7 +209,12 @@ export default function Casos() {
        { codigo_dda: "5160", tipo_documento: "comprovante_transferencia_integralizacao", descricao: "Comprovante de transferência de recursos", base_legal: "Art. 7º, II, c", obrigatorio: false },
      ];
 
+     const codigosAplicaveis = hipoteseMap[hipotese] || [];
+
      for (const item of items) {
+       const aplicavel = codigosAplicaveis.includes(item.codigo_dda);
+       if (!aplicavel) continue; // Pula items não-aplicáveis
+
        await base44.entities.ChecklistItem.create({
          caso_id: casoId,
          codigo_dda: item.codigo_dda,
