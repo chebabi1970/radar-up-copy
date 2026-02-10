@@ -33,15 +33,11 @@ export default function AnaliseDocumentoModal({ item, documentos, casoId, client
     setAnalisando(true);
     try {
       // Buscar todos os balancetes e extratos do caso
-      const balancetes = documentos.filter(d => d.tipo_documento?.includes('balancete'));
-      const extratos = documentos.filter(d => d.tipo_documento?.includes('extrato'));
-
-      console.log('Balancetes encontrados:', balancetes.length);
-      console.log('Extratos encontrados:', extratos.length);
+      const balancetes = documentos.filter(d => d.tipo_documento?.includes('balancete')).slice(0, 2);
+      const extratos = documentos.filter(d => d.tipo_documento?.includes('extrato')).slice(0, 3);
 
       if (balancetes.length === 0 || extratos.length === 0) {
         const msg = `Documentos necessários não encontrados. Balancetes: ${balancetes.length}, Extratos: ${extratos.length}`;
-        console.error(msg);
         setResultados({
           erro: true,
           mensagem: msg
@@ -50,32 +46,17 @@ export default function AnaliseDocumentoModal({ item, documentos, casoId, client
         return;
       }
 
-      // Extrair dados dos balancetes
-      const promptBalancete = `Você é contador especializado em análise de balancetes para revisão de estimativa RFB. Analise este/estes balancete(s) contábil(is) com MÁXIMA PRECISÃO:
+      // Extrair dados dos balancetes - PROMPT OTIMIZADO
+      const promptBalancete = `Extraia RÁPIDO caixa/bancos do balancete.
 
-      **INSTRUÇÕES CRÍTICAS:**
-      1. Extraia APENAS valores do grupo de Caixa/Bancos (ativo circulante)
-      2. Procure por: Caixa, Bancos c/ Movimento, Bancos s/ Movimento, Equivalentes de Caixa
-      3. Identifique cada banco/conta INDIVIDUALMENTE
-      4. Capture a DATA FINAL do período do balancete
-      5. Se houver múltiplos períodos, use o MAIS RECENTE
-      6. Converta todos os valores para NÚMEROS (remova formatação)
-
-      **RETORNE OBRIGATORIAMENTE:**
-      {
-      data_balancete: "YYYY-MM-DD (data final do período)",
-      periodo_referencia: "mês/ano",
-      saldos_caixa: {
-      "Caixa": número,
-      "Banco X - Conta 12345": número,
-      "Banco Y - Aplicação": número
-      },
-      total_caixa: número (soma de todos saldos),
-      contas_detalhadas: {
-      "descrição exata": número
-      },
-      observacoes: "qualquer nota sobre conversão ou dúvida"
-      }`;
+Procure: Caixa, Bancos (todos), Aplicações
+Retorne EM JSON APENAS:
+{
+  "data_balancete": "YYYY-MM-DD",
+  "total_caixa": 0,
+  "saldos_caixa": {"Banco X": valor},
+  "observacoes": ""
+}`;
 
       // Obter URLs assinadas para balancetes
       const balanceteUrls = await Promise.all(balancetes.map(async (b) => {
