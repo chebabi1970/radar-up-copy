@@ -295,15 +295,24 @@ export default function AnaliseDocumentoModal({ item, documentos, casoId, client
       resumo: string,
       classificacao_final: "APROVADO"|"INCONSISTENTE"|"FALTANTE"
       }`
-        : `Analise APENAS este documento: ${tipoDoc}
+        : `Você é analista de conformidade especializado em validação de documentos para processos RFB.
 
-      Retorne JSON com:
+      DOCUMENTO A ANALISAR: ${tipoDoc}
+
+      ANÁLISE GENÉRICA:
+      1. Extraia os dados principais visíveis no documento
+      2. Identifique o período de referência
+      3. Verifique se o documento está legível e completo
+      4. Liste alertas ou inconsistências encontradas
+      5. Determine se o documento é aprovável para protocolo
+
+      Retorne JSON estruturado:
       {
-      dados_extraidos: {},
-      checklist_verificacao: [],
-      indicadores_alerta: [],
-      resumo: "Análise em construção",
-      classificacao_final: "PENDENTE"
+      dados_extraidos: {informações principais extraídas},
+      checklist_verificacao: [{item: string, status: "OK"|"ALERTA"|"CRÍTICO", observacao: string}],
+      indicadores_alerta: [{tipo: string, severidade: "critica"|"media"|"leve", descricao: string}],
+      resumo: "resumo breve da análise",
+      classificacao_final: "APROVADO"|"INCONSISTENTE"|"PENDENTE"
       }`;
 
       // Obter URL assinada se for file_uri
