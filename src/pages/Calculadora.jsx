@@ -656,7 +656,7 @@ export default function Calculadora() {
               <strong>Portaria COANA Nº 72/2020:</strong> Estabelece procedimentos para revisão de estimativa de capacidade financeira.
             </p>
             <p>
-              <strong>Artigo 2º:</strong> Define a fórmula base de cálculo da capacidade financeira.
+              <strong>Artigo 2º:</strong> Define os tributos considerados na estimativa de capacidade financeira (IRPJ, CSLL, PIS/Pasep, Cofins e Contribuição Previdenciária).
             </p>
             <p>
               <strong>Artigo 4º:</strong> Lista as hipóteses que justificam a revisão de estimativa.
