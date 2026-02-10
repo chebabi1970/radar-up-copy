@@ -18,6 +18,7 @@ const navigation = [
   { name: 'Home', href: 'Home', icon: LayoutDashboard },
   { name: 'Clientes', href: 'Clientes', icon: Users },
   { name: 'Casos', href: 'Casos', icon: FolderOpen },
+  { name: 'FAQ', href: 'FAQ', icon: MessageCircle },
 ];
 const WHATSAPP_NUMBER = '+5511984848700'; // Atualize com seu número
 const WHATSAPP_MESSAGE = 'Olá! Preciso de suporte com a plataforma RADAR UP.';
