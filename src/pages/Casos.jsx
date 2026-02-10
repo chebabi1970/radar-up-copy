@@ -33,7 +33,8 @@ import {
   CheckCircle2,
   Loader2,
   Filter,
-  Trash2
+  Trash2,
+  Download
 } from 'lucide-react';
 // Imports de date-fns removidos (não utilizados)
 
@@ -231,6 +232,30 @@ export default function Casos() {
     return matchesSearch && matchesStatus;
   });
 
+  const exportarCSV = () => {
+    const headers = ['Número do Caso', 'Cliente', 'Hipótese', 'Status', 'Modalidade', 'Limite (USD)', 'Data Criação'];
+    const rows = filteredCasos.map(c => [
+      c.numero_caso || `Caso #${c.id.slice(0, 8)}`,
+      getClienteName(c.cliente_id),
+      hipoteseLabels[c.hipotese_revisao],
+      statusLabels[c.status],
+      c.modalidade_pretendida || '-',
+      c.limite_pretendido || '-',
+      new Date(c.created_date).toLocaleDateString('pt-BR')
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `casos_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10">
@@ -245,15 +270,26 @@ export default function Casos() {
             </div>
             <p className="text-sm text-slate-600 ml-10">Acompanhe todos os processos de revisão de habilitação</p>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={(open) => {
-            setIsDialogOpen(open);
-            if (!open) resetForm();
-          }}>
-            <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200 w-full sm:w-auto h-9 sm:h-10 text-xs sm:text-sm">
-                <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> <span className="hidden sm:inline">Novo Caso</span><span className="sm:hidden">Novo</span>
-              </Button>
-            </DialogTrigger>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={exportarCSV}
+              disabled={filteredCasos.length === 0}
+              className="h-9 sm:h-10 text-xs sm:text-sm"
+            >
+              <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Exportar CSV</span>
+              <span className="sm:hidden">CSV</span>
+            </Button>
+            <Dialog open={isDialogOpen} onOpenChange={(open) => {
+              setIsDialogOpen(open);
+              if (!open) resetForm();
+            }}>
+              <DialogTrigger asChild>
+                <Button className="bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200 w-full sm:w-auto h-9 sm:h-10 text-xs sm:text-sm">
+                  <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> <span className="hidden sm:inline">Novo Caso</span><span className="sm:hidden">Novo</span>
+                </Button>
+              </DialogTrigger>
             <DialogContent className="w-[95vw] max-w-lg sm:w-full max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="text-lg sm:text-xl">Novo Caso</DialogTitle>
@@ -403,7 +439,8 @@ export default function Casos() {
                 </div>
               </form>
             </DialogContent>
-          </Dialog>
+            </Dialog>
+          </div>
         </div>
 
         {/* Filters */}
