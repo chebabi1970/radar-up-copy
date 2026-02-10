@@ -7,7 +7,7 @@ const faqs = {
     {
       titulo: 'Procuração',
       pontos: [
-        { item: 'Rogério Zarattini Chebabi obrigatoriamente como outorgado', critico: true },
+        { item: 'Outorgado (procurador) obrigatoriamente indicado', critico: true },
         { item: 'Nome deve ser idêntico ao documento de identidade', critico: true },
         { item: 'Reconhecimento de firma em cartório', critico: false },
         { item: 'Poderes para comércio exterior' }
