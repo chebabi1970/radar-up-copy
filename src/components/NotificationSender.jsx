@@ -29,9 +29,12 @@ export default function NotificationSender({ usuarios = [], open = false, onOpen
 
     for (const u of usuariosParaNotificar) {
       try {
-        // Aqui você pode integrar com um sistema de notificações real
-        // Por enquanto, apenas registramos em logs
-        console.log(`[NOTIFICATION] ${u.email}: ${notificationData.titulo}`);
+        await base44.entities.Notificacao.create({
+          usuario_email: u.email,
+          titulo: notificationData.titulo,
+          mensagem: notificationData.mensagem,
+          tipo: 'info'
+        });
         enviadas++;
       } catch (error) {
         console.error(`Erro ao notificar ${u.email}:`, error);

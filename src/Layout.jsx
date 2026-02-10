@@ -13,6 +13,7 @@ import {
   MessageCircle
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import NotificationBell from '@/components/NotificationBell';
 
 const navigation = [
   { name: 'Home', href: 'Home', icon: LayoutDashboard },
@@ -97,6 +98,11 @@ export default function Layout({ children, currentPageName }) {
             })}
           </nav>
 
+          {/* Notification Bell - Desktop Sidebar */}
+          <div className="p-4 border-t border-slate-100 hidden lg:flex">
+            <NotificationBell />
+          </div>
+
           {/* Footer */}
           <div className="p-4 border-t border-slate-100">
             <Button 
@@ -114,18 +120,21 @@ export default function Layout({ children, currentPageName }) {
       {/* Main content */}
       <div className="lg:pl-64">
         {/* Mobile header */}
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center px-4 lg:hidden">
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={() => setSidebarOpen(true)}
-          >
-            <Menu className="h-5 w-5" />
-          </Button>
-          <div className="flex items-center gap-2 ml-3">
-            <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69837481d21b7c5da35b451b/71a683b7b_Designsemnome10.png" alt="Radar UP" className="h-8 w-8 object-contain" />
-            <span className="font-bold text-slate-900">RADAR UP</span>
+        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:hidden">
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+            <div className="flex items-center gap-2">
+              <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69837481d21b7c5da35b451b/71a683b7b_Designsemnome10.png" alt="Radar UP" className="h-8 w-8 object-contain" />
+              <span className="font-bold text-slate-900">RADAR UP</span>
+            </div>
           </div>
+          <NotificationBell />
         </header>
 
         {/* Page content */}
