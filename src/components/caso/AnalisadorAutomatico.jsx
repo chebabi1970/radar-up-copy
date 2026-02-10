@@ -60,7 +60,7 @@ export default function AnalisadorAutomatico({ casoId, documentos, checklistItem
       // Preparar dados dos documentos para análise
       const dadosDocumentos = documentos
         .filter(d => d.file_url || d.file_uri)
-        .slice(0, 8) // Aumentar para 8 documentos
+        .slice(0, 6) // Reduzir para 6 documentos
         .map(d => ({
           tipo: d.tipo_documento,
           nome: d.nome_arquivo,
@@ -70,195 +70,67 @@ export default function AnalisadorAutomatico({ casoId, documentos, checklistItem
         }));
 
       // Buscar dados do cliente e caso completo
-      const casos = await base44.entities.Caso.list({ id: casoId });
+      const [casos, cliente] = await Promise.all([
+        base44.entities.Caso.list({ id: casoId }),
+        base44.entities.Cliente.list()
+      ]);
+      
       const caso = casos.length > 0 ? casos[0] : null;
-      const cliente = caso ? await base44.entities.Cliente.list({ id: caso.cliente_id }) : [];
-      const clienteData = cliente.length > 0 ? cliente[0] : null;
+      const clienteData = caso ? cliente.find(c => c.id === caso.cliente_id) : null;
 
-      // Preparar URLs dos documentos para análise visual pela IA
+      // Preparar URLs dos documentos para análise visual pela IA - MÁXIMO 3
       const documentoUrls = dadosDocumentos
-        .filter(d => d.url && !d.url.includes('gs://')) // Apenas URLs públicas
-        .slice(0, 5) // Limitar a 5 para análise visual
+        .filter(d => d.url && !d.url.includes('gs://'))
+        .slice(0, 3) // Reduzir para 3 para análise visual
         .map(d => d.url);
 
-      // Preparar contexto do checklist
-      const checklistContext = checklistItems.map(item => ({
-        tipo: item.tipo_documento,
-        status: item.status,
-        obrigatorio: item.obrigatorio,
-        descricao: item.descricao
-      }));
+      // Preparar contexto do checklist - APENAS FALTANTES CRÍTICOS
+      const checklistContext = checklistItems
+        .filter(item => item.status !== 'aprovado')
+        .slice(0, 8)
+        .map(item => ({
+          tipo: item.tipo_documento,
+          status: item.status,
+          obrigatorio: item.obrigatorio
+        }));
 
-      // Chamar IA para análise com contexto completo
+      // Prompt OTIMIZADO - muito mais conciso
       const analise = await base44.integrations.Core.InvokeLLM({
-        prompt: `Você é um analista sênior de conformidade RFB especializado em processos de habilitação de importadores/exportadores.
+        prompt: `Analise rapidamente estes documentos de processo RFB. SEJA CONCISO.
 
-**DADOS DO CASO**:
-Número: ${caso?.numero_caso || 'N/A'}
-Status: ${caso?.status || 'N/A'}
-Modalidade Pretendida: ${caso?.modalidade_pretendida || 'N/A'}
-Limite Pretendido: ${caso?.limite_pretendido ? `USD ${caso.limite_pretendido.toLocaleString()}` : 'N/A'}
-Hipótese Legal: ${caso?.hipotese_revisao || 'N/A'}
+CASO: ${caso?.numero_caso || 'N/A'} | ${clienteData?.razao_social || 'N/A'} (CNPJ: ${clienteData?.cnpj || 'N/A'})
 
-**CLIENTE**:
-Razão Social: ${clienteData?.razao_social || 'N/A'}
-CNPJ: ${clienteData?.cnpj || 'N/A'}
-Endereço: ${clienteData?.endereco || 'N/A'}
-Procuração e-CAC: ${clienteData?.procuracao_eletronica ? 'SIM' : 'NÃO'}
+DOCUMENTOS (${dadosDocumentos.length}): ${dadosDocumentos.map(d => d.tipo).join(', ')}
 
-**DOCUMENTOS PARA ANÁLISE** (${dadosDocumentos.length} documentos):
-${JSON.stringify(dadosDocumentos.map(d => ({ 
-  tipo: tiposDocumentos[d.tipo] || d.tipo, 
-  nome: d.nome, 
-  data: d.data,
-  status: d.status_analise 
-})), null, 2)}
+CHECKLIST PENDENTE: ${checklistContext.map(c => c.tipo).join(', ') || 'Nenhum'}
 
-**CHECKLIST DE DOCUMENTOS OBRIGATÓRIOS**:
-${JSON.stringify(checklistContext, null, 2)}
+ANALISE RÁPIDA:
+1. Documentos obrigatórios faltando?
+2. Saldos batem entre balancete e extratos?
+3. Inconsistências de valores/datas?
+4. Riscos críticos?
+5. Aprovável para protocolo?
 
-**ANÁLISE COMPLETA - CHECKLIST AUTOMATIZADO**:
-
-1. **ANÁLISE DE CHECKLIST**:
-   - Identificar documentos obrigatórios faltantes
-   - Verificar conformidade dos documentos enviados vs obrigatoriedade
-   - Alertar sobre documentos críticos não fornecidos
-
-2. **CRUZAMENTO DE DOCUMENTOS FINANCEIROS**:
-   - Somas do balancete devem corresponder aos saldos dos extratos
-   - Datas de referência devem ser consistentes (mesmo período)
-   - Saldos em 28/02 (ou 29 em anos bissextos), 30 e 31 devem corresponder
-   - Validar se valores batem entre diferentes documentos
-
-3. **VALIDAÇÃO DE DATAS E PRAZOS**:
-   - Nenhum documento pode ter data futura
-   - Verificar se documentos estão dentro de prazos de validade
-   - Alertar se documentos têm datas muito antigas (>6 meses)
-   - Comparar datas entre documentos relacionados
-
-4. **EXTRAÇÃO AUTOMÁTICA DE DADOS CHAVE**:
-   - Extrair valores financeiros (saldos, movimentações, capacidade)
-   - Identificar CNPJs, razões sociais, endereços
-   - Capturar datas de referência e períodos
-   - Extrair assinaturas e autenticações
-
-5. **VALIDAÇÃO CADASTRAL E DOCUMENTAL**:
-   - Comparar RAZÃO SOCIAL do cadastro com documentos
-   - Validar CNPJ em todos os documentos
-   - Verificar ENDEREÇO cadastrado vs documentos
-   - Confirmar procuração e-CAC se necessário
-
-6. **DETECÇÃO DE PADRÕES SUSPEITOS**:
-   - Movimentações anormais próximas ao período de análise
-   - Saldos que aumentam/diminuem drasticamente entre períodos
-   - Movimentos circulares (entrada/saída mesmo dia)
-   - Valores "redondos" suspeitos
-
-7. **ALERTAS ESPECÍFICOS RFB**:
-   - ⚠️ Contrato de mútuo SEM registro em cartório
-   - ⚠️ Falta de IOF em contratos de mútuo
-   - ⚠️ Inconsistências de valores entre documentos
-   - ⚠️ Documentação incompleta típica de rejeição
-   - ⚠️ Falta de procuração e-CAC
-
-8. **ANÁLISE PREDITIVA E RECOMENDAÇÕES**:
-   - Probabilidade de aprovação (baixa/média/alta) com justificativa
-   - Listar riscos que podem resultar em indeferimento
-   - Sugerir próximos passos e documentos adicionais
-   - Recomendar ações corretivas antes do protocolo
-
-**RETORNE OBRIGATORIAMENTE UM JSON ESTRUTURADO**:
+RESPONDA EM JSON:
 {
-  "resumo": "resumo executivo focado em riscos críticos e principais achados",
-  "documentos_faltantes": [
-    {
-      "tipo": "tipo do documento obrigatório",
-      "criticidade": "critica|alta|media",
-      "motivo": "por que é necessário"
-    }
-  ],
-  "informacoes_extraidas": [
-    {
-      "documento": "nome do documento",
-      "dados_chave": {
-        "cnpj": "valor extraído",
-        "razao_social": "valor extraído",
-        "valores_financeiros": ["lista de valores"],
-        "data_referencia": "data",
-        "outros_campos": "conforme relevante"
-      }
-    }
-  ],
-  "discrepancias": [
-    {
-      "tipo": "tipo exato da discrepância",
-      "descricao": "descrição técnica e detalhada",
-      "documentos_envolvidos": ["doc1", "doc2"],
-      "severidade": "critica|media|leve",
-      "valor_encontrado": "valor real",
-      "valor_esperado": "valor que deveria ser",
-      "impacto": "impacto no processo"
-    }
-  ],
-  "validacoes": [
-    {
-      "item": "o que foi validado",
-      "status": "ok|alerta|erro",
-      "detalhes": "resultado detalhado da validação"
-    }
-  ],
-  "riscos": [
-    {
-      "descricao": "descrição do risco identificado",
-      "impacto": "alto|medio|baixo",
-      "fundamento_legal": "artigo/norma aplicável",
-      "probabilidade_problema": "alta|media|baixa"
-    }
-  ],
-  "proximos_passos": [
-    {
-      "acao": "ação recomendada",
-      "prioridade": "alta|media|baixa",
-      "prazo_sugerido": "urgente|curto|medio",
-      "justificativa": "por que fazer isso"
-    }
-  ],
+  "resumo": "1-2 linhas dos principais achados",
+  "documentos_faltantes": [{"tipo": "", "criticidade": ""}],
+  "discrepancias": [{"tipo": "", "severidade": "", "descricao": ""}],
+  "riscos": [{"descricao": "", "impacto": "alto|medio|baixo"}],
+  "proximosPasso": "1-2 ações prioritárias",
   "probabilidade_aprovacao": "baixa|media|alta",
-  "justificativa_probabilidade": "explicação da avaliação",
-  "conclusao": "conclusão final com recomendações estratégicas"
+  "conclusao": "Aprovável ou pendências?"
 }`,
-        add_context_from_internet: false,
         file_urls: documentoUrls.length > 0 ? documentoUrls : undefined,
         response_json_schema: {
           type: 'object',
           properties: {
             resumo: { type: 'string' },
-            documentos_faltantes: { 
-              type: 'array',
-              items: { type: 'object' }
-            },
-            informacoes_extraidas: { 
-              type: 'array',
-              items: { type: 'object' }
-            },
-            discrepancias: { 
-              type: 'array',
-              items: { type: 'object' }
-            },
-            validacoes: { 
-              type: 'array',
-              items: { type: 'object' }
-            },
-            riscos: { 
-              type: 'array',
-              items: { type: 'object' }
-            },
-            proximos_passos: { 
-              type: 'array',
-              items: { type: 'object' }
-            },
+            documentos_faltantes: { type: 'array', items: { type: 'object' } },
+            discrepancias: { type: 'array', items: { type: 'object' } },
+            riscos: { type: 'array', items: { type: 'object' } },
+            proximosPasso: { type: 'string' },
             probabilidade_aprovacao: { type: 'string' },
-            justificativa_probabilidade: { type: 'string' },
             conclusao: { type: 'string' }
           }
         }
