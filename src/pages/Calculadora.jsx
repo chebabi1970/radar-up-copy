@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calculator, TrendingUp, FileText, DollarSign, Building2, Clock } from 'lucide-react';
+import { Calculator, TrendingUp, FileText, DollarSign, Building2, Clock, Upload, Loader2 } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 import {
   Select,
   SelectContent,
@@ -28,6 +29,7 @@ export default function Calculadora() {
 
   // Estados para Hipótese III - DAS/Simples Nacional
   const [receitasBrutasDAS, setReceitasBrutasDAS] = useState('');
+  const [uploadingDAS, setUploadingDAS] = useState(false);
 
   // Estados para Hipótese IV - CPRB
   const [receitasBrutasCPRB, setReceitasBrutasCPRB] = useState('');
@@ -35,6 +37,7 @@ export default function Calculadora() {
   // Estados para Hipótese V - Início/Retomada < 5 anos
   const [tribsSeis1a4, setTribsSeis1a4] = useState('');
   const [contribSeis5, setContribSeis5] = useState('');
+  const [uploadingTributos, setUploadingTributos] = useState(false);
 
   const calcularCapacidade = () => {
     let numerador = 0;
@@ -99,6 +102,101 @@ export default function Calculadora() {
     setReceitasBrutasCPRB('');
     setTribsSeis1a4('');
     setContribSeis5('');
+    setUploadingDAS(false);
+    setUploadingTributos(false);
+  };
+
+  const processarPlanilhaDAS = async (file) => {
+    setUploadingDAS(true);
+    try {
+      // Upload do arquivo
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+
+      // Extrair dados com schema para faturamento mensal
+      const resultado = await base44.integrations.Core.ExtractDataFromUploadedFile({
+        file_url,
+        json_schema: {
+          type: "object",
+          properties: {
+            faturamentos: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  mes: { type: "string" },
+                  receita_bruta: { type: "number" }
+                }
+              }
+            }
+          }
+        }
+      });
+
+      if (resultado.status === 'success' && resultado.output?.faturamentos) {
+        const total = resultado.output.faturamentos.reduce((acc, item) => acc + (item.receita_bruta || 0), 0);
+        setReceitasBrutasDAS(total.toString());
+        alert(`Planilha processada com sucesso! ${resultado.output.faturamentos.length} meses identificados.`);
+      } else {
+        alert('Erro ao processar planilha: ' + (resultado.details || 'Formato inválido'));
+      }
+    } catch (error) {
+      alert('Erro ao processar arquivo: ' + error.message);
+    } finally {
+      setUploadingDAS(false);
+    }
+  };
+
+  const processarPlanilhaTributos = async (file) => {
+    setUploadingTributos(true);
+    try {
+      // Upload do arquivo
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+
+      // Extrair dados com schema para tributos mensais
+      const resultado = await base44.integrations.Core.ExtractDataFromUploadedFile({
+        file_url,
+        json_schema: {
+          type: "object",
+          properties: {
+            tributos_i_a_iv: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  mes: { type: "string" },
+                  valor: { type: "number" }
+                }
+              }
+            },
+            contribuicoes_v: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  mes: { type: "string" },
+                  valor: { type: "number" }
+                }
+              }
+            }
+          }
+        }
+      });
+
+      if (resultado.status === 'success' && resultado.output) {
+        const totalTribs = resultado.output.tributos_i_a_iv?.reduce((acc, item) => acc + (item.valor || 0), 0) || 0;
+        const totalContrib = resultado.output.contribuicoes_v?.reduce((acc, item) => acc + (item.valor || 0), 0) || 0;
+        
+        setTribsSeis1a4(totalTribs.toString());
+        setContribSeis5(totalContrib.toString());
+        alert('Planilha processada com sucesso!');
+      } else {
+        alert('Erro ao processar planilha: ' + (resultado.details || 'Formato inválido'));
+      }
+    } catch (error) {
+      alert('Erro ao processar arquivo: ' + error.message);
+    } finally {
+      setUploadingTributos(false);
+    }
   };
 
   const hipoteses = [
@@ -283,6 +381,46 @@ export default function Calculadora() {
               {/* Hipótese III */}
               {hipoteseSelecionada === 'III' && (
                 <>
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+                    <p className="font-medium text-amber-900 mb-2">📊 Upload de Planilha de Faturamento</p>
+                    <p className="text-sm text-amber-800 mb-3">
+                      Faça upload da planilha com o faturamento mensal dos últimos 60 meses (Excel ou CSV)
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <label className="cursor-pointer">
+                        <input
+                          type="file"
+                          accept=".xlsx,.xls,.csv"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              processarPlanilhaDAS(e.target.files[0]);
+                            }
+                          }}
+                          disabled={uploadingDAS}
+                        />
+                        <div className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-dashed transition-colors ${
+                          uploadingDAS 
+                            ? 'bg-slate-100 border-slate-300 cursor-not-allowed' 
+                            : 'bg-white border-amber-300 hover:bg-amber-50'
+                        }`}>
+                          {uploadingDAS ? (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              <span className="text-sm">Processando...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="h-4 w-4" />
+                              <span className="text-sm font-medium">Upload Planilha</span>
+                            </>
+                          )}
+                        </div>
+                      </label>
+                      <span className="text-xs text-slate-500">ou preencha manualmente abaixo</span>
+                    </div>
+                  </div>
+
                   <div className="space-y-2">
                     <Label htmlFor="receitasDAS">Somatório Receitas Brutas DAS (60 meses) - R$</Label>
                     <Input
@@ -331,6 +469,46 @@ export default function Calculadora() {
               {/* Hipótese V */}
               {hipoteseSelecionada === 'V' && (
                 <>
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+                    <p className="font-medium text-amber-900 mb-2">📊 Upload de Planilha de Tributos</p>
+                    <p className="text-sm text-amber-800 mb-3">
+                      Faça upload da planilha com tributos dos últimos 6 meses (Excel ou CSV)
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <label className="cursor-pointer">
+                        <input
+                          type="file"
+                          accept=".xlsx,.xls,.csv"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              processarPlanilhaTributos(e.target.files[0]);
+                            }
+                          }}
+                          disabled={uploadingTributos}
+                        />
+                        <div className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-dashed transition-colors ${
+                          uploadingTributos 
+                            ? 'bg-slate-100 border-slate-300 cursor-not-allowed' 
+                            : 'bg-white border-amber-300 hover:bg-amber-50'
+                        }`}>
+                          {uploadingTributos ? (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              <span className="text-sm">Processando...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="h-4 w-4" />
+                              <span className="text-sm font-medium">Upload Planilha</span>
+                            </>
+                          )}
+                        </div>
+                      </label>
+                      <span className="text-xs text-slate-500">ou preencha manualmente abaixo</span>
+                    </div>
+                  </div>
+
                   <div className="space-y-2">
                     <Label htmlFor="tribsSeis">Soma Tributos I-IV (6 meses anteriores) - R$</Label>
                     <Input
