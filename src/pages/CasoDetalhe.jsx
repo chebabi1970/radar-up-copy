@@ -46,14 +46,8 @@ import {
 
 import ChecklistTab from '@/components/caso/ChecklistTab';
 import DocumentosTab from '@/components/caso/DocumentosTab';
-import DivergenciasTab from '@/components/caso/DivergenciasTab';
 import AnaliseTab from '@/components/caso/AnaliseTab';
-import HistoricoTab from '@/components/caso/HistoricoTab';
-import AnalisadorAutomatico from '@/components/caso/AnalisadorAutomatico';
 import AnaliseCruzadaPanel from '@/components/caso/AnaliseCruzadaPanel';
-import ConformidadePanel from '@/components/caso/ConformidadePanel';
-import WorkflowGestao from '@/components/caso/WorkflowGestao';
-import ChatContestaçãoAnálise from '@/components/caso/ChatContestaçãoAnálise';
 import PrivacyWarning from '@/components/caso/PrivacyWarning';
 import { Input } from "@/components/ui/input";
 
@@ -406,41 +400,6 @@ export default function CasoDetalhe() {
                   <span className="hidden sm:inline">Documentos</span>
                   <span className="sm:hidden">Docs</span>
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="divergencias" 
-                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
-                >
-                  <AlertTriangle className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-                  <span className="hidden sm:inline">Divergências</span>
-                  <span className="sm:hidden">Div</span>
-                  {unresolvedDivergencias > 0 && (
-                    <Badge className="ml-1 md:ml-2 bg-red-100 text-red-700 text-xs px-1.5">{unresolvedDivergencias}</Badge>
-                  )}
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="analise" 
-                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
-                >
-                  <Calculator className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-                  <span className="hidden sm:inline">Análise</span>
-                  <span className="sm:hidden">Anál</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="historico" 
-                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
-                >
-                  <History className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-                  <span className="hidden sm:inline">Histórico</span>
-                  <span className="sm:hidden">Hist</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                   value="ia-analise" 
-                   className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
-                 >
-                   <Zap className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-                   <span className="hidden md:inline">IA</span>
-                   <span className="md:hidden">IA</span>
-                 </TabsTrigger>
                  <TabsTrigger 
                    value="cruzada" 
                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
@@ -449,30 +408,14 @@ export default function CasoDetalhe() {
                    <span className="hidden lg:inline">Cruzada</span>
                    <span className="lg:hidden">Cruz</span>
                  </TabsTrigger>
-                 <TabsTrigger 
-                    value="conformidade" 
-                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
-                  >
-                    <Shield className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-                    <span className="hidden lg:inline">Conformidade</span>
-                    <span className="lg:hidden">Conf</span>
-                  </TabsTrigger>
-                  <TabsTrigger 
-                     value="workflow" 
-                     className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
-                   >
-                     <Zap className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-                     <span className="hidden sm:inline">Workflow</span>
-                     <span className="sm:hidden">WF</span>
-                   </TabsTrigger>
-                   <TabsTrigger 
-                     value="contestacao" 
-                     className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
-                   >
-                     <MessageCircle className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-                     <span className="hidden md:inline">Chat IA</span>
-                     <span className="md:hidden">Chat</span>
-                   </TabsTrigger>
+                <TabsTrigger 
+                  value="resumo" 
+                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
+                >
+                  <Calculator className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                  <span className="hidden sm:inline">Resumo</span>
+                  <span className="sm:hidden">Res</span>
+                </TabsTrigger>
                   </TabsList>
             </CardHeader>
 
@@ -484,36 +427,12 @@ export default function CasoDetalhe() {
               <DocumentosTab casoId={casoId} documentos={documentos} checklistItems={checklistItems} cliente={cliente} />
             </TabsContent>
 
-            <TabsContent value="divergencias" className="p-3 md:p-6 mt-0">
-              <DivergenciasTab caso={caso} documentos={documentos} />
-            </TabsContent>
-
-            <TabsContent value="analise" className="p-3 md:p-6 mt-0">
-              <AnaliseTab caso={caso} cliente={cliente} documentos={documentos} />
-            </TabsContent>
-
-            <TabsContent value="historico" className="p-3 md:p-6 mt-0">
-              <HistoricoTab casoId={casoId} />
-            </TabsContent>
-
-            <TabsContent value="ia-analise" className="p-3 md:p-6 mt-0">
-              <AnalisadorAutomatico casoId={casoId} documentos={documentos} checklistItems={checklistItems} />
-            </TabsContent>
-
             <TabsContent value="cruzada" className="p-3 md:p-6 mt-0">
               <AnaliseCruzadaPanel documentos={documentos} cliente={cliente} />
             </TabsContent>
 
-            <TabsContent value="conformidade" className="p-3 md:p-6 mt-0">
-              <ConformidadePanel casoId={casoId} cliente={cliente} />
-            </TabsContent>
-
-            <TabsContent value="workflow" className="p-3 md:p-6 mt-0">
-              <WorkflowGestao casoId={casoId} casoData={caso} />
-            </TabsContent>
-
-            <TabsContent value="contestacao" className="p-3 md:p-6 mt-0 h-[600px]">
-              <ChatContestaçãoAnálise casoId={casoId} casoData={caso} documentosAnálise={documentos} />
+            <TabsContent value="resumo" className="p-3 md:p-6 mt-0">
+              <AnaliseTab caso={caso} cliente={cliente} documentos={documentos} />
             </TabsContent>
             </Tabs>
         </Card>
