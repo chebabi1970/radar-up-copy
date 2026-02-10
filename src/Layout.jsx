@@ -18,7 +18,7 @@ const navigation = [
   { name: 'Clientes', href: 'Clientes', icon: Users },
   { name: 'Casos', href: 'Casos', icon: FolderOpen },
 ];
-const WHATSAPP_NUMBER = '+5511999999999'; // Atualize com seu número
+const WHATSAPP_NUMBER = '+5511984848700'; // Atualize com seu número
 const WHATSAPP_MESSAGE = 'Olá! Preciso de suporte com a plataforma RADAR UP.';
 export default function Layout({ children, currentPageName }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
