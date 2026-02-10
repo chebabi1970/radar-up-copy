@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { formatDateBrasilia, formatDateTimeBrasilia } from '@/components/utils/dateFormatter';
 import { toast } from 'sonner';
+import NotificationSender from '@/components/NotificationSender';
 
 export default function Admin() {
   const [user, setUser] = useState(null);
@@ -25,6 +26,7 @@ export default function Admin() {
   const [sortUsuarios, setSortUsuarios] = useState({ field: 'created_date', direction: 'desc' });
   const [usuariosPagina, setUsuariosPagina] = useState(1);
   const usuariosPorPagina = 10;
+  const [showNotificationSender, setShowNotificationSender] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(u => {
@@ -218,6 +220,13 @@ export default function Admin() {
               <p className="text-slate-600 mt-1">Bem-vindo, {user?.full_name}</p>
             </div>
             <div className="flex gap-3">
+              <Button 
+                onClick={() => setShowNotificationSender(true)}
+                className="bg-green-600 hover:bg-green-700 gap-2"
+              >
+                <Bell className="h-4 w-4" />
+                Enviar Notificação
+              </Button>
               <Button 
                 onClick={() => setShowEmailDialog(true)}
                 className="bg-blue-600 hover:bg-blue-700 gap-2"
@@ -580,6 +589,13 @@ export default function Admin() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {/* Notification Sender */}
+        <NotificationSender 
+          usuarios={users}
+          open={showNotificationSender}
+          onOpenChange={setShowNotificationSender}
+        />
 
         {/* Email Modal */}
         <Dialog open={showEmailDialog} onOpenChange={setShowEmailDialog}>

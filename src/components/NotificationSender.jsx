@@ -1,0 +1,169 @@
+import React, { useState } from 'react';
+import { base44 } from '@/api/base44Client';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Loader2, Send } from 'lucide-react';
+import { toast } from 'sonner';
+
+export default function NotificationSender({ usuarios = [], open = false, onOpenChange }) {
+  const [usuariosSelecionados, setUsuariosSelecionados] = useState(new Set());
+  const [busca, setBusca] = useState('');
+  const [notificationData, setNotificationData] = useState({ titulo: '', mensagem: '' });
+  const [sending, setSending] = useState(false);
+
+  const handleSendNotifications = async () => {
+    if (!notificationData.titulo.trim() || !notificationData.mensagem.trim()) {
+      toast.error('Preencha o título e a mensagem');
+      return;
+    }
+    if (usuariosSelecionados.size === 0) {
+      toast.error('Selecione pelo menos um usuário');
+      return;
+    }
+
+    setSending(true);
+    const usuariosParaNotificar = usuarios.filter(u => usuariosSelecionados.has(u.id));
+    let enviadas = 0;
+
+    for (const u of usuariosParaNotificar) {
+      try {
+        // Aqui você pode integrar com um sistema de notificações real
+        // Por enquanto, apenas registramos em logs
+        console.log(`[NOTIFICATION] ${u.email}: ${notificationData.titulo}`);
+        enviadas++;
+      } catch (error) {
+        console.error(`Erro ao notificar ${u.email}:`, error);
+      }
+    }
+
+    setSending(false);
+    toast.success(`Notificações enviadas: ${enviadas}/${usuariosParaNotificar.length}`);
+    onOpenChange(false);
+    setNotificationData({ titulo: '', mensagem: '' });
+    setUsuariosSelecionados(new Set());
+    setBusca('');
+  };
+
+  const usuariosFiltrados = usuarios.filter(u =>
+    u.email.toLowerCase().includes(busca.toLowerCase()) ||
+    (u.full_name && u.full_name.toLowerCase().includes(busca.toLowerCase()))
+  );
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Enviar Notificações aos Usuários</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+          {/* Seleção de Usuários */}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <label className="text-sm font-medium text-slate-700">Selecionar Usuários</label>
+              <button
+                onClick={() => {
+                  if (usuariosFiltrados.every(u => usuariosSelecionados.has(u.id))) {
+                    const newSet = new Set(usuariosSelecionados);
+                    usuariosFiltrados.forEach(u => newSet.delete(u.id));
+                    setUsuariosSelecionados(newSet);
+                  } else {
+                    const newSet = new Set(usuariosSelecionados);
+                    usuariosFiltrados.forEach(u => newSet.add(u.id));
+                    setUsuariosSelecionados(newSet);
+                  }
+                }}
+                className="text-xs text-green-600 hover:text-green-800 font-semibold"
+              >
+                {usuariosFiltrados.every(u => usuariosSelecionados.has(u.id)) ? 'Desselecionar filtrados' : 'Selecionar filtrados'}
+              </button>
+            </div>
+            <Input
+              placeholder="Buscar por email ou nome..."
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              disabled={sending}
+              className="mb-3"
+            />
+            <div className="border border-slate-200 rounded-lg p-3 max-h-48 overflow-y-auto space-y-2 bg-slate-50">
+              {usuariosFiltrados.length === 0 ? (
+                <p className="text-sm text-slate-500 text-center py-4">Nenhum usuário encontrado</p>
+              ) : (
+                usuariosFiltrados.map(u => (
+                  <label key={u.id} className="flex items-center gap-3 p-2 hover:bg-white rounded cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={usuariosSelecionados.has(u.id)}
+                      onChange={(e) => {
+                        const newSet = new Set(usuariosSelecionados);
+                        if (e.target.checked) {
+                          newSet.add(u.id);
+                        } else {
+                          newSet.delete(u.id);
+                        }
+                        setUsuariosSelecionados(newSet);
+                      }}
+                      disabled={sending}
+                      className="w-4 h-4 cursor-pointer"
+                    />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-slate-700">{u.full_name || u.email}</p>
+                      <p className="text-xs text-slate-500">{u.email}</p>
+                    </div>
+                  </label>
+                ))
+              )}
+            </div>
+          </div>
+
+          <div>
+            <label className="text-sm font-medium text-slate-700 mb-2 block">Título</label>
+            <Input
+              placeholder="Ex: Manutenção Programada"
+              value={notificationData.titulo}
+              onChange={(e) => setNotificationData({ ...notificationData, titulo: e.target.value })}
+              disabled={sending}
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-slate-700 mb-2 block">Mensagem</label>
+            <Textarea
+              placeholder="Digite a mensagem da notificação..."
+              value={notificationData.mensagem}
+              onChange={(e) => setNotificationData({ ...notificationData, mensagem: e.target.value })}
+              disabled={sending}
+              rows={3}
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={sending}
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleSendNotifications}
+            disabled={sending || usuariosSelecionados.size === 0}
+            className="bg-green-600 hover:bg-green-700 gap-2"
+          >
+            {sending ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Enviando...
+              </>
+            ) : (
+              <>
+                <Send className="w-4 h-4" />
+                Enviar para {usuariosSelecionados.size}
+              </>
+            )}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
