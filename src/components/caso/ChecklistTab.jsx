@@ -20,6 +20,7 @@ import {
   Loader2
 } from 'lucide-react';
 import AnaliseDocumentoModal from './AnaliseDocumentoModal';
+import VisualizadorDocumento from './VisualizadorDocumento';
 
 const statusConfig = {
   pendente: { icon: Circle, color: "text-slate-400", bg: "bg-slate-100", label: "Pendente" },
@@ -31,6 +32,7 @@ const statusConfig = {
 export default function ChecklistTab({ casoId, checklistItems, documentos, cliente }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [itemSelecionado, setItemSelecionado] = useState(null);
+  const [documentoVisualizar, setDocumentoVisualizar] = useState(null);
   const queryClient = useQueryClient();
 
   const updateStatusMutation = useMutation({
@@ -96,14 +98,12 @@ export default function ChecklistTab({ casoId, checklistItems, documentos, clien
                           <FileText className="h-3 w-3" />
                           Anexado
                         </Badge>
-                        <a
-                          href={linkedDoc.file_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-blue-600 hover:text-blue-800 hover:underline font-medium truncate"
+                        <button
+                          onClick={() => setDocumentoVisualizar(linkedDoc)}
+                          className="text-xs text-blue-600 hover:text-blue-800 hover:underline font-medium truncate text-left"
                         >
                           {linkedDoc.nome_arquivo}
-                        </a>
+                        </button>
                       </div>
                     ) : null}
                   </div>
@@ -153,6 +153,13 @@ export default function ChecklistTab({ casoId, checklistItems, documentos, clien
             setModalOpen(false);
             setItemSelecionado(null);
           }}
+        />
+      )}
+
+      {documentoVisualizar && (
+        <VisualizadorDocumento
+          documento={documentoVisualizar}
+          onClose={() => setDocumentoVisualizar(null)}
         />
       )}
     </>
