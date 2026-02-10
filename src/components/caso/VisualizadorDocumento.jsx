@@ -12,9 +12,14 @@ export default function VisualizadorDocumento({ isOpen, onClose, documento, caso
   const [tempoVisualizacao, setTempoVisualizacao] = useState(0);
   const [visualizando, setVisualizando] = useState(false);
   const [mostrarConteudo, setMostrarConteudo] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    if (!documento || !isOpen) {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (!documento || !isOpen || !user) {
       setSignedUrl(null);
       setTempoVisualizacao(0);
       setVisualizando(false);
@@ -29,11 +34,12 @@ export default function VisualizadorDocumento({ isOpen, onClose, documento, caso
       setTempoVisualizacao(duracao);
       registrarAcessoMutation.mutate({
         documento_id: documento.id,
+        usuario_email: user.email,
         tipo_acesso: 'visualizacao',
         tempo_visualizacao_segundos: duracao
       });
     };
-  }, [isOpen, documento?.id]);
+  }, [isOpen, documento?.id, user]);
 
   const registrarAcessoMutation = useMutation({
     mutationFn: (dados) => base44.entities.AuditoriaDocumento.create(dados)
