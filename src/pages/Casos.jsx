@@ -199,16 +199,11 @@ export default function Casos() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Calcular prazo de análise (10-15 dias úteis conforme Art. 14/15)
+    // Calcular prazo de análise (30 dias corridos conforme Art. 14/15)
     let prazoAnalise = null;
     if (formData.data_protocolo_ecac) {
       const dataProtocolo = new Date(formData.data_protocolo_ecac);
-      let diasUteis = 0;
-      while (diasUteis < 15) {
-        dataProtocolo.setDate(dataProtocolo.getDate() + 1);
-        const dia = dataProtocolo.getDay();
-        if (dia !== 0 && dia !== 6) diasUteis++;
-      }
+      dataProtocolo.setDate(dataProtocolo.getDate() + 30);
       prazoAnalise = dataProtocolo.toISOString().split('T')[0];
     }
 
