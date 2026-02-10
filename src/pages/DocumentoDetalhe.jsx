@@ -163,12 +163,17 @@ export default function DocumentoDetalhe() {
                 <CardTitle>Visualização do Documento</CardTitle>
               </CardHeader>
               <CardContent>
-                <VisualizadorDocumento
-                  isOpen={true}
-                  onClose={() => {}}
-                  documento={documento}
-                  casoId={casoId}
-                />
+                {documento.file_uri || documento.file_url ? (
+                  <iframe
+                    src={documento.file_uri ? `https://docs.google.com/gview?url=${encodeURIComponent(documento.file_uri)}&embedded=true` : documento.file_url}
+                    className="w-full h-[600px] rounded-lg border border-slate-200"
+                    title={documento.nome_arquivo}
+                  />
+                ) : (
+                  <div className="text-center py-12 text-slate-500">
+                    <p>Arquivo não disponível para visualização</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -248,11 +253,13 @@ export default function DocumentoDetalhe() {
 
           {/* Aba Contestação */}
           <TabsContent value="contestacao" className="space-y-4">
-            <ChatContestaçãoAnálise
-              casoId={casoId}
-              casoData={caso}
-              documentosAnálise={[documento]}
-            />
+            <Card className="h-[600px]">
+              <ChatContestaçãoAnálise
+                casoId={casoId}
+                casoData={caso}
+                documentosAnálise={[documento]}
+              />
+            </Card>
           </TabsContent>
         </Tabs>
       </div>
