@@ -645,6 +645,31 @@ export default function Calculadora() {
             </CardContent>
           </Card>
         )}
+
+        {/* Informações Adicionais */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">📚 Referências Normativas</CardTitle>
+          </CardHeader>
+          <CardContent className="text-xs text-slate-600 space-y-2">
+            <p>
+              <strong>Portaria COANA Nº 72/2020:</strong> Estabelece procedimentos para revisão de estimativa de capacidade financeira.
+            </p>
+            <p>
+              <strong>Artigo 2º:</strong> Define a fórmula base de cálculo da capacidade financeira.
+            </p>
+            <p>
+              <strong>Artigo 4º:</strong> Lista as hipóteses que justificam a revisão de estimativa.
+            </p>
+            <p>
+              <strong>Artigo 11:</strong> Determina como calcular a nova estimativa conforme a hipótese invocada.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
       </div>
     </div>
   );
