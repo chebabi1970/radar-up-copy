@@ -10,7 +10,7 @@ const faqs = {
         { item: 'Outorgado (procurador) obrigatoriamente indicado', critico: true },
         { item: 'Nome deve ser idêntico ao documento de identidade', critico: true },
         { item: 'Reconhecimento de firma em cartório', critico: false },
-        { item: 'Poderes para comércio exterior' }
+        { item: 'Poderes para atos de revisão de estimativa de capacidade financeira', critico: true }
       ]
     },
     {
