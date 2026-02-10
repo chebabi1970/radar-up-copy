@@ -277,6 +277,26 @@ export default function Calculadora() {
           <p className="text-blue-100">Portaria COANA Nº 72/2020 - Art. 11</p>
         </div>
 
+        {/* Alerta Importante */}
+        <div className="bg-amber-50 border-l-4 border-amber-500 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0">
+              <span className="text-2xl">⚠️</span>
+            </div>
+            <div>
+              <h3 className="font-semibold text-amber-900 mb-2">Tributos NÃO Considerados</h3>
+              <p className="text-sm text-amber-800 mb-2">
+                Não serão considerados, para fins de apuração da estimativa da capacidade financeira do declarante de mercadorias, os tributos:
+              </p>
+              <ul className="text-sm text-amber-800 space-y-1 ml-4 list-disc">
+                <li>não recolhidos, ainda que tenham sido declarados;</li>
+                <li>objetos de quaisquer modalidades de parcelamentos; ou</li>
+                <li>constituídos por meio de lançamento de ofício.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
         {/* Seleção de Hipótese */}
         <Card>
           <CardHeader>
