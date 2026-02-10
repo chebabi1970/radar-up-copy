@@ -15,6 +15,7 @@ import { base44 } from '@/api/base44Client';
 
 const navigation = [
   { name: 'Home', href: 'Home', icon: LayoutDashboard },
+  { name: 'Calculadora', href: 'Calculadora', icon: Briefcase },
   { name: 'Clientes', href: 'Clientes', icon: Users },
   { name: 'Casos', href: 'Casos', icon: FolderOpen },
 ];

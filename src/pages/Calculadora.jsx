@@ -1,0 +1,417 @@
+import React, { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Calculator, TrendingUp, FileText, DollarSign, Building2, Clock } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+export default function Calculadora() {
+  const [hipoteseSelecionada, setHipoteseSelecionada] = useState('');
+  const [resultado, setResultado] = useState(null);
+
+  // Estados para Hipótese I - Recursos Financeiros Livres
+  const [saldosContasCorrente, setSaldosContasCorrente] = useState('');
+  const [aplicacoesFinanceiras, setAplicacoesFinanceiras] = useState('');
+
+  // Estados para Hipótese II - Desonerações Tributárias
+  const [somaTribs1a4, setSomaTribs1a4] = useState('');
+  const [somaContrib5, setSomaContrib5] = useState('');
+  const [tribNaoRecolhidos, setTribNaoRecolhidos] = useState('');
+
+  // Estados para Hipótese III - DAS/Simples Nacional
+  const [receitasBrutasDAS, setReceitasBrutasDAS] = useState('');
+
+  // Estados para Hipótese IV - CPRB
+  const [receitasBrutasCPRB, setReceitasBrutasCPRB] = useState('');
+
+  // Estados para Hipótese V - Início/Retomada < 5 anos
+  const [tribsSeis1a4, setTribsSeis1a4] = useState('');
+  const [contribSeis5, setContribSeis5] = useState('');
+
+  const calcularCapacidade = () => {
+    let numerador = 0;
+    let formula = '';
+
+    switch(hipoteseSelecionada) {
+      case 'I':
+        // Saldo de contas correntes + aplicações financeiras (mês anterior)
+        numerador = parseFloat(saldosContasCorrente || 0) + parseFloat(aplicacoesFinanceiras || 0);
+        formula = 'Saldos Bancários + Aplicações Financeiras';
+        break;
+
+      case 'II':
+        // Maior entre tributos I-IV ou contribuições V + tributos não recolhidos
+        const tribs = parseFloat(somaTribs1a4 || 0);
+        const contrib = parseFloat(somaContrib5 || 0);
+        const naoRecolhidos = parseFloat(tribNaoRecolhidos || 0);
+        numerador = Math.max(tribs, contrib) + naoRecolhidos;
+        formula = 'Maior entre (Tributos I-IV ou Contribuições V) + Tributos Não Recolhidos';
+        break;
+
+      case 'III':
+        // Receitas brutas DAS 60 meses / 20
+        numerador = parseFloat(receitasBrutasDAS || 0) / 20;
+        formula = 'Receitas Brutas DAS (60 meses) ÷ 20';
+        break;
+
+      case 'IV':
+        // Receitas brutas CPRB 60 meses / 20
+        numerador = parseFloat(receitasBrutasCPRB || 0) / 20;
+        formula = 'Receitas Brutas CPRB (60 meses) ÷ 20';
+        break;
+
+      case 'V':
+        // Maior entre tributos ou contribuições dos 6 meses x 10
+        const tribsSeis = parseFloat(tribsSeis1a4 || 0);
+        const contribSeis = parseFloat(contribSeis5 || 0);
+        numerador = Math.max(tribsSeis, contribSeis) * 10;
+        formula = 'Maior entre (Tributos I-IV ou Contribuições V dos 6 meses) × 10';
+        break;
+
+      default:
+        return;
+    }
+
+    setResultado({
+      valor: numerador,
+      formula: formula,
+      valorFormatado: numerador.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+    });
+  };
+
+  const limparCalculadora = () => {
+    setHipoteseSelecionada('');
+    setResultado(null);
+    setSaldosContasCorrente('');
+    setAplicacoesFinanceiras('');
+    setSomaTribs1a4('');
+    setSomaContrib5('');
+    setTribNaoRecolhidos('');
+    setReceitasBrutasDAS('');
+    setReceitasBrutasCPRB('');
+    setTribsSeis1a4('');
+    setContribSeis5('');
+  };
+
+  const hipoteses = [
+    {
+      value: 'I',
+      label: 'Hipótese I - Recursos Financeiros Livres',
+      icon: DollarSign,
+      description: 'Saldos bancários e aplicações financeiras de liquidez imediata',
+      artigo: 'Art. 11, I'
+    },
+    {
+      value: 'II',
+      label: 'Hipótese II - Desonerações Tributárias',
+      icon: FileText,
+      description: 'Isenções e imunidades tributárias',
+      artigo: 'Art. 11, II'
+    },
+    {
+      value: 'III',
+      label: 'Hipótese III - DAS (Simples Nacional)',
+      icon: Building2,
+      description: 'Recolhimentos via DAS - optantes do Simples Nacional',
+      artigo: 'Art. 11, III'
+    },
+    {
+      value: 'IV',
+      label: 'Hipótese IV - CPRB',
+      icon: TrendingUp,
+      description: 'Contribuição Previdenciária sobre Receita Bruta',
+      artigo: 'Art. 11, IV'
+    },
+    {
+      value: 'V',
+      label: 'Hipótese V - Início/Retomada < 5 anos',
+      icon: Clock,
+      description: 'Empresas com início ou retomada de atividades há menos de 5 anos',
+      artigo: 'Art. 11, V'
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-slate-50 p-4 md:p-6 lg:p-8">
+      <div className="max-w-5xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-6 md:p-8 text-white">
+          <div className="flex items-center gap-3 mb-2">
+            <Calculator className="h-8 w-8" />
+            <h1 className="text-2xl md:text-3xl font-bold">Calculadora de Capacidade Financeira</h1>
+          </div>
+          <p className="text-blue-100">Portaria COANA Nº 72/2020 - Art. 11</p>
+        </div>
+
+        {/* Seleção de Hipótese */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Selecione a Hipótese</CardTitle>
+            <CardDescription>Escolha a base legal aplicável ao caso</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-3">
+              {hipoteses.map((hip) => {
+                const Icon = hip.icon;
+                return (
+                  <button
+                    key={hip.value}
+                    onClick={() => {
+                      setHipoteseSelecionada(hip.value);
+                      setResultado(null);
+                    }}
+                    className={`p-4 rounded-lg border-2 text-left transition-all hover:shadow-md ${
+                      hipoteseSelecionada === hip.value
+                        ? 'border-blue-600 bg-blue-50'
+                        : 'border-slate-200 hover:border-slate-300'
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className={`h-10 w-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                        hipoteseSelecionada === hip.value ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600'
+                      }`}>
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="font-semibold text-slate-900">{hip.label}</h3>
+                          <Badge variant="outline" className="text-xs">{hip.artigo}</Badge>
+                        </div>
+                        <p className="text-sm text-slate-600">{hip.description}</p>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Formulários por Hipótese */}
+        {hipoteseSelecionada && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Dados para Cálculo</CardTitle>
+              <CardDescription>
+                Preencha os valores necessários para a {hipoteses.find(h => h.value === hipoteseSelecionada)?.label}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Hipótese I */}
+              {hipoteseSelecionada === 'I' && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="saldos">Saldos em Contas Correntes (mês anterior) - R$</Label>
+                    <Input
+                      id="saldos"
+                      type="number"
+                      step="0.01"
+                      value={saldosContasCorrente}
+                      onChange={(e) => setSaldosContasCorrente(e.target.value)}
+                      placeholder="0,00"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="aplicacoes">Aplicações Financeiras (mês anterior) - R$</Label>
+                    <Input
+                      id="aplicacoes"
+                      type="number"
+                      step="0.01"
+                      value={aplicacoesFinanceiras}
+                      onChange={(e) => setAplicacoesFinanceiras(e.target.value)}
+                      placeholder="0,00"
+                    />
+                  </div>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-slate-700">
+                    <p className="font-medium mb-1">Fórmula:</p>
+                    <p>Capacidade = Saldos Bancários + Aplicações Financeiras</p>
+                  </div>
+                </>
+              )}
+
+              {/* Hipótese II */}
+              {hipoteseSelecionada === 'II' && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="tribs14">Soma dos Tributos (Incisos I a IV) - R$</Label>
+                    <Input
+                      id="tribs14"
+                      type="number"
+                      step="0.01"
+                      value={somaTribs1a4}
+                      onChange={(e) => setSomaTribs1a4(e.target.value)}
+                      placeholder="0,00"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="contrib5">Soma das Contribuições (Inciso V) - R$</Label>
+                    <Input
+                      id="contrib5"
+                      type="number"
+                      step="0.01"
+                      value={somaContrib5}
+                      onChange={(e) => setSomaContrib5(e.target.value)}
+                      placeholder="0,00"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="naoRecolhidos">Tributos Não Recolhidos (Desonerações) - R$</Label>
+                    <Input
+                      id="naoRecolhidos"
+                      type="number"
+                      step="0.01"
+                      value={tribNaoRecolhidos}
+                      onChange={(e) => setTribNaoRecolhidos(e.target.value)}
+                      placeholder="0,00"
+                    />
+                  </div>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-slate-700">
+                    <p className="font-medium mb-1">Fórmula:</p>
+                    <p>Capacidade = MAIOR(Tributos I-IV, Contribuições V) + Tributos Não Recolhidos</p>
+                  </div>
+                </>
+              )}
+
+              {/* Hipótese III */}
+              {hipoteseSelecionada === 'III' && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="receitasDAS">Somatório Receitas Brutas DAS (60 meses) - R$</Label>
+                    <Input
+                      id="receitasDAS"
+                      type="number"
+                      step="0.01"
+                      value={receitasBrutasDAS}
+                      onChange={(e) => setReceitasBrutasDAS(e.target.value)}
+                      placeholder="0,00"
+                    />
+                    <p className="text-xs text-slate-500">
+                      Base de cálculo dos valores recolhidos via DAS nos últimos 60 meses
+                    </p>
+                  </div>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-slate-700">
+                    <p className="font-medium mb-1">Fórmula:</p>
+                    <p>Capacidade = Receitas Brutas DAS (60 meses) ÷ 20</p>
+                  </div>
+                </>
+              )}
+
+              {/* Hipótese IV */}
+              {hipoteseSelecionada === 'IV' && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="receitasCPRB">Somatório Receitas Brutas CPRB (60 meses) - R$</Label>
+                    <Input
+                      id="receitasCPRB"
+                      type="number"
+                      step="0.01"
+                      value={receitasBrutasCPRB}
+                      onChange={(e) => setReceitasBrutasCPRB(e.target.value)}
+                      placeholder="0,00"
+                    />
+                    <p className="text-xs text-slate-500">
+                      Base de cálculo da CPRB nos últimos 60 meses
+                    </p>
+                  </div>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-slate-700">
+                    <p className="font-medium mb-1">Fórmula:</p>
+                    <p>Capacidade = Receitas Brutas CPRB (60 meses) ÷ 20</p>
+                  </div>
+                </>
+              )}
+
+              {/* Hipótese V */}
+              {hipoteseSelecionada === 'V' && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="tribsSeis">Soma Tributos I-IV (6 meses anteriores) - R$</Label>
+                    <Input
+                      id="tribsSeis"
+                      type="number"
+                      step="0.01"
+                      value={tribsSeis1a4}
+                      onChange={(e) => setTribsSeis1a4(e.target.value)}
+                      placeholder="0,00"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="contribSeis">Soma Contribuições V (6 meses anteriores) - R$</Label>
+                    <Input
+                      id="contribSeis"
+                      type="number"
+                      step="0.01"
+                      value={contribSeis5}
+                      onChange={(e) => setContribSeis5(e.target.value)}
+                      placeholder="0,00"
+                    />
+                  </div>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-slate-700">
+                    <p className="font-medium mb-1">Fórmula:</p>
+                    <p>Capacidade = MAIOR(Tributos I-IV, Contribuições V) dos 6 meses × 10</p>
+                  </div>
+                </>
+              )}
+
+              <div className="flex gap-3 pt-4">
+                <Button onClick={calcularCapacidade} className="flex-1 bg-blue-600 hover:bg-blue-700">
+                  <Calculator className="h-4 w-4 mr-2" />
+                  Calcular Capacidade
+                </Button>
+                <Button onClick={limparCalculadora} variant="outline">
+                  Limpar
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Resultado */}
+        {resultado && (
+          <Card className="border-2 border-green-200 bg-green-50">
+            <CardHeader>
+              <CardTitle className="text-green-900 flex items-center gap-2">
+                <TrendingUp className="h-5 w-5" />
+                Resultado do Cálculo
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-white rounded-lg p-6 border border-green-200">
+                <div className="text-sm text-slate-600 mb-1">Capacidade Financeira Estimada</div>
+                <div className="text-4xl font-bold text-green-700 mb-2">{resultado.valorFormatado}</div>
+                <div className="text-sm text-slate-600">
+                  <span className="font-medium">Fórmula aplicada:</span> {resultado.formula}
+                </div>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm">
+                <p className="font-medium text-slate-900 mb-2">⚖️ Base Legal</p>
+                <p className="text-slate-700 mb-2">
+                  Portaria COANA Nº 72, de 29/10/2020 - Artigo 11, {hipoteseSelecionada === 'I' ? 'Inciso I' : hipoteseSelecionada === 'II' ? 'Inciso II' : hipoteseSelecionada === 'III' ? 'Inciso III' : hipoteseSelecionada === 'IV' ? 'Inciso IV' : 'Inciso V'}
+                </p>
+                <p className="text-slate-700">
+                  Artigo 4º - {hipoteses.find(h => h.value === hipoteseSelecionada)?.description}
+                </p>
+              </div>
+
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-900">
+                <p className="font-medium mb-1">⚠️ Observação Importante</p>
+                <p>
+                  Este é apenas o numerador da fórmula. O valor final da capacidade financeira deve considerar 
+                  também o denominador conforme § 3º do art. 2º da Portaria COANA 72/2020.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </div>
+  );
+}
