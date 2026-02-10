@@ -57,6 +57,7 @@ import DetalheCliente from './pages/DetalheCliente';
 import FAQ from './pages/FAQ';
 import Home from './pages/Home';
 import Reports from './pages/Reports';
+import Admin from './pages/Admin';
 import __Layout from './Layout.jsx';
 
 
@@ -71,6 +72,7 @@ export const PAGES = {
     "FAQ": FAQ,
     "Home": Home,
     "Reports": Reports,
+    "Admin": Admin,
 }
 
 export const pagesConfig = {
