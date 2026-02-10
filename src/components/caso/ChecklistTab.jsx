@@ -42,8 +42,8 @@ export default function ChecklistTab({ casoId, checklistItems, documentos, clien
     }
   });
 
-  const getLinkedDocument = (item) => {
-    return documentos.find(d => d.tipo_documento === item.tipo_documento);
+  const getLinkedDocuments = (item) => {
+    return documentos.filter(d => d.tipo_documento === item.tipo_documento);
   };
 
   const handleAnalisar = (item) => {
@@ -72,7 +72,7 @@ export default function ChecklistTab({ casoId, checklistItems, documentos, clien
           {checklistItems.map((item) => {
             const config = statusConfig[item.status];
             const StatusIcon = config.icon;
-            const linkedDoc = getLinkedDocument(item);
+            const linkedDocs = getLinkedDocuments(item);
 
             return (
               <div key={item.id} className="py-3 md:py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
@@ -92,25 +92,30 @@ export default function ChecklistTab({ casoId, checklistItems, documentos, clien
                       <span className="hidden md:inline">•</span>
                       <span className="hidden md:inline">{item.base_legal}</span>
                     </div>
-                    {linkedDoc ? (
-                      <div className="flex items-center gap-2 mt-2">
-                        <Badge className="bg-green-100 text-green-700 text-xs flex items-center gap-1">
+                    {linkedDocs.length > 0 ? (
+                      <div className="flex items-start gap-2 mt-2">
+                        <Badge className="bg-green-100 text-green-700 text-xs flex items-center gap-1 flex-shrink-0">
                           <FileText className="h-3 w-3" />
                           Anexado
                         </Badge>
-                        <button
-                          onClick={() => setDocumentoVisualizar(linkedDoc)}
-                          className="text-xs text-blue-600 hover:text-blue-800 hover:underline font-medium truncate text-left"
-                        >
-                          {linkedDoc.nome_arquivo}
-                        </button>
+                        <div className="flex flex-col gap-1">
+                          {linkedDocs.map((doc) => (
+                            <button
+                              key={doc.id}
+                              onClick={() => setDocumentoVisualizar(doc)}
+                              className="text-xs text-blue-600 hover:text-blue-800 hover:underline font-medium text-left"
+                            >
+                              {doc.nome_arquivo}
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     ) : null}
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 flex-shrink-0 self-end md:self-auto">
-                  {linkedDoc && (
+                  {linkedDocs.length > 0 && (
                     <Button
                       variant="outline"
                       size="sm"
