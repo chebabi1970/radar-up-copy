@@ -233,23 +233,30 @@ export default function Casos() {
   });
 
   const exportarCSV = () => {
-    const headers = ['Número do Caso', 'Cliente', 'Hipótese', 'Status', 'Modalidade', 'Limite (USD)', 'Data Criação'];
-    const rows = filteredCasos.map(c => [
-      c.numero_caso || `Caso #${c.id.slice(0, 8)}`,
-      getClienteName(c.cliente_id),
-      hipoteseLabels[c.hipotese_revisao],
-      statusLabels[c.status],
-      c.modalidade_pretendida || '-',
-      c.limite_pretendido || '-',
-      new Date(c.created_date).toLocaleDateString('pt-BR')
-    ]);
+    const headers = ['Número do Caso', 'Cliente', 'CNPJ', 'Hipótese', 'Status', 'Modalidade Pretendida', 'Limite Pretendido (USD)', 'Data Protocolo', 'Prazo RFB', 'Criado em'];
+    
+    const rows = filteredCasos.map(caso => {
+      const cliente = clientes.find(c => c.id === caso.cliente_id);
+      return [
+        caso.numero_caso || '',
+        cliente?.razao_social || '',
+        cliente?.cnpj || '',
+        hipoteseLabels[caso.hipotese_revisao] || '',
+        statusLabels[caso.status] || '',
+        caso.modalidade_pretendida || '',
+        caso.limite_pretendido || '',
+        caso.data_protocolo_ecac || '',
+        caso.prazo_analise_rfb || '',
+        new Date(caso.created_date).toLocaleDateString('pt-BR')
+      ];
+    });
 
     const csvContent = [
       headers.join(','),
       ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
     ].join('\n');
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = `casos_${new Date().toISOString().split('T')[0]}.csv`;
@@ -271,15 +278,13 @@ export default function Casos() {
             <p className="text-sm text-slate-600 ml-10">Acompanhe todos os processos de revisão de habilitação</p>
           </div>
           <div className="flex gap-2">
-            <Button
-              variant="outline"
+            <Button 
+              variant="outline" 
               onClick={exportarCSV}
               disabled={filteredCasos.length === 0}
-              className="h-9 sm:h-10 text-xs sm:text-sm"
+              className="border-slate-300"
             >
-              <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">Exportar CSV</span>
-              <span className="sm:hidden">CSV</span>
+              <Download className="h-4 w-4 mr-2" /> Exportar CSV
             </Button>
             <Dialog open={isDialogOpen} onOpenChange={(open) => {
               setIsDialogOpen(open);

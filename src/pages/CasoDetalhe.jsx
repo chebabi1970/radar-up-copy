@@ -33,7 +33,8 @@ import {
   Shield,
   Edit2,
   Check,
-  X
+  X,
+  Download
 } from 'lucide-react';
 
 import ChecklistTab from '@/components/caso/ChecklistTab';
@@ -164,6 +165,149 @@ export default function CasoDetalhe() {
     }
   };
 
+  const gerarPDF = async () => {
+    const { jsPDF } = await import('jspdf');
+    await import('jspdf-autotable');
+    
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    
+    // Cabeçalho
+    doc.setFontSize(20);
+    doc.setTextColor(30, 58, 138);
+    doc.text('RADAR UP', pageWidth / 2, 20, { align: 'center' });
+    
+    doc.setFontSize(16);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Caso: ${caso.numero_caso || 'N/A'}`, pageWidth / 2, 30, { align: 'center' });
+    
+    // Informações do Cliente
+    doc.setFontSize(14);
+    doc.setTextColor(30, 58, 138);
+    doc.text('Informações do Cliente', 14, 45);
+    
+    doc.autoTable({
+      startY: 50,
+      head: [['Campo', 'Valor']],
+      body: [
+        ['Razão Social', cliente?.razao_social || ''],
+        ['CNPJ', cliente?.cnpj || ''],
+        ['Email', cliente?.email || ''],
+        ['Telefone', cliente?.telefone || '']
+      ],
+      theme: 'grid',
+      headStyles: { fillColor: [30, 58, 138] }
+    });
+    
+    // Informações do Caso
+    let currentY = doc.lastAutoTable.finalY + 10;
+    doc.setFontSize(14);
+    doc.setTextColor(30, 58, 138);
+    doc.text('Informações do Caso', 14, currentY);
+    
+    doc.autoTable({
+      startY: currentY + 5,
+      head: [['Campo', 'Valor']],
+      body: [
+        ['Hipótese', hipoteseLabels[caso.hipotese_revisao] || ''],
+        ['Status', statusLabels[caso.status] || ''],
+        ['Modalidade Pretendida', caso.modalidade_pretendida || ''],
+        ['Limite Pretendido (USD)', caso.limite_pretendido ? caso.limite_pretendido.toLocaleString('en-US') : ''],
+        ['Estimativa Calculada (USD)', caso.estimativa_calculada ? caso.estimativa_calculada.toLocaleString('en-US') : ''],
+        ['Data Protocolo e-CAC', caso.data_protocolo_ecac || ''],
+        ['Prazo RFB', caso.prazo_analise_rfb || ''],
+        ['Número Processo e-CAC', caso.numero_processo_ecac || '']
+      ],
+      theme: 'grid',
+      headStyles: { fillColor: [30, 58, 138] }
+    });
+    
+    // Checklist
+    currentY = doc.lastAutoTable.finalY + 10;
+    if (currentY > 250) {
+      doc.addPage();
+      currentY = 20;
+    }
+    
+    doc.setFontSize(14);
+    doc.setTextColor(30, 58, 138);
+    doc.text('Checklist de Documentos', 14, currentY);
+    
+    const checklistData = checklistItems.map(item => [
+      item.tipo_documento,
+      item.status === 'pendente' ? 'Pendente' :
+      item.status === 'enviado' ? 'Enviado' :
+      item.status === 'aprovado' ? 'Aprovado' : 'N/A'
+    ]);
+    
+    doc.autoTable({
+      startY: currentY + 5,
+      head: [['Tipo de Documento', 'Status']],
+      body: checklistData,
+      theme: 'grid',
+      headStyles: { fillColor: [30, 58, 138] }
+    });
+    
+    // Documentos Anexados
+    currentY = doc.lastAutoTable.finalY + 10;
+    if (currentY > 250) {
+      doc.addPage();
+      currentY = 20;
+    }
+    
+    doc.setFontSize(14);
+    doc.setTextColor(30, 58, 138);
+    doc.text('Documentos Anexados', 14, currentY);
+    
+    const documentosData = documentos.map(doc => [
+      doc.tipo_documento,
+      doc.nome_arquivo,
+      doc.status_analise || 'Pendente'
+    ]);
+    
+    doc.autoTable({
+      startY: currentY + 5,
+      head: [['Tipo', 'Nome do Arquivo', 'Status']],
+      body: documentosData,
+      theme: 'grid',
+      headStyles: { fillColor: [30, 58, 138] }
+    });
+    
+    // Observações
+    if (caso.observacoes) {
+      currentY = doc.lastAutoTable.finalY + 10;
+      if (currentY > 250) {
+        doc.addPage();
+        currentY = 20;
+      }
+      
+      doc.setFontSize(14);
+      doc.setTextColor(30, 58, 138);
+      doc.text('Observações', 14, currentY);
+      
+      doc.setFontSize(10);
+      doc.setTextColor(0, 0, 0);
+      const splitObs = doc.splitTextToSize(caso.observacoes, pageWidth - 28);
+      doc.text(splitObs, 14, currentY + 7);
+    }
+    
+    // Rodapé
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(128, 128, 128);
+      doc.text(
+        `Gerado em ${new Date().toLocaleString('pt-BR')} - Página ${i} de ${pageCount}`,
+        pageWidth / 2,
+        doc.internal.pageSize.getHeight() - 10,
+        { align: 'center' }
+      );
+    }
+    
+    doc.save(`caso_${caso.numero_caso || casoId}_${new Date().toISOString().split('T')[0]}.pdf`);
+  };
+
   if (!casoId) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex items-center justify-center">
@@ -198,11 +342,16 @@ export default function CasoDetalhe() {
 
         {/* Header */}
         <div className="mb-4 md:mb-6">
-          <Link to={createPageUrl('Casos')}>
-            <Button variant="ghost" className="mb-3 md:mb-4 text-slate-600 hover:text-slate-900 px-2 md:px-4 h-8 md:h-10">
-              <ArrowLeft className="h-3.5 w-3.5 md:h-4 md:w-4 mr-1.5 md:mr-2" /> <span className="hidden sm:inline">Voltar aos Casos</span><span className="sm:hidden">Voltar</span>
+          <div className="flex items-center gap-3 mb-3 md:mb-4">
+            <Link to={createPageUrl('Casos')}>
+              <Button variant="ghost" className="text-slate-600 hover:text-slate-900 px-2 md:px-4 h-8 md:h-10">
+                <ArrowLeft className="h-3.5 w-3.5 md:h-4 md:w-4 mr-1.5 md:mr-2" /> <span className="hidden sm:inline">Voltar aos Casos</span><span className="sm:hidden">Voltar</span>
+              </Button>
+            </Link>
+            <Button variant="outline" size="sm" onClick={gerarPDF}>
+              <Download className="h-4 w-4 mr-2" /> Exportar PDF
             </Button>
-          </Link>
+          </div>
 
           <div className="flex flex-col gap-3 md:gap-4">
             <div className="flex-1">
