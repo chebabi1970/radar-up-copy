@@ -9,7 +9,8 @@ import {
   Menu,
   X,
   LogOut,
-  Briefcase
+  Briefcase,
+  MessageCircle
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
@@ -130,6 +131,17 @@ export default function Layout({ children, currentPageName }) {
           {children}
         </main>
       </div>
+
+      {/* Floating Support Button */}
+      <a 
+        href={`https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, '')}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-all duration-200 z-40 flex items-center justify-center"
+        title="Suporte via WhatsApp"
+      >
+        <MessageCircle className="h-6 w-6" />
+      </a>
     </div>
   );
 }
