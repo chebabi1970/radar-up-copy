@@ -60,7 +60,7 @@ export default function AnaliseTab({ caso, cliente, documentos }) {
   const calcularCapacidadeAutomatica = () => {
     const totalRecursos = saldosBancarios + aplicacoesFinanceiras;
     const capacidadeReais = totalRecursos * 0.5;
-    const taxaDolar = 5.3076; // Portaria Coana - válida até 31/12/2026
+    const taxaDolar = 5.3076; // Portaria Coana 180/2026
     return capacidadeReais / taxaDolar;
   };
 
@@ -373,7 +373,7 @@ Justifique sua análise citando os artigos relevantes da IN 1984/2020 e Portaria
                   <li><strong>Recursos Financeiros (Art. 4º, I):</strong> 50% dos saldos bancários + aplicações (Art. 6º, I)</li>
                   <li><strong>DAS (Art. 4º, III):</strong> Soma dos DAS dos últimos 60 meses ÷ cotação média do dólar</li>
                   <li><strong>CPRB (Art. 4º, IV):</strong> Soma dos DARF CPRB dos últimos 60 meses ÷ cotação média</li>
-                  <li><strong>Taxa vigente:</strong> R$ 5,2208 (Portaria Coana 167/2025)</li>
+                  <li><strong>Taxa vigente:</strong> R$ 5,3076 (Portaria Coana 180/2026)</li>
                   <li><strong>Modalidades:</strong> Limitada (até USD 150.000/operação) | Ilimitada (sem limites)</li>
                 </ul>
               </div>
