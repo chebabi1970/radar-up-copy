@@ -163,6 +163,7 @@ export default function ChecklistTab({ casoId, checklistItems, documentos, clien
 
       {documentoVisualizar && (
         <VisualizadorDocumento
+          isOpen={true}
           documento={documentoVisualizar}
           onClose={() => setDocumentoVisualizar(null)}
         />
