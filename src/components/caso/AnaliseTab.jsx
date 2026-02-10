@@ -310,7 +310,7 @@ Justifique sua análise citando os artigos relevantes da IN 1984/2020 e Portaria
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="p-4 bg-blue-50 rounded-xl">
               <div className="flex items-center gap-2 text-blue-600 mb-2">
                 <DollarSign className="h-5 w-5" />
@@ -320,6 +320,14 @@ Justifique sua análise citando os artigos relevantes da IN 1984/2020 e Portaria
                 {caso.estimativa_calculada 
                   ? `USD ${caso.estimativa_calculada.toLocaleString('en-US', {minimumFractionDigits: 2})}`
                   : 'Pendente'
+                }
+              </p>
+              <p className="text-xs text-slate-500 mt-2">
+                {caso.estimativa_calculada > 150000 
+                  ? 'Acima de USD 150.000 → Habilitação Ilimitada'
+                  : caso.estimativa_calculada > 50000
+                    ? 'Entre USD 50.000 e USD 150.000 → Limitada'
+                    : 'Até USD 50.000 → Limitada'
                 }
               </p>
             </div>
@@ -337,17 +345,10 @@ Justifique sua análise citando os artigos relevantes da IN 1984/2020 e Portaria
                   : 'Pendente'
                 }
               </p>
-            </div>
-
-            <div className="p-4 bg-purple-50 rounded-xl">
-              <div className="flex items-center gap-2 text-purple-600 mb-2">
-                <Calculator className="h-5 w-5" />
-                <span className="font-medium">Limite Sugerido</span>
-              </div>
-              <p className="text-2xl font-bold text-slate-900">
-                {caso.limite_pretendido 
-                  ? `USD ${caso.limite_pretendido.toLocaleString('en-US')}`
-                  : 'Pendente'
+              <p className="text-xs text-slate-500 mt-2">
+                {caso.modalidade_pretendida === 'ilimitada' 
+                  ? 'Sem limites por operação'
+                  : 'Com limite por operação'
                 }
               </p>
             </div>
