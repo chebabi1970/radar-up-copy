@@ -25,86 +25,77 @@ const navigation = [
 const WHATSAPP_NUMBER = '+5511984848700'; // Atualize com seu número
 const WHATSAPP_MESSAGE = 'Olá! Preciso de suporte com a plataforma RADAR UP.';
 export default function Layout({ children, currentPageName }) {
-  // ========== SEGURANÇA HTTP E DE CABEÇALHOS ==========
+  // ========== SECURITY META TAGS ==========
   React.useEffect(() => {
-    // Content Security Policy
-    const cspMeta = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
-    if (!cspMeta) {
-      const meta = document.createElement('meta');
-      meta.httpEquiv = 'Content-Security-Policy';
-      meta.content = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://qtrypzzcjebvfcihiynt.supabase.co; frame-ancestors 'none'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'";
-      document.head.appendChild(meta);
-    }
+    const securityHeaders = [
+      { httpEquiv: 'Content-Security-Policy', content: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; connect-src 'self' https://qtrypzzcjebvfcihiynt.supabase.co wss://qtrypzzcjebvfcihiynt.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; frame-src 'self' https:;" },
+      { httpEquiv: 'X-Content-Type-Options', content: 'nosniff' },
+      { httpEquiv: 'X-Frame-Options', content: 'DENY' },
+      { httpEquiv: 'X-XSS-Protection', content: '1; mode=block' },
+      { httpEquiv: 'Strict-Transport-Security', content: 'max-age=31536000; includeSubDomains; preload' },
+      { name: 'referrer', content: 'strict-origin-when-cross-origin' },
+      { name: 'permissions-policy', content: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()' }
+    ];
 
-    // Force HTTPS
-    if (window.location.protocol !== 'https:' && !window.location.hostname.includes('localhost')) {
-      window.location.href = window.location.href.replace('http:', 'https:');
-    }
+    securityHeaders.forEach(header => {
+      const selector = header.httpEquiv 
+        ? `meta[http-equiv="${header.httpEquiv}"]`
+        : `meta[name="${header.name}"]`;
+      
+      if (!document.querySelector(selector)) {
+        const meta = document.createElement('meta');
+        if (header.httpEquiv) meta.httpEquiv = header.httpEquiv;
+        if (header.name) meta.name = header.name;
+        meta.content = header.content;
+        document.head.appendChild(meta);
+      }
+    });
   }, []);
 
-  // ========== LOGOUT POR INATIVIDADE ==========
-  React.useEffect(() => {
-    let inactivityTimer;
-    const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutos
-
-    const resetTimer = () => {
-      clearTimeout(inactivityTimer);
-      inactivityTimer = setTimeout(() => {
-        base44.auth.logout();
-      }, INACTIVITY_TIMEOUT);
-    };
-
-    // Eventos que resetam o timer
-    const events = ['mousedown', 'keydown', 'scroll', 'touchstart'];
-    events.forEach(event => window.addEventListener(event, resetTimer));
-    
-    resetTimer();
-
-    return () => {
-      clearTimeout(inactivityTimer);
-      events.forEach(event => window.removeEventListener(event, resetTimer));
-    };
-  }, []);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [inactivityTimer, setInactivityTimer] = useState(null);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
+
+  // ========== AUTO-LOGOUT POR INATIVIDADE (30 minutos) ==========
+  useEffect(() => {
+    if (!user) return;
+
+    const INACTIVITY_TIME = 30 * 60 * 1000; // 30 minutos
+    let timer;
+
+    const resetTimer = () => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        base44.auth.logout();
+        alert('Você foi desconectado por inatividade.');
+      }, INACTIVITY_TIME);
+    };
+
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    events.forEach(event => {
+      document.addEventListener(event, resetTimer);
+    });
+
+    resetTimer();
+
+    return () => {
+      if (timer) clearTimeout(timer);
+      events.forEach(event => {
+        document.removeEventListener(event, resetTimer);
+      });
+    };
+  }, [user]);
 
   const handleLogout = () => {
     base44.auth.logout();
   };
 
   return (
-    <>
-      <style dangerouslySetInnerHTML={{ __html: `
-        /* ========== PREVENÇÃO DE SELEÇÃO DE DADOS SENSÍVEIS ========== */
-        [data-sensitive="true"],
-        [class*="cnpj"],
-        [class*="cpf"],
-        .documento-confidencial {
-          user-select: none;
-          -webkit-user-select: none;
-          -moz-user-select: none;
-          -ms-user-select: none;
-        }
-        
-        img[data-sensitive="true"] {
-          pointer-events: none;
-          user-select: none;
-        }
-      ` }} />
-      
-      {/* ========== SEGURANÇA: Meta tags adicionais ========== */}
-      <meta name="referrer" content="strict-origin-when-cross-origin" />
-      <meta name="permissions-policy" content="geolocation=(), microphone=(), camera=(), payment=(), usb=()" />
-      <meta httpEquiv="X-UA-Compatible" content="ie=edge" />
-      <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
-      <meta httpEquiv="X-Frame-Options" content="DENY" />
-      <meta httpEquiv="X-XSS-Protection" content="1; mode=block" />
-      
-      <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50" style={{ userSelect: 'text', WebkitUserSelect: 'text' }}>
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div 
