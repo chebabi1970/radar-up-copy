@@ -179,7 +179,7 @@ export default function DocumentosTab({ casoId, documentos, checklistItems, clie
                   required
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecione..." />
+                    <SelectValue placeholder="Selecione o tipo do documento primeiro" />
                   </SelectTrigger>
                   <SelectContent>
                     {Object.entries(tipoDocumentoLabels).map(([value, label]) => (
@@ -189,17 +189,25 @@ export default function DocumentosTab({ casoId, documentos, checklistItems, clie
                 </Select>
               </div>
 
-              <div>
-                <AdvancedFileUpload
-                  onUploadComplete={handleUploadComplete}
-                  maxSizeMB={50}
-                  allowedTypes={['application/pdf', 'image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp']}
-                  multiple={true}
-                  privateStorage={true}
-                  label="Arquivo(s) *"
-                  description="Arraste arquivos ou clique para selecionar"
-                />
-              </div>
+              {!formData.tipo_documento && (
+                <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
+                  ⚠️ Selecione o tipo de documento acima antes de fazer upload
+                </div>
+              )}
+
+              {formData.tipo_documento && (
+                <div>
+                  <AdvancedFileUpload
+                    onUploadComplete={handleUploadComplete}
+                    maxSizeMB={50}
+                    allowedTypes={['application/pdf', 'image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp']}
+                    multiple={true}
+                    privateStorage={true}
+                    label="Arquivo(s) *"
+                    description="Arraste arquivos ou clique para selecionar"
+                  />
+                </div>
+              )}
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
