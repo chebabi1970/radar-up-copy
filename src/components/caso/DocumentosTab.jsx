@@ -34,6 +34,7 @@ import {
 } from 'lucide-react';
 import VisualizadorDocumento from './VisualizadorDocumento';
 import VersionHistoricoPanel from './VersionHistoricoPanel';
+import AdvancedFileUpload from '../upload/AdvancedFileUpload';
 
 const tipoDocumentoLabels = {
   requerimento_das: "REQUERIMENTO",
@@ -81,30 +82,19 @@ export default function DocumentosTab({ casoId, documentos, checklistItems, clie
     periodo_referencia: '',
     observacoes: ''
   });
-  const [files, setFiles] = useState([]);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
 
   const queryClient = useQueryClient();
 
   const createMutation = useMutation({
      mutationFn: async (data) => {
-       const documentsToCreate = [];
-
-       for (const file of files) {
-         let fileUri = '';
-
-         if (file) {
-           const uploadResult = await base44.integrations.Core.UploadPrivateFile({ file });
-           fileUri = uploadResult.file_uri;
-         }
-
-         documentsToCreate.push({
-           ...data,
-           caso_id: casoId,
-           file_uri: fileUri,
-           nome_arquivo: file.name,
-           status_analise: 'pendente'
-         });
-       }
+       const documentsToCreate = uploadedFiles.map(({ file, url }) => ({
+         ...data,
+         caso_id: casoId,
+         file_uri: url,
+         nome_arquivo: file.name,
+         status_analise: 'pendente'
+       }));
 
        return Promise.all(documentsToCreate.map(doc => base44.entities.Documento.create(doc)));
      },
@@ -141,31 +131,17 @@ export default function DocumentosTab({ casoId, documentos, checklistItems, clie
       periodo_referencia: '',
       observacoes: ''
     });
-    setFiles([]);
+    setUploadedFiles([]);
   };
 
-  const handleFileChange = (e) => {
-     const selectedFiles = Array.from(e.target.files || []);
-     const validFiles = selectedFiles.filter(f => {
-       const validExtensions = ['.pdf', '.jpg', '.jpeg', '.png', '.gif', '.webp', '.doc', '.docx', '.xlsx'];
-       const ext = '.' + f.name.split('.').pop().toLowerCase();
-       return validExtensions.includes(ext) && f.size < 50 * 1024 * 1024;
-     });
-
-     if (validFiles.length === 0) {
-       alert('Selecione arquivos válidos (PDF, imagens ou documentos Office). Tamanho máximo: 50MB');
-       return;
-     }
-     if (validFiles.length < selectedFiles.length) {
-       alert(`${selectedFiles.length - validFiles.length} arquivo(s) rejeitado(s)`);
-     }
-     setFiles(validFiles);
-   };
+  const handleUploadComplete = (uploadData) => {
+    setUploadedFiles(prev => [...prev, uploadData]);
+  };
 
   const handleSubmit = (e) => {
      e.preventDefault();
-     if (files.length === 0) {
-       alert('Selecione pelo menos um arquivo');
+     if (uploadedFiles.length === 0) {
+       alert('Faça upload de pelo menos um arquivo');
        return;
      }
      if (!formData.tipo_documento) {
@@ -215,18 +191,14 @@ export default function DocumentosTab({ casoId, documentos, checklistItems, clie
 
               <div>
                 <Label>Arquivo(s) *</Label>
-                <Input
-                  type="file"
-                  multiple
-                  onChange={handleFileChange}
-                  className="cursor-pointer"
-                  required
+                <AdvancedFileUpload
+                  onUploadComplete={handleUploadComplete}
+                  maxSizeMB={50}
+                  allowedTypes={['application/pdf', 'image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp']}
+                  multiple={true}
+                  privateStorage={true}
+                  description="Arraste arquivos ou clique para selecionar"
                 />
-                {files.length > 0 && (
-                  <p className="text-sm text-slate-600 mt-2">
-                    {files.length} arquivo(s) selecionado(s)
-                  </p>
-                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
