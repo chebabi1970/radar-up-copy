@@ -3,14 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent } from '@/components/ui/card';
 import { Upload, X, FileText, Image as ImageIcon, AlertCircle, CheckCircle2 } from 'lucide-react';
-import { Document, Page, pdfjs } from 'react-pdf';
 import { base44 } from '@/api/base44Client';
 import { validateFileUpload } from '@/components/security/InputValidator';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
-
-// Configure PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 export default function AdvancedFileUpload({
   onUploadComplete,
@@ -189,22 +183,11 @@ export default function AdvancedFileUpload({
                       <img 
                         src={fileObj.preview} 
                         alt="Preview" 
-                        className="h-20 w-20 object-cover rounded border border-slate-200"
+                        className="h-16 w-16 object-cover rounded border border-slate-200"
                       />
-                    ) : fileObj.isPdf ? (
-                      <div className="h-20 w-20 bg-slate-100 rounded border border-slate-200 flex items-center justify-center">
-                        <Document file={fileObj.file} loading={<FileText className="h-8 w-8 text-slate-400" />}>
-                          <Page 
-                            pageNumber={1} 
-                            width={80} 
-                            renderTextLayer={false}
-                            renderAnnotationLayer={false}
-                          />
-                        </Document>
-                      </div>
                     ) : (
-                      <div className="h-20 w-20 bg-slate-100 rounded border border-slate-200 flex items-center justify-center">
-                        <FileText className="h-8 w-8 text-slate-400" />
+                      <div className="h-16 w-16 bg-slate-100 rounded border border-slate-200 flex items-center justify-center">
+                        <FileText className="h-6 w-6 text-slate-400" />
                       </div>
                     )}
                   </div>
@@ -269,7 +252,7 @@ export default function AdvancedFileUpload({
             <Button
               onClick={uploadAll}
               disabled={uploading}
-              className="w-full"
+              className="w-full bg-blue-600 hover:bg-blue-700"
             >
               {uploading ? 'Enviando...' : `Enviar ${files.filter(f => f.valid && !f.uploaded).length} arquivo(s)`}
             </Button>
