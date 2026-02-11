@@ -166,7 +166,7 @@ export default function DocumentosTab({ casoId, documentos, checklistItems, clie
               <Plus className="h-4 w-4 mr-2" /> Enviar Documento
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-lg">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Enviar Documento</DialogTitle>
             </DialogHeader>
@@ -190,13 +190,13 @@ export default function DocumentosTab({ casoId, documentos, checklistItems, clie
               </div>
 
               <div>
-                <Label>Arquivo(s) *</Label>
                 <AdvancedFileUpload
                   onUploadComplete={handleUploadComplete}
                   maxSizeMB={50}
                   allowedTypes={['application/pdf', 'image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp']}
                   multiple={true}
                   privateStorage={true}
+                  label="Arquivo(s) *"
                   description="Arraste arquivos ou clique para selecionar"
                 />
               </div>

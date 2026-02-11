@@ -136,58 +136,58 @@ export default function AdvancedFileUpload({
   };
 
   return (
-    <div className="space-y-4">
-      <div className="space-y-2">
+    <div className="space-y-3">
+      {label && (
         <label className="text-sm font-medium text-slate-700">{label}</label>
+      )}
+      
+      {/* Drag and Drop Zone */}
+      <div
+        onDragEnter={handleDrag}
+        onDragLeave={handleDrag}
+        onDragOver={handleDrag}
+        onDrop={handleDrop}
+        className={`
+          relative border-2 border-dashed rounded-lg p-6 text-center transition-all
+          ${dragActive 
+            ? 'border-blue-500 bg-blue-50' 
+            : 'border-slate-300 bg-slate-50 hover:border-slate-400'
+          }
+        `}
+      >
+        <input
+          type="file"
+          multiple={multiple}
+          accept={allowedTypes.join(',')}
+          onChange={handleFileInput}
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+        />
         
-        {/* Drag and Drop Zone */}
-        <div
-          onDragEnter={handleDrag}
-          onDragLeave={handleDrag}
-          onDragOver={handleDrag}
-          onDrop={handleDrop}
-          className={`
-            relative border-2 border-dashed rounded-lg p-8 text-center transition-all
-            ${dragActive 
-              ? 'border-blue-500 bg-blue-50' 
-              : 'border-slate-300 bg-slate-50 hover:border-slate-400'
-            }
-          `}
-        >
-          <input
-            type="file"
-            multiple={multiple}
-            accept={allowedTypes.join(',')}
-            onChange={handleFileInput}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-          />
-          
-          <Upload className="mx-auto h-12 w-12 text-slate-400 mb-4" />
-          <p className="text-sm text-slate-600 mb-1">{description}</p>
-          <p className="text-xs text-slate-500">
-            Máximo {maxSizeMB}MB • {allowedTypes.map(t => t.split('/')[1].toUpperCase()).join(', ')}
-          </p>
-        </div>
+        <Upload className="mx-auto h-10 w-10 text-slate-400 mb-2" />
+        <p className="text-sm text-slate-600 mb-1">{description}</p>
+        <p className="text-xs text-slate-500">
+          Máximo {maxSizeMB}MB • {allowedTypes.map(t => t.split('/')[1].toUpperCase()).join(', ')}
+        </p>
       </div>
 
       {/* Files List */}
       {files.length > 0 && (
-        <div className="space-y-3">
+        <div className="space-y-2">
           {files.map((fileObj) => (
             <Card key={fileObj.id} className={fileObj.valid ? 'border-slate-200' : 'border-red-200 bg-red-50'}>
-              <CardContent className="p-4">
-                <div className="flex gap-4">
+              <CardContent className="p-3">
+                <div className="flex gap-3">
                   {/* Preview */}
                   <div className="flex-shrink-0">
                     {fileObj.preview ? (
                       <img 
                         src={fileObj.preview} 
                         alt="Preview" 
-                        className="h-16 w-16 object-cover rounded border border-slate-200"
+                        className="h-12 w-12 object-cover rounded border border-slate-200"
                       />
                     ) : (
-                      <div className="h-16 w-16 bg-slate-100 rounded border border-slate-200 flex items-center justify-center">
-                        <FileText className="h-6 w-6 text-slate-400" />
+                      <div className="h-12 w-12 bg-slate-100 rounded border border-slate-200 flex items-center justify-center">
+                        <FileText className="h-5 w-5 text-slate-400" />
                       </div>
                     )}
                   </div>
@@ -208,16 +208,16 @@ export default function AdvancedFileUpload({
                         variant="ghost"
                         size="icon"
                         onClick={() => removeFile(fileObj.id)}
-                        className="h-8 w-8 flex-shrink-0"
+                        className="h-7 w-7 flex-shrink-0"
                       >
-                        <X className="h-4 w-4" />
+                        <X className="h-3 w-3" />
                       </Button>
                     </div>
 
                     {/* Validation Errors */}
                     {!fileObj.valid && fileObj.errors.length > 0 && (
-                      <div className="mt-2 flex items-start gap-2 text-red-600">
-                        <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                      <div className="mt-1 flex items-start gap-2 text-red-600">
+                        <AlertCircle className="h-3 w-3 mt-0.5 flex-shrink-0" />
                         <div className="text-xs">
                           {fileObj.errors.map((err, idx) => (
                             <div key={idx}>{err}</div>
@@ -228,16 +228,16 @@ export default function AdvancedFileUpload({
 
                     {/* Upload Progress */}
                     {fileObj.valid && fileObj.progress > 0 && !fileObj.uploaded && (
-                      <div className="mt-2 space-y-1">
-                        <Progress value={fileObj.progress} className="h-2" />
+                      <div className="mt-1 space-y-1">
+                        <Progress value={fileObj.progress} className="h-1.5" />
                         <p className="text-xs text-slate-500">Enviando... {fileObj.progress}%</p>
                       </div>
                     )}
 
                     {/* Upload Success */}
                     {fileObj.uploaded && (
-                      <div className="mt-2 flex items-center gap-2 text-green-600">
-                        <CheckCircle2 className="h-4 w-4" />
+                      <div className="mt-1 flex items-center gap-1 text-green-600">
+                        <CheckCircle2 className="h-3 w-3" />
                         <p className="text-xs">Upload concluído</p>
                       </div>
                     )}
@@ -252,7 +252,7 @@ export default function AdvancedFileUpload({
             <Button
               onClick={uploadAll}
               disabled={uploading}
-              className="w-full bg-blue-600 hover:bg-blue-700"
+              className="w-full bg-blue-600 hover:bg-blue-700 mt-2"
             >
               {uploading ? 'Enviando...' : `Enviar ${files.filter(f => f.valid && !f.uploaded).length} arquivo(s)`}
             </Button>
