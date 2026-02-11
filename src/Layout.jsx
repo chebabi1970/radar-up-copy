@@ -25,17 +25,45 @@ const navigation = [
 const WHATSAPP_NUMBER = '+5511984848700'; // Atualize com seu número
 const WHATSAPP_MESSAGE = 'Olá! Preciso de suporte com a plataforma RADAR UP.';
 export default function Layout({ children, currentPageName }) {
-  // ========== CONTENT SECURITY POLICY ==========
-  // Via meta tags para proteção contra XSS, clickjacking, etc
+  // ========== SEGURANÇA HTTP E DE CABEÇALHOS ==========
   React.useEffect(() => {
-    // Já fornecido pelo servidor Base44, mas reforçando em meta tags
+    // Content Security Policy
     const cspMeta = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
     if (!cspMeta) {
       const meta = document.createElement('meta');
       meta.httpEquiv = 'Content-Security-Policy';
-      meta.content = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://qtrypzzcjebvfcihiynt.supabase.co; frame-ancestors 'none'";
+      meta.content = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://qtrypzzcjebvfcihiynt.supabase.co; frame-ancestors 'none'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'";
       document.head.appendChild(meta);
     }
+
+    // Force HTTPS
+    if (window.location.protocol !== 'https:' && !window.location.hostname.includes('localhost')) {
+      window.location.href = window.location.href.replace('http:', 'https:');
+    }
+  }, []);
+
+  // ========== LOGOUT POR INATIVIDADE ==========
+  React.useEffect(() => {
+    let inactivityTimer;
+    const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutos
+
+    const resetTimer = () => {
+      clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(() => {
+        base44.auth.logout();
+      }, INACTIVITY_TIMEOUT);
+    };
+
+    // Eventos que resetam o timer
+    const events = ['mousedown', 'keydown', 'scroll', 'touchstart'];
+    events.forEach(event => window.addEventListener(event, resetTimer));
+    
+    resetTimer();
+
+    return () => {
+      clearTimeout(inactivityTimer);
+      events.forEach(event => window.removeEventListener(event, resetTimer));
+    };
   }, []);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState(null);
@@ -50,10 +78,31 @@ export default function Layout({ children, currentPageName }) {
 
   return (
     <>
+      <style dangerouslySetInnerHTML={{ __html: `
+        /* ========== PREVENÇÃO DE SELEÇÃO DE DADOS SENSÍVEIS ========== */
+        [data-sensitive="true"],
+        [class*="cnpj"],
+        [class*="cpf"],
+        .documento-confidencial {
+          user-select: none;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+        }
+        
+        img[data-sensitive="true"] {
+          pointer-events: none;
+          user-select: none;
+        }
+      ` }} />
+      
       {/* ========== SEGURANÇA: Meta tags adicionais ========== */}
       <meta name="referrer" content="strict-origin-when-cross-origin" />
-      <meta name="permissions-policy" content="geolocation=(), microphone=(), camera=()" />
+      <meta name="permissions-policy" content="geolocation=(), microphone=(), camera=(), payment=(), usb=()" />
       <meta httpEquiv="X-UA-Compatible" content="ie=edge" />
+      <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
+      <meta httpEquiv="X-Frame-Options" content="DENY" />
+      <meta httpEquiv="X-XSS-Protection" content="1; mode=block" />
       
       <div className="min-h-screen bg-slate-50">
       {/* Mobile sidebar backdrop */}
