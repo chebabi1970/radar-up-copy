@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Loader2, Lock, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import VisualizadorPDF from './VisualizadorPDF';
 
 export default function VisualizadorDocumento({ isOpen, onClose, documento, casoId }) {
@@ -11,7 +11,6 @@ export default function VisualizadorDocumento({ isOpen, onClose, documento, caso
   const [loading, setLoading] = useState(false);
   const [tempoVisualizacao, setTempoVisualizacao] = useState(0);
   const [visualizando, setVisualizando] = useState(false);
-  const [mostrarConteudo, setMostrarConteudo] = useState(false);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -28,6 +27,9 @@ export default function VisualizadorDocumento({ isOpen, onClose, documento, caso
 
     setVisualizando(true);
     const inicio = Date.now();
+    
+    // Carregar documento automaticamente
+    carregarDocumento();
 
     return () => {
       const duracao = Math.floor((Date.now() - inicio) / 1000);
@@ -65,8 +67,6 @@ export default function VisualizadorDocumento({ isOpen, onClose, documento, caso
       } else if (fileUrl) {
         setSignedUrl(fileUrl);
       }
-      
-      setMostrarConteudo(true);
     } catch (error) {
       console.error('Erro ao carregar documento:', error);
       alert('Erro ao carregar documento: ' + (error.message || 'Tente novamente.'));
@@ -85,66 +85,27 @@ export default function VisualizadorDocumento({ isOpen, onClose, documento, caso
     }}>
       <DialogContent className="max-w-4xl max-h-[90vh]">
         <DialogHeader>
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <DialogTitle>{documento.nome_arquivo}</DialogTitle>
-              <p className="text-sm text-slate-500 mt-1">Sigilo Fiscal - Acesso Controlado</p>
-            </div>
-            <Lock className="h-5 w-5 text-red-600 flex-shrink-0" />
-          </div>
+          <DialogTitle>{documento.nome_arquivo}</DialogTitle>
         </DialogHeader>
 
-        {!mostrarConteudo ? (
-          <div className="flex flex-col items-center justify-center py-12 px-4">
-            <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-sm text-center mb-6">
-              <AlertCircle className="h-12 w-12 text-red-600 mx-auto mb-3" />
-              <h3 className="font-semibold text-slate-900 mb-2">Documento com Sigilo Fiscal</h3>
-              <p className="text-sm text-slate-700 mb-4">
-                Este documento contém informações confidenciais protegidas por sigilo fiscal. Seu acesso será registrado em auditoria.
-              </p>
-              <div className="text-xs text-slate-600 space-y-1 mb-4">
-                <p>✓ Acesso será registrado</p>
-                <p>✓ Link expira em 10 minutos</p>
-                <p>✓ Download não permitido</p>
-              </div>
-            </div>
-
-            <Button 
-              onClick={carregarDocumento}
-              disabled={loading}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Carregando...
-                </>
-              ) : (
-                <>
-                  <Eye className="h-4 w-4 mr-2" />
-                  Visualizar Documento
-                </>
-              )}
-            </Button>
-          </div>
-        ) : signedUrl ? (
-           <div className="space-y-4">
-             <VisualizadorPDF url={signedUrl} />
-             <div className="flex justify-center gap-2">
-               <Button 
-                 variant="outline"
-                 onClick={() => window.open(signedUrl, '_blank')}
-                 size="sm"
-               >
-                 Abrir em Nova Aba
-               </Button>
-             </div>
-           </div>
-        ) : (
+        {loading ? (
           <div className="flex items-center justify-center py-8">
             <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
           </div>
-        )}
+        ) : signedUrl ? (
+          <div className="space-y-4">
+            <VisualizadorPDF url={signedUrl} />
+            <div className="flex justify-center gap-2">
+              <Button 
+                variant="outline"
+                onClick={() => window.open(signedUrl, '_blank')}
+                size="sm"
+              >
+                Abrir em Nova Aba
+              </Button>
+            </div>
+          </div>
+        ) : null}
       </DialogContent>
     </Dialog>
   );
