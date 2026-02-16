@@ -38,6 +38,8 @@ export default function ChecklistTab({ casoId, checklistItems, documentos, clien
   const [modalOpen, setModalOpen] = useState(false);
   const [itemSelecionado, setItemSelecionado] = useState(null);
   const [documentoVisualizar, setDocumentoVisualizar] = useState(null);
+  const [filtroStatus, setFiltroStatus] = useState('todos');
+  const [expandido, setExpandido] = useState({});
   const queryClient = useQueryClient();
 
   const updateStatusMutation = useMutation({
