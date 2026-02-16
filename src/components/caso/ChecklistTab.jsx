@@ -146,89 +146,209 @@ export default function ChecklistTab({ casoId, checklistItems, documentos, clien
           </div>
         </div>
 
-      {checklistItems.length === 0 ? (
-        <div className="text-center py-8 text-slate-500 text-sm">
-          Nenhum item no checklist
-        </div>
-      ) : (
-        <div className="divide-y divide-slate-100 space-y-0">
-          {checklistItems.map((item) => {
-            const config = statusConfig[item.status];
-            const StatusIcon = config.icon;
-            const linkedDocs = getLinkedDocuments(item);
-
-            return (
-              <div key={item.id} className="py-3 md:py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                <div className="flex items-start gap-3 flex-1 min-w-0">
-                  <div className={`h-7 w-7 md:h-8 md:w-8 rounded-lg flex items-center justify-center flex-shrink-0 ${config.bg}`}>
-                    <StatusIcon className={`h-3.5 w-3.5 md:h-4 md:w-4 ${config.color}`} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start gap-2 flex-wrap">
-                      <span className="font-medium text-slate-900 text-sm break-words">{item.descricao}</span>
-                      {item.obrigatorio && (
-                        <Badge variant="outline" className="text-xs flex-shrink-0 mt-0.5">Obrigatório</Badge>
+        {/* Lista de itens agrupados */}
+        {itensFiltrados.length === 0 ? (
+          <div className="text-center py-12 text-slate-500 text-sm bg-slate-50 rounded-lg">
+            {filtroStatus === 'todos' ? 'Nenhum item no checklist' : `Nenhum item com status "${statusConfig[filtroStatus]?.label}"`}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {Object.entries(itensAgrupados).map(([grupo, items]) => {
+              const isExpanded = expandido[grupo] !== false;
+              const grupoAprovados = items.filter(i => i.status === 'aprovado' || i.status === 'nao_aplicavel').length;
+              
+              return (
+                <div key={grupo} className="border border-slate-200 rounded-lg overflow-hidden bg-white">
+                  {/* Header do grupo */}
+                  <button
+                    onClick={() => setExpandido(prev => ({ ...prev, [grupo]: !isExpanded }))}
+                    className="w-full flex items-center justify-between p-4 hover:bg-slate-50 transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <FileText className="h-4 w-4 text-blue-600" />
+                      </div>
+                      <div className="text-left">
+                        <h4 className="font-medium text-slate-900 text-sm">
+                          Categoria {grupo}
+                        </h4>
+                        <p className="text-xs text-slate-500">
+                          {grupoAprovados}/{items.length} itens concluídos
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="text-xs">
+                        {items.length}
+                      </Badge>
+                      {isExpanded ? (
+                        <ChevronUp className="h-4 w-4 text-slate-400" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4 text-slate-400" />
                       )}
                     </div>
-                    <div className="flex items-center gap-2 mt-1 text-xs md:text-sm text-slate-500 flex-wrap">
-                      <span>Código: {item.codigo_dda}</span>
-                      <span className="hidden md:inline">•</span>
-                      <span className="hidden md:inline">{item.base_legal}</span>
-                    </div>
-                    {linkedDocs.length > 0 ? (
-                      <div className="flex items-start gap-2 mt-2">
-                        <Badge className="bg-green-100 text-green-700 text-xs flex items-center gap-1 flex-shrink-0">
-                          <FileText className="h-3 w-3" />
-                          Anexado
-                        </Badge>
-                        <div className="flex flex-col gap-1">
-                          {linkedDocs.map((doc) => (
-                            <button
-                              key={doc.id}
-                              onClick={() => setDocumentoVisualizar(doc)}
-                              className="text-xs text-blue-600 hover:text-blue-800 hover:underline font-medium text-left"
-                            >
-                              {doc.nome_arquivo}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    ) : null}
-                  </div>
-                </div>
+                  </button>
 
-                <div className="flex items-center gap-2 flex-shrink-0 self-end md:self-auto">
-                  {linkedDocs.length > 0 && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleAnalisar(item)}
-                      className="h-8 px-2 md:h-9 md:px-3 text-xs gap-1 flex-shrink-0"
-                    >
-                      <Zap className="h-3 w-3" />
-                      <span className="hidden sm:inline">Analisar</span>
-                    </Button>
+                  {/* Conteúdo do grupo */}
+                  {isExpanded && (
+                    <div className="border-t border-slate-100 divide-y divide-slate-100">
+                      {items.map((item) => {
+                        const config = statusConfig[item.status];
+                        const StatusIcon = config.icon;
+                        const linkedDocs = getLinkedDocuments(item);
+                        const itemExpandido = expandido[item.id];
+
+                        return (
+                          <div key={item.id} className="p-4 hover:bg-slate-50/50 transition-colors">
+                            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
+                              {/* Conteúdo principal */}
+                              <div className="flex items-start gap-3 flex-1 min-w-0">
+                                <div className={`h-8 w-8 rounded-lg flex items-center justify-center flex-shrink-0 ${config.bg}`}>
+                                  <StatusIcon className={`h-4 w-4 ${config.color}`} />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-start gap-2 flex-wrap mb-1">
+                                    <span className="font-medium text-slate-900 text-sm break-words">
+                                      {item.descricao}
+                                    </span>
+                                    {item.obrigatorio && (
+                                      <Badge variant="destructive" className="text-xs flex-shrink-0">
+                                        Obrigatório
+                                      </Badge>
+                                    )}
+                                  </div>
+                                  
+                                  <div className="flex items-center gap-2 text-xs text-slate-500 mb-2">
+                                    <span className="font-mono bg-slate-100 px-2 py-0.5 rounded">
+                                      {item.codigo_dda}
+                                    </span>
+                                    {item.base_legal && (
+                                      <>
+                                        <span>•</span>
+                                        <span>{item.base_legal}</span>
+                                      </>
+                                    )}
+                                  </div>
+
+                                  {/* Documentos anexados */}
+                                  {linkedDocs.length > 0 && (
+                                    <div className="mt-2 space-y-1">
+                                      <Badge className="bg-green-100 text-green-700 text-xs flex items-center gap-1 w-fit">
+                                        <FileText className="h-3 w-3" />
+                                        {linkedDocs.length} documento(s) anexado(s)
+                                      </Badge>
+                                      <div className="flex flex-col gap-1 ml-1">
+                                        {linkedDocs.map((doc) => (
+                                          <button
+                                            key={doc.id}
+                                            onClick={() => setDocumentoVisualizar(doc)}
+                                            className="text-xs text-blue-600 hover:text-blue-800 hover:underline font-medium text-left flex items-center gap-1"
+                                          >
+                                            <FileText className="h-3 w-3" />
+                                            {doc.nome_arquivo}
+                                          </button>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Detalhes expandidos */}
+                                  {itemExpandido && (
+                                    <div className="mt-3 p-3 bg-slate-50 rounded-lg text-xs text-slate-600 space-y-1">
+                                      {item.aplicavel_hipotese && item.aplicavel_hipotese.length > 0 && (
+                                        <div>
+                                          <span className="font-medium">Aplicável em:</span>
+                                          <span className="ml-1">{item.aplicavel_hipotese.join(', ')}</span>
+                                        </div>
+                                      )}
+                                      {item.documento_id && (
+                                        <div>
+                                          <span className="font-medium">Documento vinculado:</span>
+                                          <span className="ml-1 font-mono">{item.documento_id.slice(0, 8)}</span>
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+
+                                  {/* Botão expandir detalhes */}
+                                  <button
+                                    onClick={() => setExpandido(prev => ({ ...prev, [item.id]: !itemExpandido }))}
+                                    className="mt-2 text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1"
+                                  >
+                                    {itemExpandido ? (
+                                      <>
+                                        <ChevronUp className="h-3 w-3" />
+                                        Menos detalhes
+                                      </>
+                                    ) : (
+                                      <>
+                                        <ChevronDown className="h-3 w-3" />
+                                        Mais detalhes
+                                      </>
+                                    )}
+                                  </button>
+                                </div>
+                              </div>
+
+                              {/* Ações */}
+                              <div className="flex items-center gap-2 flex-shrink-0 self-end md:self-start">
+                                {linkedDocs.length > 0 && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleAnalisar(item)}
+                                    className="h-9 px-3 text-xs gap-1.5 flex-shrink-0"
+                                  >
+                                    <Zap className="h-3.5 w-3.5" />
+                                    Analisar
+                                  </Button>
+                                )}
+                                <Select 
+                                  value={item.status} 
+                                  onValueChange={(value) => updateStatusMutation.mutate({ itemId: item.id, status: value })}
+                                >
+                                  <SelectTrigger className="w-[140px] h-9 text-xs flex-shrink-0">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="pendente">
+                                      <div className="flex items-center gap-2">
+                                        <Circle className="h-3 w-3 text-slate-400" />
+                                        Pendente
+                                      </div>
+                                    </SelectItem>
+                                    <SelectItem value="enviado">
+                                      <div className="flex items-center gap-2">
+                                        <Clock className="h-3 w-3 text-blue-600" />
+                                        Enviado
+                                      </div>
+                                    </SelectItem>
+                                    <SelectItem value="aprovado">
+                                      <div className="flex items-center gap-2">
+                                        <CheckCircle2 className="h-3 w-3 text-green-600" />
+                                        Aprovado
+                                      </div>
+                                    </SelectItem>
+                                    <SelectItem value="nao_aplicavel">
+                                      <div className="flex items-center gap-2">
+                                        <AlertCircle className="h-3 w-3 text-slate-400" />
+                                        N/A
+                                      </div>
+                                    </SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   )}
-                  <Select 
-                    value={item.status} 
-                    onValueChange={(value) => updateStatusMutation.mutate({ itemId: item.id, status: value })}
-                  >
-                    <SelectTrigger className="w-24 md:w-[140px] h-8 md:h-9 text-xs flex-shrink-0">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="pendente">Pendente</SelectItem>
-                      <SelectItem value="enviado">Enviado</SelectItem>
-                      <SelectItem value="aprovado">Aprovado</SelectItem>
-                      <SelectItem value="nao_aplicavel">N/A</SelectItem>
-                    </SelectContent>
-                  </Select>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {modalOpen && (
