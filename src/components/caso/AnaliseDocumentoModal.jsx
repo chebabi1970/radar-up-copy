@@ -209,8 +209,11 @@ RETORNE EM JSON APENAS:
 
   const analisarDocumentoSimples = async () => {
     setAnalisando(true);
+    setResultados(null); // Reset results
     try {
-      if (!linkedDoc) {
+      const linkedDocs = documentos.filter(d => d.tipo_documento === docSelecionado.tipo_documento);
+      
+      if (linkedDocs.length === 0) {
         setResultados({
           erro: true,
           mensagem: 'Nenhum documento vinculado encontrado.'
@@ -219,7 +222,7 @@ RETORNE EM JSON APENAS:
         return;
       }
 
-      const tipoDoc = item.tipo_documento;
+      const tipoDoc = docSelecionado.tipo_documento;
       const guide = getGuide(tipoDoc);
 
       // Construir prompt OTIMIZADO E CONCISO
@@ -229,7 +232,7 @@ RETORNE EM JSON APENAS:
 REGRAS: ${guide.regras.slice(0, 3).join(' | ')}
 CRÍTICOS: ${guide.checklist.filter(c => c.critico).map(c => c.item).join(' | ')}
 
-EMPRESA: ${cliente?.razao_social} | CNPJ: ${cliente?.cnpj}
+EMPRESA: ${cliente?.razao_social || 'N/A'} | CNPJ: ${cliente?.cnpj || 'N/A'}
 
 RESPONDA EM JSON APENAS:
 {
@@ -256,35 +259,24 @@ RESPONDA EM JSON:
   "classificacao_final": "APROVADO|INCONSISTENTE"
 }`;
 
-      // Obter URL assinada se for file_uri
-      let fileUrl = linkedDoc.file_url;
-      if (!fileUrl && linkedDoc.file_uri) {
-        const signedResult = await base44.integrations.Core.CreateFileSignedUrl({
-          file_uri: linkedDoc.file_uri,
-          expires_in: 3600
-        });
-        fileUrl = signedResult.signed_url;
-      }
-
-      if (!fileUrl) {
-        throw new Error('URL do documento não disponível');
-      }
-
       // Array de arquivos - pode ter múltiplos do mesmo tipo
-      const linkedDocs = documentos.filter(d => d.tipo_documento === item.tipo_documento);
       const fileUrls = [];
       
-      for (const doc of linkedDocs) {
-        let docUrl = doc.file_url;
-        if (!docUrl && doc.file_uri) {
-          const signedResult = await base44.integrations.Core.CreateFileSignedUrl({
-            file_uri: doc.file_uri,
-            expires_in: 3600
-          });
-          docUrl = signedResult.signed_url;
-        }
-        if (docUrl) {
-          fileUrls.push(docUrl);
+      for (const doc of linkedDocs.slice(0, 3)) { // Limite de 3 docs
+        try {
+          let docUrl = doc.file_url;
+          if (!docUrl && doc.file_uri) {
+            const signedResult = await base44.integrations.Core.CreateFileSignedUrl({
+              file_uri: doc.file_uri,
+              expires_in: 3600
+            });
+            docUrl = signedResult.signed_url;
+          }
+          if (docUrl) {
+            fileUrls.push(docUrl);
+          }
+        } catch (err) {
+          console.warn('Erro ao obter URL do documento:', err);
         }
       }
 
@@ -292,6 +284,8 @@ RESPONDA EM JSON:
         throw new Error('Nenhuma URL de documento disponível');
       }
 
+      console.log('Iniciando análise LLM com', fileUrls.length, 'arquivos...');
+      
       const resultado = await base44.integrations.Core.InvokeLLM({
         prompt,
         file_urls: fileUrls,
@@ -307,6 +301,8 @@ RESPONDA EM JSON:
         }
       });
 
+      console.log('Análise LLM concluída:', resultado);
+
       setResultados({
         erro: false,
         dados: resultado
@@ -315,7 +311,7 @@ RESPONDA EM JSON:
       console.error('Erro na análise:', error);
       setResultados({
         erro: true,
-        mensagem: 'Erro ao analisar documento. Verifique se o PDF está legível.'
+        mensagem: error.message || 'Erro ao analisar documento. Verifique se o PDF está legível.'
       });
     } finally {
       setAnalisando(false);
