@@ -86,13 +86,63 @@ export default function ChecklistTab({ casoId, checklistItems, documentos, clien
 
   return (
     <>
-      <div className="space-y-3">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4 pb-4 border-b border-slate-200">
-          <h3 className="font-semibold text-slate-900 text-sm md:text-base">
-            Documentação Instrutória
-          </h3>
-          <div className="text-xs text-slate-500 whitespace-nowrap">
-            {checklistItems.filter(i => i.status !== 'pendente').length} de {checklistItems.length} concluídos
+      <div className="space-y-4">
+        {/* Header com progresso e filtros */}
+        <div className="space-y-4">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div className="flex-1">
+              <h3 className="font-semibold text-slate-900 text-base md:text-lg mb-2">
+                Documentação Instrutória
+              </h3>
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <Progress value={progresso} className="h-2 flex-1" />
+                  <span className="text-sm font-medium text-slate-700 whitespace-nowrap">
+                    {progresso}%
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-slate-500">
+                  <span className="font-medium">{checklistItems.filter(i => i.status === 'aprovado' || i.status === 'nao_aplicavel').length}</span>
+                  <span>de</span>
+                  <span className="font-medium">{checklistItems.length}</span>
+                  <span>concluídos</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Filtros */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-2">
+                <Filter className="h-4 w-4 text-slate-400" />
+                <Select value={filtroStatus} onValueChange={setFiltroStatus}>
+                  <SelectTrigger className="w-[140px] h-9 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todos</SelectItem>
+                    <SelectItem value="pendente">Pendentes</SelectItem>
+                    <SelectItem value="enviado">Enviados</SelectItem>
+                    <SelectItem value="aprovado">Aprovados</SelectItem>
+                    <SelectItem value="nao_aplicavel">N/A</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+          {/* Legenda de status */}
+          <div className="flex flex-wrap gap-2 p-3 bg-slate-50 rounded-lg">
+            {Object.entries(statusConfig).map(([key, config]) => {
+              const StatusIcon = config.icon;
+              return (
+                <div key={key} className="flex items-center gap-2 text-xs">
+                  <div className={`h-5 w-5 rounded flex items-center justify-center ${config.bg}`}>
+                    <StatusIcon className={`h-3 w-3 ${config.color}`} />
+                  </div>
+                  <span className="text-slate-600">{config.label}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
 
