@@ -58,6 +58,32 @@ export default function ChecklistTab({ casoId, checklistItems, documentos, clien
     setModalOpen(true);
   };
 
+  // Calcular progresso
+  const progresso = useMemo(() => {
+    if (checklistItems.length === 0) return 0;
+    const concluidos = checklistItems.filter(i => i.status === 'aprovado' || i.status === 'nao_aplicavel').length;
+    return Math.round((concluidos / checklistItems.length) * 100);
+  }, [checklistItems]);
+
+  // Filtrar itens
+  const itensFiltrados = useMemo(() => {
+    if (filtroStatus === 'todos') return checklistItems;
+    return checklistItems.filter(i => i.status === filtroStatus);
+  }, [checklistItems, filtroStatus]);
+
+  // Agrupar por categoria (baseado no código DDA)
+  const itensAgrupados = useMemo(() => {
+    const grupos = {};
+    itensFiltrados.forEach(item => {
+      const codigo = item.codigo_dda?.split('-')[0] || 'Outros';
+      if (!grupos[codigo]) {
+        grupos[codigo] = [];
+      }
+      grupos[codigo].push(item);
+    });
+    return grupos;
+  }, [itensFiltrados]);
+
   return (
     <>
       <div className="space-y-3">
