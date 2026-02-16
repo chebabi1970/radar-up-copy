@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Progress } from "@/components/ui/progress";
 import { 
   CheckCircle2, 
   Circle, 
@@ -17,7 +18,11 @@ import {
   AlertCircle,
   Clock,
   Zap,
-  Loader2
+  Loader2,
+  Filter,
+  Upload,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import AnaliseDocumentoModal from './AnaliseDocumentoModal';
 import VisualizadorDocumento from './VisualizadorDocumento';
