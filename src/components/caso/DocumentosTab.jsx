@@ -35,6 +35,7 @@ import {
 import VisualizadorDocumento from './VisualizadorDocumento';
 import VersionHistoricoPanel from './VersionHistoricoPanel';
 import AdvancedFileUpload from '../upload/AdvancedFileUpload';
+import EditarTipoDocumento from './EditarTipoDocumento';
 
 const tipoDocumentoLabels = {
   requerimento_das: "REQUERIMENTO",
