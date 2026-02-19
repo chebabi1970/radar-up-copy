@@ -81,7 +81,34 @@ Veja o resumo do caso e o cálculo da capacidade financeira estimada, conforme a
 
 ---
 
-## 4. Entendendo a Análise Automática
+## 4. Calculadora de Capacidade Financeira
+
+O RADAR UP inclui uma ferramenta poderosa e independente para simular o cálculo da capacidade financeira. Acesse-a a qualquer momento pelo menu lateral "Calculadora".
+
+### Como Usar
+
+1.  **Selecione a Hipótese:** Escolha uma das 5 hipóteses da Portaria Coana 72/2020.
+2.  **Preencha os Campos:** O formulário se adapta à hipótese selecionada, mostrando apenas os campos necessários.
+3.  **Clique em "Calcular"**.
+
+### Entendendo o Resultado
+
+A calculadora mostra um resultado detalhado:
+
+-   **Capacidade em Reais (BRL):** O valor base calculado.
+-   **Cotação do Dólar:** A taxa usada na conversão (conforme Portaria Coana 180/2026).
+-   **Capacidade em Dólares (USD):** O valor final que define a modalidade.
+-   **Modalidade de Habilitação:** O sistema classifica automaticamente em:
+    -   **Limitada (US$ 50k):** Para capacidade até US$ 50.000.
+    -   **Limitada (US$ 150k):** Para capacidade entre US$ 50.001 e US$ 150.000.
+    -   **Ilimitada:** Para capacidade acima de US$ 150.000,01.
+-   **Descrição da Modalidade:** Explica o que significa cada modalidade em termos de limites de operação.
+
+Esta ferramenta é ideal para simulações rápidas e para entender o potencial de habilitação de um cliente antes mesmo de abrir um caso.
+
+---
+
+## 5. Entendendo a Análise Automática
 
 O RADAR UP trabalha para você em segundo plano. Assim que um documento é enviado, o sistema:
 
@@ -93,5 +120,7 @@ O RADAR UP trabalha para você em segundo plano. Assim que um documento é envia
 Você pode forçar uma reanálise completa a qualquer momento no Dashboard.
 
 ---
+
+## 6. Conclusão
 
 **Parabéns!** Você está pronto para usar o RADAR UP e transformar sua análise de conformidade. Em caso de dúvidas, consulte o FAQ ou entre em contato com o suporte.
