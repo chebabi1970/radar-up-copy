@@ -29,6 +29,7 @@ class Logger {
     this.minLevel = LogLevel.INFO;
     this.listeners = [];
     this.sessionId = this.generateSessionId();
+    this.maskSensitiveData = true; // Habilita mascaramento por padrão
   }
 
   /**
@@ -36,6 +37,95 @@ class Logger {
    */
   generateSessionId() {
     return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  /**
+   * Mascara dados sensíveis (CNPJ, CPF, valores financeiros, emails)
+   * @param {any} data - Dados a serem mascarados
+   * @returns {any} Dados mascarados
+   */
+  maskData(data) {
+    if (!this.maskSensitiveData) return data;
+
+    if (typeof data === 'string') {
+      return this.maskString(data);
+    }
+
+    if (Array.isArray(data)) {
+      return data.map(item => this.maskData(item));
+    }
+
+    if (data && typeof data === 'object') {
+      const masked = {};
+      for (const [key, value] of Object.entries(data)) {
+        // Campos que devem ser completamente ocultados
+        if (['password', 'senha', 'token', 'apiKey', 'secret'].includes(key)) {
+          masked[key] = '[REDACTED]';
+        } else {
+          masked[key] = this.maskData(value);
+        }
+      }
+      return masked;
+    }
+
+    return data;
+  }
+
+  /**
+   * Mascara strings contendo dados sensíveis
+   * @param {string} str - String a ser mascarada
+   * @returns {string} String mascarada
+   */
+  maskString(str) {
+    if (!str || typeof str !== 'string') return str;
+
+    let masked = str;
+
+    // Mascara CNPJ (12.345.678/0001-90 → 12.345***0001-90)
+    masked = masked.replace(
+      /(\d{2}\.\d{3})\.(\d{3})\/(\d{4})-(\d{2})/g,
+      '$1***$3-$4'
+    );
+    masked = masked.replace(
+      /(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/g,
+      '$1$2***$4$5'
+    );
+
+    // Mascara CPF (123.456.789-01 → 123***789-01)
+    masked = masked.replace(
+      /(\d{3})\.(\d{3})\.(\d{3})-(\d{2})/g,
+      '$1***$3-$4'
+    );
+    masked = masked.replace(
+      /(\d{3})(\d{3})(\d{3})(\d{2})/g,
+      '$1***$3$4'
+    );
+
+    // Mascara valores monetários acima de R$ 10.000 (R$ 150.000,00 → R$ 1**.**0,00)
+    masked = masked.replace(
+      /R\$\s*(\d{1,3})(?:\.\d{3})+,(\d{2})/g,
+      (match, first, cents) => {
+        const value = parseFloat(match.replace(/[R$\s.]/g, '').replace(',', '.'));
+        if (value > 10000) {
+          return `R$ ${first[0]}**.**${cents}`;
+        }
+        return match;
+      }
+    );
+
+    // Mascara emails (usuario@exemplo.com → us***@exemplo.com)
+    masked = masked.replace(
+      /([a-zA-Z0-9._%+-]{2})([a-zA-Z0-9._%+-]*)@([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g,
+      '$1***@$3'
+    );
+
+    // Mascara números de conta bancária (12345-6 → 12***-6)
+    masked = masked.replace(
+      /(\d{2})(\d+)-(\d)/g,
+      '$1***-$3'
+    );
+
+    return masked;
   }
 
   /**
@@ -77,15 +167,19 @@ class Logger {
    * @returns {object} Entrada de log estruturada
    */
   createLogEntry(level, category, message, metadata = {}) {
+    // Mascara dados sensíveis na mensagem e metadados
+    const maskedMessage = this.maskString(message);
+    const maskedMetadata = this.maskData(metadata);
+
     return {
       timestamp: new Date().toISOString(),
       level,
       category,
-      message,
+      message: maskedMessage,
       sessionId: this.sessionId,
       userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
       url: typeof window !== 'undefined' ? window.location.href : 'unknown',
-      ...metadata
+      ...maskedMetadata
     };
   }
 
