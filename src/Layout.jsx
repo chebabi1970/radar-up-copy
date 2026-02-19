@@ -9,9 +9,9 @@ import {
   Menu,
   X,
   LogOut,
-  Briefcase,
   MessageCircle,
-  HelpCircle
+  HelpCircle,
+  Calculator
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import NotificationBell from '@/components/NotificationBell';
