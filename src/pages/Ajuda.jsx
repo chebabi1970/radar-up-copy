@@ -133,7 +133,7 @@ export default function Ajuda() {
             </TabsTrigger>
             <TabsTrigger value="faq" className="text-base">
               <HelpCircle className="h-4 w-4 mr-2" />
-              FAQ
+              Tópicos
             </TabsTrigger>
           </TabsList>
 
