@@ -49,12 +49,20 @@ export default function VersionHistoricoPanel({ documentoId, casoId, cliente, on
       const user = await base44.auth.me();
 
       // Criar nova versão a partir da versão anterior
-      const arquivo = await fetch(versaoAnterior.file_url || 
-        (await base44.integrations.Core.CreateFileSignedUrl({
-          file_uri: versaoAnterior.file_uri,
-          expires_in: 3600
-        })).signed_url
-      ).then(r => r.blob());
+      let fileUrl = versaoAnterior.file_url;
+      if (!fileUrl && versaoAnterior.file_uri) {
+        if (versaoAnterior.file_uri.startsWith('http')) {
+          fileUrl = versaoAnterior.file_uri;
+        } else {
+          const result = await base44.integrations.Core.CreateFileSignedUrl({
+            file_uri: versaoAnterior.file_uri,
+            expires_in: 3600
+          });
+          fileUrl = result.signed_url;
+        }
+      }
+      
+      const arquivo = await fetch(fileUrl).then(r => r.blob());
 
       const uploadResult = await base44.integrations.Core.UploadFile({
         file: arquivo
