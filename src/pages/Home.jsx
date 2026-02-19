@@ -19,8 +19,8 @@ import {
   Sparkles,
   BarChart3,
   Clock,
-  Rocket
-} from 'lucide-react';
+  Rocket } from
+'lucide-react';
 
 export default function Home() {
   const [user, setUser] = useState(null);
@@ -44,12 +44,12 @@ export default function Home() {
         const clientes = await base44.entities.Cliente.list();
         const casos = await base44.entities.Caso.list();
         const documentos = await base44.entities.Documento.list();
-        
+
         return {
           totalClientes: clientes.length,
           totalCasos: casos.length,
-          casosAtivos: casos.filter(c => ['em_analise', 'aguardando_documentos', 'protocolado'].includes(c.status)).length,
-          documentosPendentes: documentos.filter(d => d.status_analise === 'pendente').length
+          casosAtivos: casos.filter((c) => ['em_analise', 'aguardando_documentos', 'protocolado'].includes(c.status)).length,
+          documentosPendentes: documentos.filter((d) => d.status_analise === 'pendente').length
         };
       } catch (error) {
         return null;
@@ -59,58 +59,58 @@ export default function Home() {
   });
 
   const features = [
-    {
-      icon: <Users className="h-8 w-8 text-blue-600" />,
-      title: "Gestão de Clientes",
-      descricao: "Organize e acompanhe todos os seus clientes em um só lugar",
-      link: "Clientes",
-      cor: "blue"
-    },
-    {
-      icon: <FileText className="h-8 w-8 text-purple-600" />,
-      title: "Gestão de Casos",
-      descricao: "Crie e acompanhe casos de revisão de estimativa e habilitação",
-      link: "Casos",
-      cor: "purple"
-    },
-    {
-      icon: <DollarSign className="h-8 w-8 text-green-600" />,
-      title: "Cálculo de Capacidade",
-      descricao: "Calcule automaticamente a capacidade financeira conforme IN 1984/2020",
-      link: "Casos",
-      cor: "green"
-    },
-    {
-      icon: <Zap className="h-8 w-8 text-red-600" />,
-      title: "Crítica Documental por IA",
-      descricao: "Análise automática de documentos com detecção de discrepâncias e inconsistências",
-      link: "Casos",
-      cor: "red"
-    }
-  ];
+  {
+    icon: <Users className="h-8 w-8 text-blue-600" />,
+    title: "Gestão de Clientes",
+    descricao: "Organize e acompanhe todos os seus clientes em um só lugar",
+    link: "Clientes",
+    cor: "blue"
+  },
+  {
+    icon: <FileText className="h-8 w-8 text-purple-600" />,
+    title: "Gestão de Casos",
+    descricao: "Crie e acompanhe casos de revisão de estimativa e habilitação",
+    link: "Casos",
+    cor: "purple"
+  },
+  {
+    icon: <DollarSign className="h-8 w-8 text-green-600" />,
+    title: "Cálculo de Capacidade",
+    descricao: "Calcule automaticamente a capacidade financeira conforme IN 1984/2020",
+    link: "Casos",
+    cor: "green"
+  },
+  {
+    icon: <Zap className="h-8 w-8 text-red-600" />,
+    title: "Crítica Documental por IA",
+    descricao: "Análise automática de documentos com detecção de discrepâncias e inconsistências",
+    link: "Casos",
+    cor: "red"
+  }];
+
 
   const highlights = [
-    {
-      icon: <Shield className="h-6 w-6" />,
-      titulo: "Confidencialidade",
-      descricao: "Seus dados e casos são privados e seguros"
-    },
-    {
-      icon: <TrendingUp className="h-6 w-6" />,
-      titulo: "Eficiência",
-      descricao: "Acompanhe todo o processo em um dashboard intuitivo"
-    },
-    {
-      icon: <Lightbulb className="h-6 w-6" />,
-      titulo: "Inteligência",
-      descricao: "Análise automatizada com validação de documentos e cálculos"
-    },
-    {
-      icon: <CheckCircle2 className="h-6 w-6" />,
-      titulo: "Conformidade",
-      descricao: "Siga todas as normas IN 1984/2020 e Portaria Coana 72/2020"
-    }
-  ];
+  {
+    icon: <Shield className="h-6 w-6" />,
+    titulo: "Confidencialidade",
+    descricao: "Seus dados e casos são privados e seguros"
+  },
+  {
+    icon: <TrendingUp className="h-6 w-6" />,
+    titulo: "Eficiência",
+    descricao: "Acompanhe todo o processo em um dashboard intuitivo"
+  },
+  {
+    icon: <Lightbulb className="h-6 w-6" />,
+    titulo: "Inteligência",
+    descricao: "Análise automatizada com validação de documentos e cálculos"
+  },
+  {
+    icon: <CheckCircle2 className="h-6 w-6" />,
+    titulo: "Conformidade",
+    descricao: "Siga todas as normas IN 1984/2020 e Portaria Coana 72/2020"
+  }];
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
@@ -122,7 +122,7 @@ export default function Home() {
 
       {/* Hero Section */}
       <div className="relative overflow-hidden">
-        <div className="relative max-w-6xl mx-auto px-6 py-32">
+        <div className="mx-auto my-1 px-6 py-32 relative max-w-6xl">
           <div className="text-center mb-16">
             {/* Logo */}
             <div className="mb-6 flex justify-center">
@@ -144,16 +144,16 @@ export default function Home() {
             <p className="text-lg text-slate-300 mb-12 max-w-2xl mx-auto">
               Análise automática, conforme IN RFB 1984/2020 e Portaria Coana 72/2020
             </p>
-            {user && (
-              <p className="text-base text-blue-200 mb-8 font-medium">
+            {user &&
+            <p className="text-base text-blue-200 mb-8 font-medium">
                 🎉 Bem-vindo, <strong>{user.full_name}</strong>
               </p>
-            )}
+            }
           </div>
 
           {/* Stats Grid */}
-           {stats && (
-             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-16">
+           {stats &&
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-16">
                <div className="rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 p-8 text-white shadow-2xl hover:shadow-3xl transition-shadow">
                  <div className="text-center">
                    <p className="text-5xl font-bold mb-2">{stats.totalClientes}</p>
@@ -190,7 +190,7 @@ export default function Home() {
                  </div>
                </div>
              </div>
-           )}
+          }
         </div>
       </div>
 
@@ -206,8 +206,8 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-           {features.map((feature, idx) => (
-              <div key={idx} className="group relative rounded-2xl bg-gradient-to-br from-slate-800 to-slate-700 p-8 border border-slate-600/50 hover:border-blue-500/50 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+           {features.map((feature, idx) =>
+          <div key={idx} className="group relative rounded-2xl bg-gradient-to-br from-slate-800 to-slate-700 p-8 border border-slate-600/50 hover:border-blue-500/50 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-600/0 to-purple-600/0 group-hover:from-blue-600/10 group-hover:to-purple-600/10 rounded-2xl transition-all duration-300" />
                 <div className="relative">
                   <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 w-fit mb-6 group-hover:from-blue-500/40 group-hover:to-purple-500/40 transition-all">
@@ -221,7 +221,7 @@ export default function Home() {
                   </p>
                 </div>
               </div>
-           ))}
+          )}
         </div>
       </div>
 
@@ -236,8 +236,8 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {highlights.map((item, idx) => (
-              <div key={idx} className="group relative rounded-2xl bg-gradient-to-br from-slate-800 to-slate-700 p-8 border border-slate-600/50 hover:border-emerald-500/50 transition-all duration-300 hover:shadow-2xl">
+            {highlights.map((item, idx) =>
+            <div key={idx} className="group relative rounded-2xl bg-gradient-to-br from-slate-800 to-slate-700 p-8 border border-slate-600/50 hover:border-emerald-500/50 transition-all duration-300 hover:shadow-2xl">
                 <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/0 to-teal-600/0 group-hover:from-emerald-600/10 group-hover:to-teal-600/10 rounded-2xl transition-all duration-300" />
                 <div className="relative flex items-start gap-4">
                   <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 text-emerald-400 flex-shrink-0 group-hover:from-emerald-500/40 group-hover:to-teal-500/40 transition-all">
@@ -253,7 +253,7 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>
@@ -271,30 +271,30 @@ export default function Home() {
             <p className="text-lg text-blue-50 mb-10 max-w-2xl mx-auto">
               Crie seu primeiro caso e comece a utilizar IA para análise automática de documentos
             </p>
-            {user ? (
-              <Link to={createPageUrl('Casos')}>
+            {user ?
+            <Link to={createPageUrl('Casos')}>
                 <Button size="lg" className="bg-white text-blue-600 hover:bg-slate-50 shadow-lg hover:shadow-xl text-base px-8">
                   Criar Novo Caso
                   <ArrowRight className="h-5 w-5 ml-2" />
                 </Button>
-              </Link>
-            ) : (
-              <Button 
-                size="lg" 
-                className="bg-white text-blue-600 hover:bg-slate-50 shadow-lg hover:shadow-xl text-base px-8"
-                onClick={() => base44.auth.redirectToLogin()}
-              >
+              </Link> :
+
+            <Button
+              size="lg"
+              className="bg-white text-blue-600 hover:bg-slate-50 shadow-lg hover:shadow-xl text-base px-8"
+              onClick={() => base44.auth.redirectToLogin()}>
+
                 Fazer Login
                 <ArrowRight className="h-5 w-5 ml-2" />
               </Button>
-            )}
+            }
           </div>
         </div>
       </div>
 
       {/* Onboarding Section */}
-      {user && stats && stats.totalClientes === 0 && (
-        <div className="py-20 border-t border-slate-700">
+      {user && stats && stats.totalClientes === 0 &&
+      <div className="py-20 border-t border-slate-700">
           <div className="max-w-6xl mx-auto px-6">
             <div className="text-center mb-16">
               <h2 className="text-5xl font-bold text-white mb-6">
@@ -351,7 +351,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      )}
-    </div>
-  );
+      }
+    </div>);
+
 }
