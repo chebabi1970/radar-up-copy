@@ -9,6 +9,7 @@ import { X, Upload, Loader2, AlertCircle } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export default function UploadNovaVersao({ documentoAtual, casoId, onClose, onSuccess }) {
+  if (!documentoAtual) return null;
   const [arquivo, setArquivo] = useState(null);
   const [tags, setTags] = useState('');
   const [observacoes, setObservacoes] = useState('');
