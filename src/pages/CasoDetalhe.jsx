@@ -55,6 +55,7 @@ import ProcessoWizard from '@/components/caso/ProcessoWizard';
 import ChecklistDocumentos from '@/components/caso/ChecklistDocumentos';
 import SmartUpload from '@/components/upload/SmartUpload';
 import SeletorHipotese from '@/components/caso/SeletorHipotese';
+import CalculadoraCapacidade from '@/components/caso/CalculadoraCapacidade';
 import { useAutoAnalysis } from '@/hooks/useAutoAnalysis';
 
 const statusColors = {
@@ -484,6 +485,14 @@ export default function CasoDetalhe() {
                   <span className="sm:hidden">Up</span>
                 </TabsTrigger>
                 <TabsTrigger 
+                  value="calculadora" 
+                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
+                >
+                  <Calculator className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                  <span className="hidden sm:inline">Calculadora</span>
+                  <span className="sm:hidden">Calc</span>
+                </TabsTrigger>
+                <TabsTrigger 
                   value="checklist" 
                   className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
                 >
@@ -580,6 +589,25 @@ export default function CasoDetalhe() {
                   queryClient.invalidateQueries(['documentos', casoId]);
                 }}
                 triggerAnalise={executarAnalise}
+              />
+            </TabsContent>
+
+            <TabsContent value="calculadora" className="p-3 md:p-6 mt-0">
+              <CalculadoraCapacidade
+                caso={caso}
+                onSalvarResultado={(resultado) => {
+                  // Salvar resultado no caso
+                  base44.entities.Caso.update(casoId, {
+                    capacidade_financeira: resultado.valorUSD,
+                    modalidade_calculada: resultado.modalidade,
+                    resultado_calculo: resultado
+                  }).then(() => {
+                    queryClient.invalidateQueries({ queryKey: ['caso', casoId] });
+                    toast.success('Resultado salvo com sucesso!');
+                  }).catch((error) => {
+                    toast.error('Erro ao salvar resultado: ' + error.message);
+                  });
+                }}
               />
             </TabsContent>
 
