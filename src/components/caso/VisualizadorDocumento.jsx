@@ -48,24 +48,31 @@ export default function VisualizadorDocumento({ isOpen, onClose, documento, caso
   });
 
   const carregarDocumento = async () => {
-    const fileUri = documento?.file_uri;
     const fileUrl = documento?.file_url;
+    const fileUri = documento?.file_uri;
 
-    if (!fileUri && !fileUrl) {
+    if (!fileUrl && !fileUri) {
       alert('Caminho do arquivo não disponível. O documento precisa ser enviado primeiro.');
       return;
     }
 
     setLoading(true);
     try {
-      if (fileUri) {
+      // Se for URL pública, usar diretamente
+      if (fileUrl) {
+        setSignedUrl(fileUrl);
+      } 
+      // Se for arquivo privado com caminho relativo, criar URL assinada
+      else if (fileUri && !fileUri.startsWith('http')) {
         const resultado = await base44.integrations.Core.CreateFileSignedUrl({
           file_uri: fileUri,
           expires_in: 600
         });
         setSignedUrl(resultado.signed_url);
-      } else if (fileUrl) {
-        setSignedUrl(fileUrl);
+      }
+      // Se fileUri for URL completa, usar diretamente
+      else if (fileUri) {
+        setSignedUrl(fileUri);
       }
     } catch (error) {
       console.error('Erro ao carregar documento:', error);
