@@ -1,5 +1,9 @@
 // Análise cruzada entre documentos para validação de consistência
 
+import { compararValoresMonetarios, compararSaldosBancarios } from '../../../utils/financialComparison';
+import { normalizarNome, normalizarRazaoSocial, compararTextos } from '../../../utils/textNormalization';
+import logger, { LogCategory } from '../../../utils/logger';
+
 export const crossDocumentRules = {
   // Procuração vs Documento de ID do Procurador
   procuracao_vs_doc_procurador: {
@@ -13,8 +17,12 @@ export const crossDocumentRules = {
       const nomeProc = procuracao.dados_extraidos.nome_outorgado;
       const nomeDoc = docProcurador.dados_extraidos.nome;
       
-      const normaliza = (s) => s?.toLowerCase().replace(/[^\w\s]/g, '').trim() || '';
-      if (normaliza(nomeProc) === normaliza(nomeDoc)) {
+      // Usa normalização avançada de nomes
+      const comparacaoNomes = compararTextos(nomeProc, nomeDoc, {
+        expandirAbreviacoes: true,
+        removerAcentos: true
+      });
+      if (comparacaoNomes.saoIguais || comparacaoNomes.altaSimilaridade) {
         return { passado: true };
       }
       
@@ -55,9 +63,14 @@ export const crossDocumentRules = {
       
       // Razão Social
       if (contrato?.dados_extraidos?.razao_social && certidao?.dados_extraidos?.razao_social) {
-        const normaliza = (s) => s?.toLowerCase().replace(/[^\w]/g, '') || '';
-        if (normaliza(contrato.dados_extraidos.razao_social) !== 
-            normaliza(certidao.dados_extraidos.razao_social)) {
+        // Usa normalização avançada de razão social
+        const comparacaoRazaoSocial = compararTextos(
+          contrato.dados_extraidos.razao_social,
+          certidao.dados_extraidos.razao_social,
+          { expandirAbreviacoes: true, removerAcentos: true }
+        );
+        
+        if (!comparacaoRazaoSocial.saoIguais && !comparacaoRazaoSocial.altaSimilaridade) {
           erros.push({
             campo: 'Razão Social',
             valor1: contrato.dados_extraidos.razao_social,
@@ -110,14 +123,18 @@ export const crossDocumentRules = {
         const saldoExtrato = extrato.dados_extraidos?.saldo_final || 0;
         somaExtratos += saldoExtrato;
         
-        const diferenca = Math.abs(saldoBalancete - saldoExtrato);
-        if (diferenca > 0.01) {
+        // Usa comparação percentual ao invés de valor fixo
+        const comparacao = compararSaldosBancarios(saldoBalancete, saldoExtrato);
+        
+        if (!comparacao.dentroTolerancia) {
           discrepancias.push({
             banco: extrato.dados_extraidos?.banco || `Conta ${idx + 1}`,
             saldoBalancete,
             saldoExtrato,
-            diferenca,
-            severidade: diferenca > 100 ? 'critica' : 'media'
+            diferenca: comparacao.diferencaAbsoluta,
+            diferencaPercentual: comparacao.diferencaPercentual,
+            severidade: comparacao.nivelRisco === 'CRITICO' ? 'critica' : 'media',
+            mensagem: comparacao.mensagem
           });
         }
       });
