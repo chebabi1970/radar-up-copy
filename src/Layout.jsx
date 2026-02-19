@@ -20,6 +20,7 @@ const navigation = [
   { name: 'Home', href: 'Home', icon: LayoutDashboard },
   { name: 'Clientes', href: 'Clientes', icon: Users },
   { name: 'Casos', href: 'Casos', icon: FolderOpen },
+  { name: 'Calculadora', href: 'Calculadora', icon: Calculator },
   { name: 'Ajuda', href: 'Ajuda', icon: HelpCircle },
   { name: 'FAQ', href: 'FAQ', icon: MessageCircle },
   { name: 'Admin', href: 'Admin', icon: Users, adminOnly: true },
