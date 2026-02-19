@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
+import { isDocumentoObrigatorio, isDocumentoAplicavel, getPeriodoDocumento } from '@/config/documentosPorHipotese';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -181,7 +182,7 @@ const CATEGORIAS_DOCUMENTOS = [
   }
 ];
 
-export default function ChecklistDocumentos({ documentos = [], onUploadClick, onViewClick }) {
+export default function ChecklistDocumentos({ documentos = [], onUploadClick, onViewClick, hipotese = 'I' }) {
   const [categoriasExpandidas, setCategoriasExpandidas] = useState(
     CATEGORIAS_DOCUMENTOS.reduce((acc, cat) => ({ ...acc, [cat.id]: true }), {})
   );
@@ -198,6 +199,20 @@ export default function ChecklistDocumentos({ documentos = [], onUploadClick, on
     return mapa;
   }, [documentos]);
 
+  // Filtra documentos aplicáveis à hipótese
+  const categoriasF--snip--) {
+    return CATEGORIAS_DOCUMENTOS.map(categoria => ({
+      ...categoria,
+      documentos: categoria.documentos.filter(doc => 
+        isDocumentoAplicavel(doc.tipo, hipotese)
+      ).map(doc => ({
+        ...doc,
+        obrigatorio: isDocumentoObrigatorio(doc.tipo, hipotese),
+        periodo: getPeriodoDocumento(doc.tipo, hipotese)
+      }))
+    })).filter(categoria => categoria.documentos.length > 0);
+  }, [hipotese]);
+
   // Calcula estatísticas
   const estatisticas = useMemo(() => {
     let totalObrigatorios = 0;
@@ -205,7 +220,7 @@ export default function ChecklistDocumentos({ documentos = [], onUploadClick, on
     let totalOpcionais = 0;
     let opcionaisPresentes = 0;
 
-    CATEGORIAS_DOCUMENTOS.forEach(categoria => {
+    categoriasFiltradas.forEach(categoria => {
       categoria.documentos.forEach(doc => {
         if (doc.obrigatorio) {
           totalObrigatorios++;
@@ -243,7 +258,7 @@ export default function ChecklistDocumentos({ documentos = [], onUploadClick, on
   };
 
   const expandirTodas = () => {
-    const todasExpandidas = CATEGORIAS_DOCUMENTOS.reduce(
+    const todasExpandidas = categoriasFiltradas.reduce(
       (acc, cat) => ({ ...acc, [cat.id]: true }), 
       {}
     );
@@ -251,7 +266,7 @@ export default function ChecklistDocumentos({ documentos = [], onUploadClick, on
   };
 
   const recolherTodas = () => {
-    const todasRecolhidas = CATEGORIAS_DOCUMENTOS.reduce(
+    const todasRecolhidas = categoriasFiltradas.reduce(
       (acc, cat) => ({ ...acc, [cat.id]: false }), 
       {}
     );
@@ -330,7 +345,7 @@ export default function ChecklistDocumentos({ documentos = [], onUploadClick, on
       </Card>
 
       {/* Categorias */}
-      {CATEGORIAS_DOCUMENTOS.map(categoria => {
+      {categoriasFiltradas.map(categoria => {
         const expandida = categoriasExpandidas[categoria.id];
         const docsCategoria = categoria.documentos;
         const docsPresentes = docsCategoria.filter(d => documentosPorTipo[d.tipo]).length;

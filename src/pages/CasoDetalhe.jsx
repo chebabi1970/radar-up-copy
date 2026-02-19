@@ -54,6 +54,7 @@ import DashboardUnificado from '@/components/caso/DashboardUnificado';
 import ProcessoWizard from '@/components/caso/ProcessoWizard';
 import ChecklistDocumentos from '@/components/caso/ChecklistDocumentos';
 import SmartUpload from '@/components/upload/SmartUpload';
+import SeletorHipotese from '@/components/caso/SeletorHipotese';
 import { useAutoAnalysis } from '@/hooks/useAutoAnalysis';
 
 const statusColors = {
@@ -189,6 +190,24 @@ export default function CasoDetalhe() {
       toast.error(`Erro ao atualizar status: ${error.message}`);
     }
   });
+
+  // Mutation para mudar hipótese
+  const updateHipoteseMutation = useMutation({
+    mutationFn: async (novaHipotese) => {
+      await base44.entities.Caso.update(casoId, { hipotese_revisao: novaHipotese });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['caso', casoId] });
+      toast.success('Hipótese atualizada com sucesso');
+    },
+    onError: (error) => {
+      toast.error(`Erro ao atualizar hipótese: ${error.message}`);
+    }
+  });
+
+  const handleMudarHipotese = (novaHipotese) => {
+    updateHipoteseMutation.mutate(novaHipotese);
+  };
 
   const handleStatusChange = (value) => {
     setNovoStatus(value);
@@ -503,17 +522,27 @@ export default function CasoDetalhe() {
             </CardHeader>
 
             <TabsContent value="dashboard" className="p-3 md:p-6 mt-0">
-              <DashboardUnificado
-                caso={caso}
-                documentos={documentos}
-                cliente={cliente}
-                onAcaoClick={(acao) => {
-                  if (acao === 'upload') {
-                    // Mudar para aba de upload
-                    document.querySelector('[value="upload"]')?.click();
-                  }
-                }}
-              />
+              <div className="space-y-6">
+                {/* Seletor de Hipótese */}
+                <SeletorHipotese
+                  hipoteseAtual={caso?.hipotese_revisao || 'I'}
+                  onMudarHipotese={handleMudarHipotese}
+                  bloqueado={caso?.status === 'protocolado' || caso?.status === 'deferido' || caso?.status === 'indeferido'}
+                />
+                
+                {/* Dashboard Unificado */}
+                <DashboardUnificado
+                  caso={caso}
+                  documentos={documentos}
+                  cliente={cliente}
+                  onAcaoClick={(acao) => {
+                    if (acao === 'upload') {
+                      // Mudar para aba de upload
+                      document.querySelector('[value="upload"]')?.click();
+                    }
+                  }}
+                />
+              </div>
             </TabsContent>
 
             <TabsContent value="wizard" className="p-3 md:p-6 mt-0">
@@ -532,6 +561,7 @@ export default function CasoDetalhe() {
             <TabsContent value="lista-docs" className="p-3 md:p-6 mt-0">
               <ChecklistDocumentos
                 documentos={documentos}
+                hipotese={caso?.hipotese_revisao || 'I'}
                 onUploadClick={(tipo) => {
                   // Mudar para aba de upload
                   document.querySelector('[value="upload"]')?.click();
