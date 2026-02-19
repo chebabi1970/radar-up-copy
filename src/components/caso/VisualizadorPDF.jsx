@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Loader2, AlertCircle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
-export default function VisualizadorPDF({ url }) {
-  const isPdf = url?.toLowerCase().includes('.pdf');
+export default function VisualizadorPDF({ url, nomeArquivo }) {
+  const isPdf = nomeArquivo
+    ? nomeArquivo.toLowerCase().endsWith('.pdf')
+    : url?.toLowerCase().includes('.pdf') || url?.toLowerCase().includes('application/pdf');
 
   return (
     <div className="w-full h-[600px] border border-slate-200 rounded-lg overflow-hidden bg-slate-50">
