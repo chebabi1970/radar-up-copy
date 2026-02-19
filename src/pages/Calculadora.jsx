@@ -84,37 +84,46 @@ export default function Calculadora() {
     }
 
     // Converter para USD
-    const cotacaoDolar = 5.3067;
+    const cotacaoDolar = 5.3076; // Portaria Coana 180/2026
     const valorUSD = numerador / cotacaoDolar;
 
-    // Determinar modalidade
+    // Determinar modalidade conforme IN RFB 1984/2020, Art. 16 e 17
     let modalidade = '';
     let limiteOperacao = 0;
     let corModalidade = '';
+    let descricaoModalidade = '';
 
     if (valorUSD <= 50000) {
-      modalidade = 'Radar Limitado';
+      // Art. 17, I - até US$ 50.000
+      modalidade = 'Limitada';
       limiteOperacao = 50000;
       corModalidade = 'text-amber-700';
+      descricaoModalidade = 'Limite de US$ 50.000,00 por operação (a cada 6 meses)';
     } else if (valorUSD > 50000 && valorUSD <= 150000) {
-      modalidade = 'Radar Limitado';
+      // Art. 17, II - de US$ 50.000,01 até US$ 150.000
+      modalidade = 'Limitada';
       limiteOperacao = 150000;
       corModalidade = 'text-blue-700';
+      descricaoModalidade = 'Limite de US$ 150.000,00 por operação (a cada 6 meses)';
     } else {
-      modalidade = 'Habilitação Ilimitada';
+      // Art. 16, III - acima de US$ 150.000,01
+      modalidade = 'Ilimitada';
       limiteOperacao = 0;
       corModalidade = 'text-green-700';
+      descricaoModalidade = 'Sem limite de operação';
     }
 
     setResultado({
       valor: numerador,
       formula: formula,
       valorFormatado: numerador.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+      cotacaoDolar: cotacaoDolar,
       valorUSD: valorUSD,
       valorUSDFormatado: valorUSD.toLocaleString('en-US', { style: 'currency', currency: 'USD' }),
       modalidade: modalidade,
       limiteOperacao: limiteOperacao,
-      corModalidade: corModalidade
+      corModalidade: corModalidade,
+      descricaoModalidade: descricaoModalidade
     });
   };
 
@@ -614,7 +623,7 @@ export default function Calculadora() {
                 <div className="text-3xl font-bold text-green-700 mb-4">{resultado.valorFormatado}</div>
                 
                 <div className="border-t border-slate-200 pt-4 mb-4">
-                  <div className="text-sm text-slate-600 mb-1">Valor em USD (Cotação: R$ 5,3067)</div>
+                  <div className="text-sm text-slate-600 mb-1">Valor em USD (Cotação: R$ {resultado.cotacaoDolar?.toFixed(4)} - Portaria Coana 180/2026)</div>
                   <div className="text-4xl font-bold text-blue-700 mb-2">{resultado.valorUSDFormatado}</div>
                 </div>
 
@@ -624,24 +633,17 @@ export default function Calculadora() {
               </div>
 
               <div className={`bg-white rounded-lg p-6 border-2 ${
-                resultado.modalidade === 'Habilitação Ilimitada' 
+                resultado.modalidade === 'Ilimitada' 
                   ? 'border-green-500' 
                   : 'border-blue-500'
               }`}>
-                <div className="text-sm text-slate-600 mb-2">Modalidade de Habilitação</div>
+                <div className="text-sm text-slate-600 mb-2">Modalidade de Habilitação (IN RFB 1984/2020)</div>
                 <div className={`text-3xl font-bold mb-3 ${resultado.corModalidade}`}>
                   {resultado.modalidade}
                 </div>
-                {resultado.limiteOperacao > 0 && (
-                  <div className="text-lg font-semibold text-slate-700">
-                    Limite: USD {resultado.limiteOperacao.toLocaleString('en-US')}
-                  </div>
-                )}
-                {resultado.modalidade === 'Habilitação Ilimitada' && (
-                  <div className="text-lg font-semibold text-green-700">
-                    ✓ Sem limite de operação
-                  </div>
-                )}
+                <div className="text-base text-slate-700 mt-2">
+                  {resultado.descricaoModalidade}
+                </div>
               </div>
 
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm">
@@ -655,11 +657,11 @@ export default function Calculadora() {
               </div>
 
               <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-sm text-slate-700">
-                <p className="font-medium text-slate-900 mb-2">📋 Critérios de Classificação</p>
+                <p className="font-medium text-slate-900 mb-2">📋 Critérios de Classificação (IN RFB 1984/2020, Arts. 16 e 17)</p>
                 <ul className="space-y-1 text-xs">
-                  <li>• Até USD 50.000,00 → Radar Limitado USD 50.000,00</li>
-                  <li>• Entre USD 50.000,01 e USD 150.000,00 → Radar Limitado USD 150.000,00</li>
-                  <li>• Igual ou maior que USD 150.000,01 → Habilitação Ilimitada</li>
+                  <li>• Até US$ 50.000,00 → <strong>Limitada</strong> (US$ 50.000,00 por operação a cada 6 meses)</li>
+                  <li>• De US$ 50.000,01 até US$ 150.000,00 → <strong>Limitada</strong> (US$ 150.000,00 por operação a cada 6 meses)</li>
+                  <li>• Acima de US$ 150.000,01 → <strong>Ilimitada</strong> (sem limite de operação)</li>
                 </ul>
               </div>
             </CardContent>
