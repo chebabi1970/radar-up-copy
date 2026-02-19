@@ -102,14 +102,27 @@ export default function VersionHistoricoPanel({ documentoId, casoId, cliente, on
 
         // Obter URLs assinadas se necessário
         const urls = await Promise.all(
-          versoesCom.map(async (v) => ({
-            versao: v.versao_numero,
-            url: v.file_url || (await base44.integrations.Core.CreateFileSignedUrl({
-              file_uri: v.file_uri,
-              expires_in: 3600
-            })).signed_url
-          }))
-        );
+          versoesCom.map(async (v) => {
+            let url = v.file_url;
+            if (!url && v.file_uri) {
+              if (v.file_uri.startsWith('http')) {
+                url = v.file_uri;
+              } else {
+                try {
+                  const result = await base44.integrations.Core.CreateFileSignedUrl({
+                    file_uri: v.file_uri,
+                    expires_in: 3600
+                  });
+                  url = result.signed_url;
+                } catch (error) {
+                  console.warn('Erro ao gerar URL assinada:', error);
+                  return null;
+                }
+              }
+            }
+            return { versao: v.versao_numero, url };
+          })
+        ).then(results => results.filter(r => r !== null));
 
         const prompt = `Você é um auditor especializado em documentação fiscal. Analize as ${versoesCom.length} versões deste documento (v${versoesCom.map(v => v.versao_numero).join(', ')}) e:
 
