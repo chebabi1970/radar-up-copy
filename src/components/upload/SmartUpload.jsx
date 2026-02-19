@@ -148,19 +148,21 @@ export default function SmartUpload({ casoId, onUploadComplete, triggerAnalise }
   const uploadMutation = useMutation({
     mutationFn: async (arquivo) => {
       // 1. Upload do arquivo para o Base44
-      const uploadResult = await base44.storage.upload(arquivo.file);
+      const uploadResult = await base44.integrations.Core.UploadFile({
+        file: arquivo.file
+      });
       
       // 2. Criar documento no banco
       const documento = await base44.entities.Documento.create({
         caso_id: casoId,
         tipo_documento: arquivo.tipoDetectado,
         nome_arquivo: arquivo.nome,
-        file_uri: uploadResult.url,
+        file_uri: uploadResult.file_url,
         status_analise: 'pendente',
         data_documento: new Date().toISOString().split('T')[0]
       });
 
-      return { arquivo, documento, url: uploadResult.url };
+      return { arquivo, documento, url: uploadResult.file_url };
     },
     onSuccess: ({ arquivo, documento }) => {
       setArquivos(prev => prev.map(a =>
