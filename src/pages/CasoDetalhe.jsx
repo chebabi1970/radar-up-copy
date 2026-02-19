@@ -33,7 +33,11 @@ import {
   Shield,
   Edit2,
   Check,
-  X
+  X,
+  LayoutDashboard,
+  Sparkles,
+  Upload,
+  List
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -44,6 +48,13 @@ import AnaliseCruzadaPanel from '@/components/caso/AnaliseCruzadaPanel';
 import PrivacyWarning from '@/components/caso/PrivacyWarning';
 import GerarPDFCaso from '@/components/caso/GerarPDFCaso';
 import { Input } from "@/components/ui/input";
+
+// Novos componentes implementados
+import DashboardUnificado from '@/components/caso/DashboardUnificado';
+import ProcessoWizard from '@/components/caso/ProcessoWizard';
+import ChecklistDocumentos from '@/components/caso/ChecklistDocumentos';
+import SmartUpload from '@/components/upload/SmartUpload';
+import { useAutoAnalysis } from '@/hooks/useAutoAnalysis';
 
 const statusColors = {
   novo: "bg-blue-100 text-blue-800 border-blue-200",
@@ -119,6 +130,18 @@ export default function CasoDetalhe() {
     queryKey: ['documentos', casoId],
     queryFn: () => base44.entities.Documento.filter({ caso_id: casoId }),
     enabled: !!casoId
+  });
+
+  // Hook de análise automática
+  const {
+    analisando,
+    progresso,
+    resultados,
+    executarAnalise,
+    forcarAnalise
+  } = useAutoAnalysis(casoId, documentos, cliente, {
+    autoStart: true,
+    notificar: true
   });
 
   const updateStatusMutation = useMutation({
@@ -406,9 +429,41 @@ export default function CasoDetalhe() {
 
         {/* Tabs */}
         <Card className="border-0 shadow-lg shadow-slate-200/50">
-          <Tabs defaultValue="checklist" className="w-full">
+          <Tabs defaultValue="dashboard" className="w-full">
             <CardHeader className="border-b border-slate-100 pb-0 px-3 md:px-6 py-3 md:py-4">
               <TabsList className="bg-transparent h-auto p-0 gap-0 sm:gap-2 overflow-x-auto pb-3 flex-nowrap">
+                <TabsTrigger 
+                  value="dashboard" 
+                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
+                >
+                  <LayoutDashboard className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                  <span className="hidden sm:inline">Dashboard</span>
+                  <span className="sm:hidden">Dash</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="wizard" 
+                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
+                >
+                  <Sparkles className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                  <span className="hidden sm:inline">Guia</span>
+                  <span className="sm:hidden">Guia</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="lista-docs" 
+                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
+                >
+                  <List className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                  <span className="hidden sm:inline">Lista Docs</span>
+                  <span className="sm:hidden">Lista</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="upload" 
+                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
+                >
+                  <Upload className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                  <span className="hidden sm:inline">Upload</span>
+                  <span className="sm:hidden">Up</span>
+                </TabsTrigger>
                 <TabsTrigger 
                   value="checklist" 
                   className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
@@ -446,6 +501,57 @@ export default function CasoDetalhe() {
                 </TabsTrigger>
                   </TabsList>
             </CardHeader>
+
+            <TabsContent value="dashboard" className="p-3 md:p-6 mt-0">
+              <DashboardUnificado
+                caso={caso}
+                documentos={documentos}
+                cliente={cliente}
+                onAcaoClick={(acao) => {
+                  if (acao === 'upload') {
+                    // Mudar para aba de upload
+                    document.querySelector('[value="upload"]')?.click();
+                  }
+                }}
+              />
+            </TabsContent>
+
+            <TabsContent value="wizard" className="p-3 md:p-6 mt-0">
+              <ProcessoWizard
+                caso={caso}
+                documentos={documentos}
+                analise={resultados}
+                onEtapaClick={(etapaId) => {
+                  if (etapaId === 'documentos') {
+                    document.querySelector('[value="upload"]')?.click();
+                  }
+                }}
+              />
+            </TabsContent>
+
+            <TabsContent value="lista-docs" className="p-3 md:p-6 mt-0">
+              <ChecklistDocumentos
+                documentos={documentos}
+                onUploadClick={(tipo) => {
+                  // Mudar para aba de upload
+                  document.querySelector('[value="upload"]')?.click();
+                }}
+                onViewClick={(tipo) => {
+                  // Mudar para aba de documentos
+                  document.querySelector('[value="documentos"]')?.click();
+                }}
+              />
+            </TabsContent>
+
+            <TabsContent value="upload" className="p-3 md:p-6 mt-0">
+              <SmartUpload
+                casoId={casoId}
+                onUploadComplete={() => {
+                  queryClient.invalidateQueries(['documentos', casoId]);
+                }}
+                triggerAnalise={executarAnalise}
+              />
+            </TabsContent>
 
             <TabsContent value="checklist" className="p-3 md:p-6 mt-0">
               <ChecklistTab casoId={casoId} checklistItems={checklistItems} documentos={documentos} cliente={cliente} />
