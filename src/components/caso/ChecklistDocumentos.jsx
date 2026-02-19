@@ -200,7 +200,7 @@ export default function ChecklistDocumentos({ documentos = [], onUploadClick, on
   }, [documentos]);
 
   // Filtra documentos aplicáveis à hipótese
-  const categoriasF--snip--) {
+  const categoriasFiltradas = useMemo(() => {
     return CATEGORIAS_DOCUMENTOS.map(categoria => ({
       ...categoria,
       documentos: categoria.documentos.filter(doc => 
