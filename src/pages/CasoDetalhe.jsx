@@ -35,14 +35,11 @@ import {
   Check,
   X,
   LayoutDashboard,
-  Sparkles,
-  Upload,
-  List
+  Sparkles
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-import ChecklistTab from '@/components/caso/ChecklistTab';
-import DocumentosTab from '@/components/caso/DocumentosTab';
+import DocumentosConsolidado from '@/components/caso/DocumentosConsolidado';
 import AnaliseTab from '@/components/caso/AnaliseTab';
 import AnaliseCruzadaPanel from '@/components/caso/AnaliseCruzadaPanel';
 import PrivacyWarning from '@/components/caso/PrivacyWarning';
@@ -51,9 +48,6 @@ import { Input } from "@/components/ui/input";
 
 // Novos componentes implementados
 import DashboardUnificado from '@/components/caso/DashboardUnificado';
-import ProcessoWizard from '@/components/caso/ProcessoWizard';
-import ChecklistDocumentos from '@/components/caso/ChecklistDocumentos';
-import SmartUpload from '@/components/upload/SmartUpload';
 import SeletorHipotese from '@/components/caso/SeletorHipotese';
 
 import { useAutoAnalysis } from '@/hooks/useAutoAnalysis';
@@ -460,42 +454,7 @@ export default function CasoDetalhe() {
                   <span className="hidden sm:inline">Dashboard</span>
                   <span className="sm:hidden">Dash</span>
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="wizard" 
-                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
-                >
-                  <Sparkles className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-                  <span className="hidden sm:inline">Guia</span>
-                  <span className="sm:hidden">Guia</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="lista-docs" 
-                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
-                >
-                  <List className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-                  <span className="hidden sm:inline">Lista Docs</span>
-                  <span className="sm:hidden">Lista</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="upload" 
-                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
-                >
-                  <Upload className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-                  <span className="hidden sm:inline">Upload</span>
-                  <span className="sm:hidden">Up</span>
-                </TabsTrigger>
 
-                <TabsTrigger 
-                  value="checklist" 
-                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
-                >
-                  <CheckSquare className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-                  <span className="hidden sm:inline">Checklist</span>
-                  <span className="sm:hidden">Check</span>
-                  {pendingItems > 0 && (
-                    <Badge className="ml-1 md:ml-2 bg-orange-100 text-orange-700 text-xs px-1.5">{pendingItems}</Badge>
-                  )}
-                </TabsTrigger>
                 <TabsTrigger 
                   value="documentos" 
                   className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
@@ -512,14 +471,7 @@ export default function CasoDetalhe() {
                    <span className="hidden lg:inline">Cruzada</span>
                    <span className="lg:hidden">Cruz</span>
                  </TabsTrigger>
-                <TabsTrigger 
-                  value="resumo" 
-                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 md:px-3 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0"
-                >
-                  <Calculator className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-                  <span className="hidden sm:inline">Resumo</span>
-                  <span className="sm:hidden">Res</span>
-                </TabsTrigger>
+
                   </TabsList>
             </CardHeader>
 
@@ -547,59 +499,27 @@ export default function CasoDetalhe() {
               </div>
             </TabsContent>
 
-            <TabsContent value="wizard" className="p-3 md:p-6 mt-0">
-              <ProcessoWizard
-                caso={caso}
-                documentos={documentos}
-                analise={resultados}
-                onEtapaClick={(etapaId) => {
-                  if (etapaId === 'documentos') {
-                    document.querySelector('[value="upload"]')?.click();
-                  }
-                }}
-              />
-            </TabsContent>
 
-            <TabsContent value="lista-docs" className="p-3 md:p-6 mt-0">
-              <ChecklistDocumentos
-                documentos={documentos}
-                hipotese={caso?.hipotese_revisao || 'I'}
-                onUploadClick={(tipo) => {
-                  // Mudar para aba de upload
-                  document.querySelector('[value="upload"]')?.click();
-                }}
-                onViewClick={(tipo) => {
-                  // Mudar para aba de documentos
-                  document.querySelector('[value="documentos"]')?.click();
-                }}
-              />
-            </TabsContent>
 
-            <TabsContent value="upload" className="p-3 md:p-6 mt-0">
-              <SmartUpload
-                casoId={casoId}
-                onUploadComplete={() => {
-                  queryClient.invalidateQueries(['documentos', casoId]);
-                }}
-                triggerAnalise={executarAnalise}
-              />
-            </TabsContent>
 
-            <TabsContent value="checklist" className="p-3 md:p-6 mt-0">
-              <ChecklistTab casoId={casoId} checklistItems={checklistItems} documentos={documentos} cliente={cliente} />
-            </TabsContent>
+
+
+
+
 
             <TabsContent value="documentos" className="p-3 md:p-6 mt-0">
-              <DocumentosTab casoId={casoId} documentos={documentos} checklistItems={checklistItems} cliente={cliente} />
+              <DocumentosConsolidado 
+                caso={caso}
+                documentos={documentos}
+                onDocumentosChange={() => queryClient.invalidateQueries(['documentos', casoId])}
+              />
             </TabsContent>
 
             <TabsContent value="cruzada" className="p-3 md:p-6 mt-0">
               <AnaliseCruzadaPanel documentos={documentos} cliente={cliente} />
             </TabsContent>
 
-            <TabsContent value="resumo" className="p-3 md:p-6 mt-0">
-              <AnaliseTab caso={caso} cliente={cliente} documentos={documentos} />
-            </TabsContent>
+
             </Tabs>
         </Card>
       </div>
