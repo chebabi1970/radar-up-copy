@@ -94,7 +94,7 @@ export default function VisualizadorDocumento({ isOpen, onClose, documento, caso
           </div>
         ) : signedUrl ? (
           <div className="space-y-4">
-            <VisualizadorPDF url={signedUrl} />
+            <VisualizadorPDF url={signedUrl} nomeArquivo={documento?.nome_arquivo} />
             <div className="flex justify-center gap-2">
               <Button 
                 variant="outline"
