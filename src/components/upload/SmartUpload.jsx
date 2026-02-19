@@ -98,7 +98,7 @@ const detectarTipoDocumento = (nomeArquivo) => {
   return 'outro';
 };
 
-export default function SmartUpload({ casoId, onUploadComplete }) {
+export default function SmartUpload({ casoId, onUploadComplete, triggerAnalise }) {
   const [arquivos, setArquivos] = useState([]);
   const [uploading, setUploading] = useState(false);
   const queryClient = useQueryClient();
@@ -219,6 +219,13 @@ export default function SmartUpload({ casoId, onUploadComplete }) {
       
       if (onUploadComplete) {
         onUploadComplete();
+      }
+
+      // Trigger análise automática se disponível
+      if (triggerAnalise) {
+        setTimeout(() => {
+          triggerAnalise();
+        }, 1000);
       }
 
       // Limpa lista após 2 segundos
