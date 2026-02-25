@@ -49,6 +49,7 @@ import {
   FileText
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { HIPOTESES } from '@/config/documentosPorHipotese';
 
 const statusColors = {
   novo: "bg-blue-100 text-blue-800 border-blue-200",
@@ -94,6 +95,7 @@ export default function Casos() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [filterHipotese, setFilterHipotese] = useState('all');
   const [viewMode, setViewMode] = useState('cards'); // 'cards' ou 'table'
   const [formData, setFormData] = useState({
     cliente_id: '',
@@ -225,44 +227,80 @@ export default function Casos() {
     }
   });
 
+  // Mapeamento de hipótese do caso para chave do config
+  const hipoteseParaConfig = {
+    'recursos_financeiros_livres': 'I',
+    'fruicao_desoneracao_tributaria': 'II',
+    'recolhimento_tributos_das': 'III',
+    'recolhimento_tributos_cprb': 'IV',
+    'retomada_atividades': 'V',
+    'inicio_retomada_atividades_5anos': 'V',
+  };
+
+  // Labels de documentos para descrição no checklist
+  const docDescricoes = {
+    requerimento_das: { descricao: "Requerimento Disponibilidade Ativo Circulante", base_legal: "Art. 5º" },
+    documento_identificacao_responsavel: { descricao: "Documento de identificação do responsável", base_legal: "Art. 5º, § 2º" },
+    procuracao: { descricao: "Procuração", base_legal: "Art. 5º, § 3º" },
+    documento_identificacao_procurador: { descricao: "Documento de identificação do procurador", base_legal: "Art. 5º, § 3º" },
+    contrato_social: { descricao: "Contrato Social e Alterações", base_legal: "Art. 7º, I" },
+    certidao_junta_comercial: { descricao: "Certidão Junta Comercial", base_legal: "Art. 7º, I" },
+    conta_energia: { descricao: "Conta de energia dos últimos 3 meses", base_legal: "Art. 7º, III" },
+    plano_internet: { descricao: "Plano de internet dos últimos 3 meses", base_legal: "Art. 7º, III" },
+    guia_iptu: { descricao: "Guia de IPTU", base_legal: "Art. 7º, III" },
+    escritura_imovel: { descricao: "Escritura do Imóvel", base_legal: "Art. 7º, IV" },
+    contrato_locacao: { descricao: "Contrato de Locação", base_legal: "Art. 7º, IV" },
+    comprovante_espaco_armazenagem: { descricao: "Comprovante Espaço de Armazenagem", base_legal: "Art. 7º, V" },
+    extratos_bancarios: { descricao: "Extratos Bancários dos últimos 3 meses", base_legal: "Art. 6º, I, a" },
+    extrato_bancario_corrente: { descricao: "Extratos Bancários - Conta Corrente (3 meses)", base_legal: "Art. 6º, I, a" },
+    balancete_verificacao: { descricao: "Balancete de Verificação dos últimos 3 meses", base_legal: "Art. 6º, I, b" },
+    contrato_mutuo: { descricao: "Contrato de Mútuo", base_legal: "Art. 6º, III" },
+    balancete_mutuante: { descricao: "Balancete do Mutuante", base_legal: "Art. 6º, III" },
+    comprovante_iof_mutuo: { descricao: "Comprovante IOF do Mútuo", base_legal: "Art. 6º, III" },
+    balanco_patrimonial_integralizacao: { descricao: "Balanço Patrimonial - Integralização", base_legal: "Art. 6º, II" },
+    comprovante_transferencia_integralizacao: { descricao: "Comprovante Transferência - Integralização", base_legal: "Art. 6º, II" },
+    embasamento_legal_desoneracao: { descricao: "Embasamento Legal da Desoneração", base_legal: "Art. 4º, II" },
+    comprovante_habilitacao_regime_especial: { descricao: "Comprovante Habilitação Regime Especial", base_legal: "Art. 4º, II" },
+    planilha_tributos_nao_recolhidos: { descricao: "Planilha de Tributos Não Recolhidos", base_legal: "Art. 4º, II" },
+  };
+
   const generateChecklist = async (casoId, hipotese) => {
-    const hipoteseMap = {
-      'recursos_financeiros_livres': ['1100', '2100', '2110', '2120', '3100', '3110', '4100', '4110', '5100', '6100'],
-      'fruicao_desoneracao_tributaria': ['1100', '2100', '2110', '2120', '3100', '3110', '4100', '4110', '5100', '6100'],
-      'recolhimento_tributos_das': ['1100', '2100', '2110', '2120', '3100', '3110', '4100', '4110', '5100', '6100'],
-      'recolhimento_tributos_cprb': ['1100', '2100', '2110', '2120', '3100', '3110', '4100', '4110', '5100', '6100'],
-      'retomada_atividades': ['1100', '2100', '2110', '2120', '3100', '3110', '4100', '4110', '5100', '6100'],
-      'inicio_retomada_atividades_5anos': ['1100', '2100', '2110', '2120', '3100', '3110', '4100', '4110', '5100', '6100'],
-    };
+    const configKey = hipoteseParaConfig[hipotese];
+    const configHipotese = configKey ? HIPOTESES[configKey] : null;
 
-    const items = [
-      { codigo_dda: "1100", tipo_documento: "requerimento_das", descricao: "Requerimento Disponibilidade Ativo Circulante", base_legal: "Art. 5º", obrigatorio: true },
-      { codigo_dda: "2100", tipo_documento: "documento_identificacao_responsavel", descricao: "Documento de identificação do responsável", base_legal: "Art. 5º, § 2º", obrigatorio: true },
-      { codigo_dda: "2110", tipo_documento: "procuracao", descricao: "Procuração", base_legal: "Art. 5º, § 3º", obrigatorio: false },
-      { codigo_dda: "2120", tipo_documento: "documento_identificacao_procurador", descricao: "Documento de identificação do procurador", base_legal: "Art. 5º, § 3º", obrigatorio: false },
-      { codigo_dda: "3100", tipo_documento: "contrato_social", descricao: "Contrato Social e Alterações", base_legal: "Art. 7º, I", obrigatorio: true },
-      { codigo_dda: "3110", tipo_documento: "certidao_junta_comercial", descricao: "Certidão Junta Comercial", base_legal: "Art. 7º, I", obrigatorio: true },
-      { codigo_dda: "4100", tipo_documento: "conta_energia", descricao: "Conta de energia dos últimos 3 meses", base_legal: "Art. 7º, III", obrigatorio: true },
-      { codigo_dda: "4110", tipo_documento: "plano_internet", descricao: "Plano de internet dos últimos 3 meses", base_legal: "Art. 7º, III", obrigatorio: true },
-      { codigo_dda: "5100", tipo_documento: "extrato_bancario_corrente", descricao: "Extratos Bancários dos últimos 3 meses", base_legal: "Art. 6º, I, a", obrigatorio: true },
-      { codigo_dda: "6100", tipo_documento: "balancete_verificacao", descricao: "Balancete de Verificação dos últimos 3 meses", base_legal: "Art. 6º, I, b", obrigatorio: true },
-    ];
+    if (!configHipotese) {
+      // Fallback: gerar checklist mínimo com documentos comuns
+      const fallbackDocs = ['requerimento_das', 'documento_identificacao_responsavel', 'contrato_social', 'certidao_junta_comercial', 'conta_energia'];
+      for (const tipo of fallbackDocs) {
+        const info = docDescricoes[tipo] || { descricao: tipo.replace(/_/g, ' '), base_legal: '' };
+        await base44.entities.ChecklistItem.create({
+          caso_id: casoId, tipo_documento: tipo, descricao: info.descricao,
+          base_legal: info.base_legal, obrigatorio: true,
+          aplicavel_hipotese: [hipotese], status: 'pendente'
+        });
+      }
+      return;
+    }
 
-    const codigosAplicaveis = hipoteseMap[hipotese] || [];
-
-    for (const item of items) {
-      const aplicavel = codigosAplicaveis.includes(item.codigo_dda);
-      if (!aplicavel) continue;
-
+    // Gerar itens obrigatórios
+    for (const tipo of configHipotese.documentos_obrigatorios) {
+      const info = docDescricoes[tipo] || { descricao: tipo.replace(/_/g, ' '), base_legal: configHipotese.artigo };
+      const periodo = configHipotese.periodo_documentos?.[tipo];
       await base44.entities.ChecklistItem.create({
-        caso_id: casoId,
-        codigo_dda: item.codigo_dda,
-        tipo_documento: item.tipo_documento,
-        descricao: item.descricao,
-        base_legal: item.base_legal,
-        obrigatorio: item.obrigatorio,
-        aplicavel_hipotese: [hipotese],
-        status: 'pendente'
+        caso_id: casoId, tipo_documento: tipo,
+        descricao: periodo ? `${info.descricao} (${periodo})` : info.descricao,
+        base_legal: info.base_legal, obrigatorio: true,
+        aplicavel_hipotese: [hipotese], status: 'pendente'
+      });
+    }
+
+    // Gerar itens opcionais
+    for (const tipo of configHipotese.documentos_opcionais) {
+      const info = docDescricoes[tipo] || { descricao: tipo.replace(/_/g, ' '), base_legal: configHipotese.artigo };
+      await base44.entities.ChecklistItem.create({
+        caso_id: casoId, tipo_documento: tipo,
+        descricao: info.descricao, base_legal: info.base_legal,
+        obrigatorio: false, aplicavel_hipotese: [hipotese], status: 'pendente'
       });
     }
   };
@@ -359,11 +397,16 @@ export default function Casos() {
   };
 
   const filteredCasos = casos.filter(c => {
-    const matchesSearch = 
-      c.numero_caso?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      getClienteName(c.cliente_id).toLowerCase().includes(searchTerm.toLowerCase());
+    const cliente = clientes.find(cl => cl.id === c.cliente_id);
+    const searchLower = searchTerm.toLowerCase();
+    const matchesSearch = !searchTerm ||
+      c.numero_caso?.toLowerCase().includes(searchLower) ||
+      getClienteName(c.cliente_id).toLowerCase().includes(searchLower) ||
+      cliente?.cnpj?.includes(searchTerm) ||
+      cliente?.nome_fantasia?.toLowerCase().includes(searchLower);
     const matchesStatus = filterStatus === 'all' || c.status === filterStatus;
-    return matchesSearch && matchesStatus;
+    const matchesHipotese = filterHipotese === 'all' || c.hipotese_revisao === filterHipotese;
+    return matchesSearch && matchesStatus && matchesHipotese;
   });
 
   const exportarCSV = () => {
@@ -417,21 +460,24 @@ export default function Casos() {
             <Button
               variant="outline"
               onClick={exportarCSV}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 rounded-xl border-slate-200"
             >
               <Download className="h-4 w-4" />
               <span className="hidden sm:inline">Exportar</span>
             </Button>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-600/30">
+                <Button className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 shadow-lg shadow-indigo-200/50 rounded-xl text-white">
                   <Plus className="h-4 w-4 mr-2" />
                   Novo Caso
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl">
                 <DialogHeader>
-                  <DialogTitle>Criar Novo Caso</DialogTitle>
+                  <DialogTitle className="flex items-center gap-2">
+                    <FolderOpen className="h-5 w-5 text-indigo-500" />
+                    Criar Novo Caso
+                  </DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
@@ -564,9 +610,9 @@ export default function Casos() {
                     <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                       Cancelar
                     </Button>
-                    <Button 
-                      type="submit" 
-                      className="bg-blue-600 hover:bg-blue-700"
+                    <Button
+                      type="submit"
+                      className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-xl"
                       disabled={createMutation.isPending}
                     >
                       {createMutation.isPending && (
@@ -581,22 +627,41 @@ export default function Casos() {
           </div>
         </div>
 
-        {/* Filters */}
-        <Card className="border-0 shadow-lg shadow-slate-200/50 mb-6">
-          <CardContent className="p-4">
-            <div className="flex flex-col gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                <Input
-                  placeholder="Buscar caso ou cliente..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
+        {/* Stats Bar */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mb-5">
+          {[
+            { label: 'Total', value: casos.length, color: 'slate', gradient: 'from-slate-500 to-slate-700' },
+            { label: 'Em Análise', value: casos.filter(c => c.status === 'em_analise').length, color: 'amber', gradient: 'from-amber-500 to-orange-600' },
+            { label: 'Protocolados', value: casos.filter(c => c.status === 'protocolado').length, color: 'violet', gradient: 'from-violet-500 to-purple-600' },
+            { label: 'Deferidos', value: casos.filter(c => c.status === 'deferido').length, color: 'emerald', gradient: 'from-emerald-500 to-teal-600' },
+          ].map((stat, idx) => (
+            <div key={idx} className="rounded-2xl border border-slate-100 bg-white p-3 md:p-4 hover:shadow-md transition-all">
+              <div className="flex items-center gap-2.5">
+                <div className={`h-8 w-8 md:h-9 md:w-9 rounded-lg bg-gradient-to-br ${stat.gradient} flex items-center justify-center`}>
+                  <span className="text-sm md:text-base font-bold text-white">{stat.value}</span>
+                </div>
+                <span className="text-xs md:text-sm text-slate-500 font-medium">{stat.label}</span>
               </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Filters */}
+        <div className="rounded-2xl border border-slate-100 bg-white shadow-lg shadow-slate-200/30 mb-6 p-4">
+          <div className="flex flex-col lg:flex-row gap-3">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input
+                placeholder="Buscar por caso, cliente ou CNPJ..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 rounded-xl border-slate-200"
+              />
+            </div>
+            <div className="flex gap-2 flex-wrap">
               <Select value={filterStatus} onValueChange={setFilterStatus}>
-                <SelectTrigger className="w-full sm:w-[200px]">
-                  <Filter className="h-4 w-4 mr-2" />
+                <SelectTrigger className="w-full sm:w-[180px] rounded-xl border-slate-200">
+                  <Filter className="h-3.5 w-3.5 mr-1.5 text-slate-400" />
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -606,9 +671,47 @@ export default function Casos() {
                   ))}
                 </SelectContent>
               </Select>
+              <Select value={filterHipotese} onValueChange={setFilterHipotese}>
+                <SelectTrigger className="w-full sm:w-[180px] rounded-xl border-slate-200">
+                  <FileText className="h-3.5 w-3.5 mr-1.5 text-slate-400" />
+                  <SelectValue placeholder="Hipótese" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas as hipóteses</SelectItem>
+                  {Object.entries(hipoteseLabelsShort).map(([value, label]) => (
+                    <SelectItem key={value} value={value}>{label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+          {(filterStatus !== 'all' || filterHipotese !== 'all' || searchTerm) && (
+            <div className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-100">
+              <span className="text-xs text-slate-400">Filtros ativos:</span>
+              {searchTerm && (
+                <Badge variant="outline" className="text-xs rounded-lg border-slate-200 cursor-pointer hover:bg-slate-50" onClick={() => setSearchTerm('')}>
+                  Busca: {searchTerm} ✕
+                </Badge>
+              )}
+              {filterStatus !== 'all' && (
+                <Badge variant="outline" className="text-xs rounded-lg border-slate-200 cursor-pointer hover:bg-slate-50" onClick={() => setFilterStatus('all')}>
+                  {statusLabels[filterStatus]} ✕
+                </Badge>
+              )}
+              {filterHipotese !== 'all' && (
+                <Badge variant="outline" className="text-xs rounded-lg border-slate-200 cursor-pointer hover:bg-slate-50" onClick={() => setFilterHipotese('all')}>
+                  {hipoteseLabelsShort[filterHipotese]} ✕
+                </Badge>
+              )}
+              <button
+                onClick={() => { setSearchTerm(''); setFilterStatus('all'); setFilterHipotese('all'); }}
+                className="text-xs text-slate-400 hover:text-slate-600 ml-auto"
+              >
+                Limpar todos
+              </button>
+            </div>
+          )}
+        </div>
 
         {/* Cases List */}
         {isLoading ? (
