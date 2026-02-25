@@ -22,7 +22,7 @@ import {
 import { toast } from 'sonner';
 import { getDocumentosAplicaveis } from '@/config/documentosPorHipotese';
 
-export default function ChecklistDocumentosEditavel({ casoId, hipotese, documentos }) {
+export default function ChecklistDocumentosEditavel({ casoId, hipotese, documentos, onViewClick, onUploadClick }) {
   const queryClient = useQueryClient();
   const [expandidas, setExpandidas] = useState({});
   const [documentosObrigatorios, setDocumentosObrigatorios] = useState({});
@@ -255,6 +255,7 @@ export default function ChecklistDocumentosEditavel({ casoId, hipotese, document
                                   variant="ghost"
                                   size="sm"
                                   className="gap-1"
+                                  onClick={() => onViewClick && onViewClick(doc.tipo)}
                                 >
                                   <Eye className="h-4 w-4" />
                                   Ver
@@ -264,6 +265,7 @@ export default function ChecklistDocumentosEditavel({ casoId, hipotese, document
                                   variant="outline"
                                   size="sm"
                                   className="gap-1"
+                                  onClick={() => onUploadClick && onUploadClick(doc.tipo)}
                                 >
                                   <Upload className="h-4 w-4" />
                                   Enviar
