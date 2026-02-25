@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Loader2, AlertCircle } from 'lucide-react';
-import { Button } from "@/components/ui/button";
+import React from 'react';
 
 export default function VisualizadorPDF({ url, nomeArquivo }) {
   const isPdf = nomeArquivo

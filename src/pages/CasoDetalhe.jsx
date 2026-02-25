@@ -3,7 +3,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -41,7 +40,6 @@ import {
 import { toast } from 'sonner';
 
 import DocumentosConsolidado from '@/components/caso/DocumentosConsolidado';
-import AnaliseTab from '@/components/caso/AnaliseTab';
 import AnaliseCruzadaPanel from '@/components/caso/AnaliseCruzadaPanel';
 import PrivacyWarning from '@/components/caso/PrivacyWarning';
 import GerarPDFCaso from '@/components/caso/GerarPDFCaso';

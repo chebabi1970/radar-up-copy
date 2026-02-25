@@ -9,7 +9,6 @@ import { X, Upload, Loader2, AlertCircle } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export default function UploadNovaVersao({ documentoAtual, casoId, onClose, onSuccess }) {
-  if (!documentoAtual) return null;
   const [arquivo, setArquivo] = useState(null);
   const [tags, setTags] = useState('');
   const [observacoes, setObservacoes] = useState('');
@@ -86,6 +85,8 @@ Retorne apenas o resumo das principais alterações.`
       setErro(error.message);
     }
   });
+
+  if (!documentoAtual) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4">

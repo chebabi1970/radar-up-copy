@@ -27,17 +27,13 @@ import {
   Trash2,
   Plus,
   Loader2,
-  CheckCircle2,
-  Clock,
   XCircle,
   AlertCircle,
-  History,
-  MoreVertical
+  History
 } from 'lucide-react';
 import VisualizadorDocumento from './VisualizadorDocumento';
 import VersionHistoricoPanel from './VersionHistoricoPanel';
 import AdvancedFileUpload from '../upload/AdvancedFileUpload';
-import EditarTipoDocumento from './EditarTipoDocumento';
 import { tipoDocumentoLabels, statusAnaliseConfig, fileTypeIcons } from '@/config/documentoLabels';
 
 export default function DocumentosTab({ casoId, documentos, checklistItems, cliente }) {

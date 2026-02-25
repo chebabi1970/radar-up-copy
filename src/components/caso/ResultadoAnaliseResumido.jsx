@@ -1,6 +1,4 @@
 import React from 'react';
-import { CheckCircle2, AlertCircle, XCircle } from 'lucide-react';
-import { Badge } from "@/components/ui/badge";
 
 export default function ResultadoAnaliseResumido({ resultado }) {
   if (!resultado) return null;

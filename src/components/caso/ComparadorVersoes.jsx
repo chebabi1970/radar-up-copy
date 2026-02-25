@@ -16,7 +16,6 @@ import {
   AlertTriangle,
   CheckCircle2,
   ArrowRight,
-  FileText,
   Minus,
   Plus,
   RefreshCw,

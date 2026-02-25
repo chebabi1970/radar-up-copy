@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import React, { useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AlertCircle, CheckCircle2, Clock, MessageSquare, Loader2, RefreshCw } from 'lucide-react';
+import { AlertCircle, MessageSquare, Loader2, RefreshCw } from 'lucide-react';
 import ConformidadeChat from './ConformidadeChat';
 
 const statusLabels = {

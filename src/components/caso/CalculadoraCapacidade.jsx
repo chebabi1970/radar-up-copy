@@ -8,7 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -16,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calculator, DollarSign, TrendingUp, AlertCircle, CheckCircle2, Info } from 'lucide-react';
+import { Calculator, DollarSign, TrendingUp, CheckCircle2, Info } from 'lucide-react';
 import { getAllHipoteses } from '@/config/documentosPorHipotese';
 
 const COTACAO_DOLAR = 5.3067; // Cotação média dos últimos 5 anos
