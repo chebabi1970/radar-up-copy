@@ -1,10 +1,9 @@
 /**
  * Dashboard Unificado de Análise
- * Visão consolidada do status do caso, progresso e próximas ações
+ * Design moderno com glass-morphism e timeline visual
  */
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -14,33 +13,52 @@ import {
   CheckCircle2,
   AlertTriangle,
   AlertCircle,
-  TrendingUp,
   Clock,
   ArrowRight,
   Sparkles,
   Target,
-  Activity
+  Activity,
+  TrendingUp,
+  Zap,
+  Shield
 } from 'lucide-react';
 import { analisarDocumentoIndividual } from '@/utils/documentAnalysis';
 import { executarAnaliseCruzadaCompleta } from '@/utils/crossDocumentAnalysis';
 
 const tipoDocumentoLabels = {
   requerimento_das: "Requerimento DAS",
-  documento_identificacao_responsavel: "Doc. Identificação Responsável",
+  documento_identificacao_responsavel: "Doc. Identificação",
   procuracao: "Procuração",
-  documento_identificacao_procurador: "Doc. Identificação Procurador",
   contrato_social: "Contrato Social",
-  certidao_junta_comercial: "Certidão Junta Comercial",
+  certidao_junta_comercial: "Certidão Junta",
   conta_energia: "Conta de Energia",
-  plano_internet: "Plano de Internet",
-  guia_iptu: "Guia IPTU",
   extrato_bancario_corrente: "Extratos Bancários",
   balancete_verificacao: "Balancete",
-  balanco_patrimonial_integralizacao: "Balanço Patrimonial",
   das_simples_nacional: "DAS",
   darf_cprb: "DARF CPRB",
   contrato_mutuo: "Contrato de Mútuo",
   comprovante_iof: "Comprovante IOF"
+};
+
+const ScoreRing = ({ score, size = 80 }) => {
+  const radius = (size - 8) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (score / 100) * circumference;
+  const color = score >= 90 ? '#10b981' : score >= 70 ? '#f59e0b' : '#ef4444';
+
+  return (
+    <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="transform -rotate-90">
+        <circle cx={size/2} cy={size/2} r={radius} fill="none" stroke="#f1f5f9" strokeWidth="6" />
+        <circle cx={size/2} cy={size/2} r={radius} fill="none" stroke={color} strokeWidth="6"
+          strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset}
+          className="transition-all duration-1000 ease-out" />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-xl font-bold" style={{ color }}>{score}</span>
+      </div>
+    </div>
+  );
 };
 
 export default function DashboardUnificado({ caso, documentos = [], cliente = {}, onAcaoClick }) {
@@ -50,36 +68,29 @@ export default function DashboardUnificado({ caso, documentos = [], cliente = {}
   const [progressoAnalise, setProgressoAnalise] = useState(0);
 
   useEffect(() => {
-    if (documentos.length > 0) {
-      executarAnalises();
-    }
+    if (documentos.length > 0) executarAnalises();
   }, [documentos]);
 
   const executarAnalises = async () => {
     setAnalisando(true);
     setProgressoAnalise(0);
-
     try {
-      // 1. Análise Individual
       const resultadosIndividuais = [];
       for (let i = 0; i < documentos.length; i++) {
-        const doc = documentos[i];
         try {
-          const resultado = await analisarDocumentoIndividual(doc);
+          const resultado = await analisarDocumentoIndividual(documentos[i]);
           resultadosIndividuais.push(resultado);
         } catch (error) {
-          console.error(`Erro ao analisar documento ${doc.id}:`, error);
+          console.error(`Erro ao analisar doc ${documentos[i].id}:`, error);
         }
         setProgressoAnalise(((i + 1) / documentos.length) * 50);
       }
       setAnaliseIndividual(resultadosIndividuais);
 
-      // 2. Análise Cruzada
       setProgressoAnalise(60);
       const resultadoCruzada = await executarAnaliseCruzadaCompleta(documentos, cliente);
       setAnaliseCruzada(resultadoCruzada);
       setProgressoAnalise(100);
-
     } catch (error) {
       console.error('Erro na análise:', error);
     } finally {
@@ -87,376 +98,245 @@ export default function DashboardUnificado({ caso, documentos = [], cliente = {}
     }
   };
 
-  // Cálculos de métricas
   const totalDocumentos = documentos.length;
   const documentosAnalisados = analiseIndividual.length;
   const documentosValidos = analiseIndividual.filter(a => a.valido).length;
-  const problemasCriticos = analiseIndividual.reduce((sum, a) => 
-    sum + a.problemas.filter(p => p.severidade === 'critico').length, 0
-  );
-  const problemasAltos = analiseIndividual.reduce((sum, a) => 
-    sum + a.problemas.filter(p => p.severidade === 'alto').length, 0
-  );
-
-  const progressoDocumentacao = totalDocumentos > 0 
-    ? Math.round((documentosAnalisados / totalDocumentos) * 100)
-    : 0;
+  const problemasCriticos = analiseIndividual.reduce((sum, a) => sum + a.problemas.filter(p => p.severidade === 'critico').length, 0);
+  const problemasAltos = analiseIndividual.reduce((sum, a) => sum + a.problemas.filter(p => p.severidade === 'alto').length, 0);
 
   const scoreGeral = analiseIndividual.length > 0
     ? Math.round(analiseIndividual.reduce((sum, a) => sum + a.score, 0) / analiseIndividual.length)
     : 0;
 
   const inconsistenciasCruzadas = analiseCruzada?.resumo?.inconsistencias_criticas || 0;
-  const inconsistenciasAltasCruzadas = analiseCruzada?.resumo?.inconsistencias_altas || 0;
 
-  // Determina próxima ação
   const determinarProximaAcao = () => {
-    if (totalDocumentos === 0) {
-      return {
-        titulo: 'Enviar Documentos',
-        descricao: 'Comece fazendo upload dos documentos necessários para análise',
-        acao: 'upload',
-        icone: FileText,
-        cor: 'blue'
-      };
-    }
-
-    if (problemasCriticos > 0) {
-      return {
-        titulo: 'Corrigir Problemas Críticos',
-        descricao: `${problemasCriticos} problema(s) crítico(s) detectado(s) que impedem a aprovação`,
-        acao: 'corrigir_criticos',
-        icone: AlertCircle,
-        cor: 'red'
-      };
-    }
-
-    if (inconsistenciasCruzadas > 0) {
-      return {
-        titulo: 'Resolver Inconsistências',
-        descricao: `${inconsistenciasCruzadas} inconsistência(s) crítica(s) entre documentos`,
-        acao: 'resolver_inconsistencias',
-        icone: AlertTriangle,
-        cor: 'orange'
-      };
-    }
-
-    if (problemasAltos > 0 || inconsistenciasAltasCruzadas > 0) {
-      return {
-        titulo: 'Revisar Alertas',
-        descricao: 'Existem alertas que requerem atenção antes do protocolo',
-        acao: 'revisar_alertas',
-        icone: AlertTriangle,
-        cor: 'yellow'
-      };
-    }
-
-    if (scoreGeral >= 90) {
-      return {
-        titulo: 'Protocolar Caso',
-        descricao: 'Documentação completa e aprovada. Pronto para protocolo!',
-        acao: 'protocolar',
-        icone: CheckCircle2,
-        cor: 'green'
-      };
-    }
-
-    return {
-      titulo: 'Completar Documentação',
-      descricao: 'Continue enviando os documentos necessários',
-      acao: 'upload',
-      icone: FileText,
-      cor: 'blue'
-    };
+    if (totalDocumentos === 0) return { titulo: 'Enviar Documentos', descricao: 'Faça upload dos documentos necessários', acao: 'upload', icone: FileText, cor: 'indigo' };
+    if (problemasCriticos > 0) return { titulo: 'Corrigir Problemas Críticos', descricao: `${problemasCriticos} problema(s) crítico(s) detectado(s)`, acao: 'corrigir_criticos', icone: AlertCircle, cor: 'red' };
+    if (inconsistenciasCruzadas > 0) return { titulo: 'Resolver Inconsistências', descricao: `${inconsistenciasCruzadas} inconsistência(s) entre documentos`, acao: 'resolver_inconsistencias', icone: AlertTriangle, cor: 'amber' };
+    if (problemasAltos > 0) return { titulo: 'Revisar Alertas', descricao: 'Alertas requerem atenção antes do protocolo', acao: 'revisar_alertas', icone: AlertTriangle, cor: 'amber' };
+    if (scoreGeral >= 90) return { titulo: 'Protocolar Caso', descricao: 'Documentação completa e aprovada!', acao: 'protocolar', icone: CheckCircle2, cor: 'emerald' };
+    return { titulo: 'Completar Documentação', descricao: 'Continue enviando os documentos', acao: 'upload', icone: FileText, cor: 'indigo' };
   };
 
   const proximaAcao = determinarProximaAcao();
   const ProximaAcaoIcone = proximaAcao.icone;
 
+  const timelineSteps = [
+    { label: 'Upload', sub: totalDocumentos > 0 ? `${totalDocumentos} docs` : 'Pendente', done: totalDocumentos > 0 },
+    { label: 'Análise Individual', sub: documentosAnalisados > 0 ? `${documentosAnalisados} analisados` : 'Aguardando', done: documentosAnalisados > 0 },
+    { label: 'Análise Cruzada', sub: analiseCruzada ? `${analiseCruzada.resumo.total_regras} regras` : 'Aguardando', done: !!analiseCruzada },
+    { label: 'Protocolo', sub: scoreGeral >= 90 ? 'Pronto' : 'Aguardando', done: scoreGeral >= 90 }
+  ];
+
   return (
-    <div className="space-y-6">
-      {/* Header com Status Geral */}
-      <Card className="border-2">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-2xl flex items-center gap-2">
-              <Activity className="h-6 w-6 text-blue-500" />
-              Visão Geral do Caso
-            </CardTitle>
-            <Badge 
-              variant="outline" 
-              className={`text-lg px-4 py-1 ${
-                scoreGeral >= 90 ? 'bg-green-100 text-green-800 border-green-300' :
-                scoreGeral >= 70 ? 'bg-yellow-100 text-yellow-800 border-yellow-300' :
-                'bg-red-100 text-red-800 border-red-300'
-              }`}
-            >
+    <div className="space-y-5">
+      {/* Score + Métricas */}
+      <div className="relative overflow-hidden rounded-2xl border border-slate-100 bg-white p-6">
+        <div className="absolute top-0 right-0 w-56 h-56 bg-gradient-to-bl from-indigo-50/60 to-transparent rounded-full -translate-y-1/3 translate-x-1/4" />
+
+        <div className="relative">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 shadow-lg shadow-indigo-200">
+              <Activity className="h-5 w-5 text-white" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-slate-900">Visão Geral do Caso</h3>
+              <p className="text-xs text-slate-500">Análise automatizada da documentação</p>
+            </div>
+            <Badge variant="outline" className={`text-sm px-3 py-1 font-bold ${
+              scoreGeral >= 90 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+              scoreGeral >= 70 ? 'bg-amber-50 text-amber-700 border-amber-200' :
+              'bg-red-50 text-red-700 border-red-200'
+            }`}>
               Score: {scoreGeral}/100
             </Badge>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {/* Barra de Progresso */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-700">
-                  Progresso da Análise
-                </span>
-                <span className="text-sm font-bold text-gray-900">
-                  {progressoDocumentacao}%
-                </span>
+
+          {/* Progress */}
+          {analisando && (
+            <div className="mb-5 p-3 rounded-xl bg-violet-50/80 border border-violet-100">
+              <div className="flex items-center gap-3">
+                <Sparkles className="h-4 w-4 text-violet-500 animate-pulse" />
+                <div className="flex-1">
+                  <p className="text-xs font-medium text-violet-700 mb-1.5">Analisando documentos...</p>
+                  <div className="h-2 bg-violet-100 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-violet-400 to-indigo-500 rounded-full transition-all duration-500" style={{ width: `${progressoAnalise}%` }} />
+                  </div>
+                </div>
               </div>
-              <Progress value={progressoDocumentacao} className="h-3" />
+            </div>
+          )}
+
+          {/* Metrics Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
+            <div className="group rounded-xl bg-blue-50/80 border border-blue-100 p-4 transition-all hover:shadow-md hover:shadow-blue-100/50 hover:-translate-y-0.5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-blue-600">Documentos</p>
+                  <p className="text-2xl font-bold text-blue-900 mt-1">{documentosAnalisados}/{totalDocumentos}</p>
+                </div>
+                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-blue-100">
+                  <FileText className="h-5 w-5 text-blue-500" />
+                </div>
+              </div>
             </div>
 
-            {/* Métricas em Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Documentos */}
-              <Card className="bg-blue-50 border-blue-200">
-                <CardContent className="pt-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-blue-600 font-medium">Documentos</p>
-                      <p className="text-2xl font-bold text-blue-900">
-                        {documentosAnalisados}/{totalDocumentos}
-                      </p>
-                    </div>
-                    <FileText className="h-8 w-8 text-blue-500" />
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="group rounded-xl bg-emerald-50/80 border border-emerald-100 p-4 transition-all hover:shadow-md hover:shadow-emerald-100/50 hover:-translate-y-0.5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-emerald-600">Conformidade</p>
+                  <p className="text-2xl font-bold text-emerald-900 mt-1">{documentosValidos}/{documentosAnalisados}</p>
+                </div>
+                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-emerald-100">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                </div>
+              </div>
+            </div>
 
-              {/* Conformidade */}
-              <Card className="bg-green-50 border-green-200">
-                <CardContent className="pt-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-green-600 font-medium">Conformidade</p>
-                      <p className="text-2xl font-bold text-green-900">
-                        {documentosValidos}/{documentosAnalisados}
-                      </p>
-                    </div>
-                    <CheckCircle2 className="h-8 w-8 text-green-500" />
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Alertas */}
-              <Card className={`${
-                problemasCriticos > 0 ? 'bg-red-50 border-red-200' :
-                problemasAltos > 0 ? 'bg-yellow-50 border-yellow-200' :
-                'bg-gray-50 border-gray-200'
-              }`}>
-                <CardContent className="pt-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className={`text-sm font-medium ${
-                        problemasCriticos > 0 ? 'text-red-600' :
-                        problemasAltos > 0 ? 'text-yellow-600' :
-                        'text-gray-600'
-                      }`}>
-                        Alertas
-                      </p>
-                      <p className={`text-2xl font-bold ${
-                        problemasCriticos > 0 ? 'text-red-900' :
-                        problemasAltos > 0 ? 'text-yellow-900' :
-                        'text-gray-900'
-                      }`}>
-                        {problemasCriticos + problemasAltos}
-                      </p>
-                    </div>
-                    <AlertTriangle className={`h-8 w-8 ${
-                      problemasCriticos > 0 ? 'text-red-500' :
-                      problemasAltos > 0 ? 'text-yellow-500' :
-                      'text-gray-400'
-                    }`} />
-                  </div>
-                </CardContent>
-              </Card>
+            <div className={`group rounded-xl p-4 transition-all hover:shadow-md hover:-translate-y-0.5 ${
+              problemasCriticos > 0 ? 'bg-red-50/80 border border-red-100 hover:shadow-red-100/50' :
+              problemasAltos > 0 ? 'bg-amber-50/80 border border-amber-100 hover:shadow-amber-100/50' :
+              'bg-slate-50/80 border border-slate-100 hover:shadow-slate-100/50'
+            }`}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`text-xs font-medium ${
+                    problemasCriticos > 0 ? 'text-red-600' : problemasAltos > 0 ? 'text-amber-600' : 'text-slate-600'
+                  }`}>Alertas</p>
+                  <p className={`text-2xl font-bold mt-1 ${
+                    problemasCriticos > 0 ? 'text-red-900' : problemasAltos > 0 ? 'text-amber-900' : 'text-slate-900'
+                  }`}>{problemasCriticos + problemasAltos}</p>
+                </div>
+                <div className={`flex items-center justify-center w-10 h-10 rounded-xl ${
+                  problemasCriticos > 0 ? 'bg-red-100' : problemasAltos > 0 ? 'bg-amber-100' : 'bg-slate-100'
+                }`}>
+                  <AlertTriangle className={`h-5 w-5 ${
+                    problemasCriticos > 0 ? 'text-red-500' : problemasAltos > 0 ? 'text-amber-500' : 'text-slate-400'
+                  }`} />
+                </div>
+              </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+
+          {/* Categorias (from cross-analysis) */}
+          {analiseCruzada?.resumo?.categorias && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {analiseCruzada.resumo.categorias.map(cat => (
+                <div key={cat.id} className="rounded-lg bg-slate-50 border border-slate-100 p-2.5 text-center">
+                  <p className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">{cat.label}</p>
+                  <p className={`text-lg font-bold mt-0.5 ${
+                    cat.score >= 90 ? 'text-emerald-600' : cat.score >= 70 ? 'text-amber-600' : 'text-red-600'
+                  }`}>{cat.score}%</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Próxima Ação */}
-      <Card className={`border-2 border-${proximaAcao.cor}-300 bg-${proximaAcao.cor}-50`}>
-        <CardContent className="pt-6">
-          <div className="flex items-start gap-4">
-            <div className={`p-3 rounded-lg bg-${proximaAcao.cor}-100`}>
-              <Target className={`h-6 w-6 text-${proximaAcao.cor}-600`} />
-            </div>
-            <div className="flex-1">
-              <h3 className={`text-lg font-semibold text-${proximaAcao.cor}-900 mb-1`}>
-                🎯 Próxima Ação: {proximaAcao.titulo}
-              </h3>
-              <p className={`text-sm text-${proximaAcao.cor}-700 mb-3`}>
-                {proximaAcao.descricao}
-              </p>
-              <Button 
-                onClick={() => onAcaoClick && onAcaoClick(proximaAcao.acao)}
-                className="gap-2"
-              >
-                <ProximaAcaoIcone className="h-4 w-4" />
-                {proximaAcao.titulo}
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </div>
+      <div className={`rounded-2xl border overflow-hidden transition-all ${
+        proximaAcao.cor === 'emerald' ? 'border-emerald-200 bg-gradient-to-r from-emerald-50/80 to-teal-50/40' :
+        proximaAcao.cor === 'red' ? 'border-red-200 bg-gradient-to-r from-red-50/80 to-rose-50/40' :
+        proximaAcao.cor === 'amber' ? 'border-amber-200 bg-gradient-to-r from-amber-50/80 to-orange-50/40' :
+        'border-indigo-200 bg-gradient-to-r from-indigo-50/80 to-violet-50/40'
+      }`}>
+        <div className="p-5 flex items-start gap-4">
+          <div className={`flex items-center justify-center w-12 h-12 rounded-xl flex-shrink-0 ${
+            proximaAcao.cor === 'emerald' ? 'bg-emerald-100' :
+            proximaAcao.cor === 'red' ? 'bg-red-100' :
+            proximaAcao.cor === 'amber' ? 'bg-amber-100' :
+            'bg-indigo-100'
+          }`}>
+            <Target className={`h-6 w-6 ${
+              proximaAcao.cor === 'emerald' ? 'text-emerald-600' :
+              proximaAcao.cor === 'red' ? 'text-red-600' :
+              proximaAcao.cor === 'amber' ? 'text-amber-600' :
+              'text-indigo-600'
+            }`} />
           </div>
-        </CardContent>
-      </Card>
+          <div className="flex-1">
+            <h4 className="font-semibold text-slate-900 mb-1">Próxima Ação: {proximaAcao.titulo}</h4>
+            <p className="text-sm text-slate-600 mb-3">{proximaAcao.descricao}</p>
+            <Button onClick={() => onAcaoClick && onAcaoClick(proximaAcao.acao)} className="rounded-xl gap-2 bg-slate-900 hover:bg-slate-800 text-white shadow-sm">
+              <ProximaAcaoIcone className="h-4 w-4" />
+              {proximaAcao.titulo}
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
 
       {/* Inconsistências Críticas */}
       {(problemasCriticos > 0 || inconsistenciasCruzadas > 0) && (
-        <Card className="border-2 border-red-300">
-          <CardHeader className="bg-red-50">
-            <CardTitle className="text-red-900 flex items-center gap-2">
-              <AlertCircle className="h-5 w-5" />
+        <div className="rounded-2xl border border-red-200 bg-gradient-to-r from-red-50/80 to-white overflow-hidden">
+          <div className="p-5">
+            <h4 className="font-semibold text-red-900 flex items-center gap-2 mb-3">
+              <Zap className="h-5 w-5 text-red-500" />
               Inconsistências Críticas
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-4">
+            </h4>
             <div className="space-y-2">
-              {/* Problemas Individuais */}
               {analiseIndividual
                 .filter(a => a.problemas.some(p => p.severidade === 'critico'))
                 .map(analise => (
-                  <Alert key={analise.documentoId} variant="destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      <span className="font-medium">
-                        {tipoDocumentoLabels[analise.tipo] || analise.tipo}:
-                      </span>{' '}
-                      {analise.problemas
-                        .filter(p => p.severidade === 'critico')
-                        .map(p => p.mensagem)
-                        .join(', ')}
-                    </AlertDescription>
-                  </Alert>
+                  <div key={analise.documentoId} className="flex items-start gap-2 p-3 rounded-xl bg-white border border-red-100">
+                    <AlertCircle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
+                    <div className="text-sm">
+                      <span className="font-medium text-slate-900">{tipoDocumentoLabels[analise.tipo] || analise.tipo}: </span>
+                      <span className="text-slate-600">
+                        {analise.problemas.filter(p => p.severidade === 'critico').map(p => p.mensagem).join(', ')}
+                      </span>
+                    </div>
+                  </div>
                 ))}
-
-              {/* Problemas Cruzados */}
               {analiseCruzada?.resultados
                 .filter(r => r.nivel === 'critico' && !r.passou)
                 .map((resultado, idx) => (
-                  <Alert key={idx} variant="destructive">
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertDescription>
-                      <span className="font-medium">{resultado.nome}:</span>{' '}
-                      {resultado.discrepancias[0]?.mensagem || resultado.sugestao}
-                    </AlertDescription>
-                  </Alert>
+                  <div key={idx} className="flex items-start gap-2 p-3 rounded-xl bg-white border border-red-100">
+                    <AlertTriangle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
+                    <div className="text-sm">
+                      <span className="font-medium text-slate-900">{resultado.nome}: </span>
+                      <span className="text-slate-600">{resultado.discrepancias?.[0]?.mensagem || resultado.sugestao}</span>
+                    </div>
+                  </div>
                 ))}
             </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Análise em Progresso */}
-      {analisando && (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <Sparkles className="h-5 w-5 text-yellow-500 animate-pulse" />
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-700 mb-2">
-                  Analisando documentos com IA...
-                </p>
-                <Progress value={progressoAnalise} />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Timeline Visual (Opcional) */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Clock className="h-5 w-5" />
-            Timeline do Processo
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-start gap-3">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                totalDocumentos > 0 ? 'bg-green-100' : 'bg-gray-100'
-              }`}>
-                {totalDocumentos > 0 ? (
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
-                ) : (
-                  <div className="w-3 h-3 rounded-full bg-gray-400" />
-                )}
-              </div>
-              <div>
-                <p className="font-medium text-gray-900">Upload de Documentos</p>
-                <p className="text-sm text-gray-500">
-                  {totalDocumentos > 0 ? `${totalDocumentos} documentos enviados` : 'Pendente'}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                documentosAnalisados > 0 ? 'bg-green-100' : 'bg-gray-100'
-              }`}>
-                {documentosAnalisados > 0 ? (
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
-                ) : (
-                  <div className="w-3 h-3 rounded-full bg-gray-400" />
-                )}
-              </div>
-              <div>
-                <p className="font-medium text-gray-900">Análise Individual</p>
-                <p className="text-sm text-gray-500">
-                  {documentosAnalisados > 0 
-                    ? `${documentosAnalisados} documentos analisados` 
-                    : 'Aguardando documentos'}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                analiseCruzada ? 'bg-green-100' : 'bg-gray-100'
-              }`}>
-                {analiseCruzada ? (
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
-                ) : (
-                  <div className="w-3 h-3 rounded-full bg-gray-400" />
-                )}
-              </div>
-              <div>
-                <p className="font-medium text-gray-900">Análise Cruzada</p>
-                <p className="text-sm text-gray-500">
-                  {analiseCruzada 
-                    ? `${analiseCruzada.resumo.total_regras} regras verificadas` 
-                    : 'Aguardando análise individual'}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                scoreGeral >= 90 ? 'bg-green-100' : 'bg-gray-100'
-              }`}>
-                {scoreGeral >= 90 ? (
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
-                ) : (
-                  <div className="w-3 h-3 rounded-full bg-gray-400" />
-                )}
-              </div>
-              <div>
-                <p className="font-medium text-gray-900">Protocolo</p>
-                <p className="text-sm text-gray-500">
-                  {scoreGeral >= 90 ? 'Pronto para protocolar' : 'Aguardando aprovação'}
-                </p>
-              </div>
-            </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      )}
+
+      {/* Timeline */}
+      <div className="rounded-2xl border border-slate-100 bg-white p-6">
+        <h4 className="font-semibold text-slate-900 flex items-center gap-2 mb-5">
+          <Clock className="h-5 w-5 text-slate-400" />
+          Timeline do Processo
+        </h4>
+        <div className="relative">
+          {/* Connecting line */}
+          <div className="absolute left-5 top-5 bottom-5 w-0.5 bg-slate-100" />
+
+          <div className="space-y-6">
+            {timelineSteps.map((step, idx) => (
+              <div key={idx} className="relative flex items-start gap-4">
+                <div className={`relative z-10 flex items-center justify-center w-10 h-10 rounded-xl flex-shrink-0 transition-all ${
+                  step.done ? 'bg-emerald-100 shadow-sm shadow-emerald-100' : 'bg-slate-100'
+                }`}>
+                  {step.done ? (
+                    <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                  ) : (
+                    <div className="w-3 h-3 rounded-full bg-slate-300" />
+                  )}
+                </div>
+                <div className="pt-2">
+                  <p className={`font-medium ${step.done ? 'text-slate-900' : 'text-slate-400'}`}>{step.label}</p>
+                  <p className="text-xs text-slate-500">{step.sub}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
