@@ -1,8 +1,7 @@
 // Análise cruzada entre documentos para validação de consistência
 
-import { compararValoresMonetarios, compararSaldosBancarios } from '../../../utils/financialComparison';
-import { normalizarNome, normalizarRazaoSocial, compararTextos } from '../../../utils/textNormalization';
-import logger, { LogCategory } from '../../../utils/logger';
+import { compararSaldosBancarios } from '../../../utils/financialComparison';
+import { compararTextos } from '../../../utils/textNormalization';
 
 export const crossDocumentRules = {
   // Procuração vs Documento de ID do Procurador

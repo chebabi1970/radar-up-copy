@@ -1,12 +1,11 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { isDocumentoAplicavel, isDocumentoObrigatorio } from '@/config/documentosPorHipotese';
 import { CATEGORIAS_DOCUMENTOS, tipoDocumentoLabels } from '@/config/documentoLabels';
 import { analisarDocumentoIndividual } from '@/utils/documentAnalysis';
 import { obterUrlsDocumentos, SCHEMAS_DOCUMENTOS, salvarAnaliseHistorico } from './utils/documentAnalysisHelpers';
 import { construirPromptDocumento } from './utils/promptBuilder';
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,

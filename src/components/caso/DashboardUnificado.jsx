@@ -6,8 +6,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   FileText,
   CheckCircle2,
@@ -18,9 +16,7 @@ import {
   Sparkles,
   Target,
   Activity,
-  TrendingUp,
-  Zap,
-  Shield
+  Zap
 } from 'lucide-react';
 import { analisarDocumentoIndividual } from '@/utils/documentAnalysis';
 import { executarAnaliseCruzadaCompleta } from '@/utils/crossDocumentAnalysis';

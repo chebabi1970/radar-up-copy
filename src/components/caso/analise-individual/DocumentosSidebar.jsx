@@ -4,9 +4,6 @@ import { CATEGORIAS_DOCUMENTOS } from '@/config/documentoLabels';
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  CheckCircle2,
-  Circle,
-  FileText,
   ChevronRight
 } from 'lucide-react';
 

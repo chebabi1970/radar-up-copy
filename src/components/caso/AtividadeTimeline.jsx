@@ -1,9 +1,7 @@
 import React, { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Badge } from "@/components/ui/badge";
 import {
-  FileText,
   Upload,
   CheckCircle2,
   AlertTriangle,

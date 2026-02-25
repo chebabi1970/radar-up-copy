@@ -6,7 +6,7 @@ import { createPageUrl } from '@/utils';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Users, FolderOpen, Mail, Phone, MapPin, Building2, Loader2 } from 'lucide-react';
+import { ArrowLeft, FolderOpen, Mail, Phone, MapPin, Building2, Loader2 } from 'lucide-react';
 
 
 const modalidadeColors = {

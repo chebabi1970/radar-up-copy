@@ -18,9 +18,7 @@ import {
   AlertCircle,
   Clock,
   Zap,
-  Loader2,
   Filter,
-  Upload,
   ChevronDown,
   ChevronUp
 } from 'lucide-react';

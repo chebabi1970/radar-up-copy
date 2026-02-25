@@ -26,7 +26,6 @@ import {
   CheckCircle2,
   Clock,
   Trash2,
-  AlertTriangle,
   FileText,
   Plus
 } from 'lucide-react';

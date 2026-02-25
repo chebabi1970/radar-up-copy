@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { ZoomIn, ZoomOut, RotateCw, Download, Loader2 } from 'lucide-react';
 
 export default function DocumentViewerInline({ documento, documentos = [], onSelectDoc }) {

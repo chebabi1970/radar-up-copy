@@ -18,27 +18,22 @@ import {
   FolderOpen,
   FileCheck,
   AlertTriangle,
-  Clock,
-  CheckCircle2,
   TrendingUp,
   TrendingDown,
   FileText,
-  ArrowRight,
   BarChart3,
   PieChart as PieChartIcon,
   Activity,
   Target,
   Loader2,
   Calendar,
-  DollarSign,
   Timer
 } from 'lucide-react';
-import { format, differenceInDays, parseISO, subMonths, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
+import { format, differenceInDays, subMonths, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
   BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid,
-  Tooltip, Legend, ResponsiveContainer, LineChart, Line, AreaChart, Area,
-  RadialBarChart, RadialBar
+  Tooltip, Legend, ResponsiveContainer, AreaChart, Area
 } from 'recharts';
 
 const statusLabels = {
