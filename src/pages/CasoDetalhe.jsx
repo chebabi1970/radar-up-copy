@@ -460,7 +460,7 @@ export default function CasoDetalhe() {
               </TabsList>
             </div>
 
-            <TabsContent value="dashboard" className="p-3 md:p-6 mt-0">
+            <TabsContent value="dashboard" className="p-3 md:p-6 mt-0 max-h-[calc(100vh-280px)] overflow-y-auto">
               <div className="space-y-6">
                 {/* Seletor de Hipótese */}
                 <SeletorHipotese
@@ -489,7 +489,7 @@ export default function CasoDetalhe() {
 
 
 
-            <TabsContent value="documentos" className="p-3 md:p-6 mt-0">
+            <TabsContent value="documentos" className="p-3 md:p-6 mt-0 max-h-[calc(100vh-280px)] overflow-y-auto">
               <DocumentosConsolidado 
                 caso={caso}
                 documentos={documentos}
@@ -497,7 +497,7 @@ export default function CasoDetalhe() {
               />
             </TabsContent>
 
-            <TabsContent value="analise" className="p-3 md:p-6 mt-0">
+            <TabsContent value="analise" className="p-3 md:p-6 mt-0 max-h-[calc(100vh-280px)] overflow-y-auto">
               <AnaliseIndividualTab
                 caso={caso}
                 documentos={documentos}
@@ -506,11 +506,11 @@ export default function CasoDetalhe() {
               />
             </TabsContent>
 
-            <TabsContent value="cruzada" className="p-3 md:p-6 mt-0">
+            <TabsContent value="cruzada" className="p-3 md:p-6 mt-0 max-h-[calc(100vh-280px)] overflow-y-auto">
               <AnaliseCruzadaPanel documentos={documentos} cliente={cliente} />
             </TabsContent>
 
-            <TabsContent value="atividade" className="p-3 md:p-6 mt-0">
+            <TabsContent value="atividade" className="p-3 md:p-6 mt-0 max-h-[calc(100vh-280px)] overflow-y-auto">
               <AtividadeTimeline casoId={casoId} documentos={documentos} caso={caso} />
             </TabsContent>
           </Tabs>
