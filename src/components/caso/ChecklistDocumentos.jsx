@@ -5,6 +5,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { isDocumentoObrigatorio, isDocumentoAplicavel, getPeriodoDocumento } from '@/config/documentosPorHipotese';
+import { CATEGORIAS_DOCUMENTOS } from '@/config/documentoLabels';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -19,64 +20,6 @@ import {
   Shield,
   Sparkles
 } from 'lucide-react';
-
-const CATEGORIAS_DOCUMENTOS = [
-  {
-    id: 'identificacao', nome: 'Identificação e Representação',
-    gradiente: 'from-blue-500 to-indigo-500',
-    documentos: [
-      { tipo: 'requerimento_das', nome: 'Requerimento DAS', descricao: 'Formulário de requerimento preenchido e assinado', obrigatorio: true },
-      { tipo: 'documento_identificacao_responsavel', nome: 'Documento de Identificação do Responsável', descricao: 'RG, CNH ou documento oficial com foto', obrigatorio: true },
-      { tipo: 'procuracao', nome: 'Procuração', descricao: 'Se houver procurador representando a empresa', obrigatorio: false },
-      { tipo: 'documento_identificacao_procurador', nome: 'Documento de Identificação do Procurador', descricao: 'Necessário se houver procuração', obrigatorio: false }
-    ]
-  },
-  {
-    id: 'constitutivos', nome: 'Documentos Constitutivos',
-    gradiente: 'from-violet-500 to-purple-500',
-    documentos: [
-      { tipo: 'contrato_social', nome: 'Contrato Social e Alterações', descricao: 'Contrato social consolidado ou com todas as alterações', obrigatorio: true },
-      { tipo: 'certidao_junta_comercial', nome: 'Certidão da Junta Comercial', descricao: 'Certidão simplificada atualizada', obrigatorio: true }
-    ]
-  },
-  {
-    id: 'endereco', nome: 'Comprovantes de Endereço',
-    gradiente: 'from-amber-500 to-orange-500',
-    documentos: [
-      { tipo: 'conta_energia', nome: 'Conta de Energia', descricao: 'Últimos 3 meses', obrigatorio: true },
-      { tipo: 'plano_internet', nome: 'Plano de Internet', descricao: 'Últimos 3 meses', obrigatorio: false },
-      { tipo: 'guia_iptu', nome: 'Guia de IPTU', descricao: 'Ano corrente', obrigatorio: false },
-      { tipo: 'contrato_locacao', nome: 'Contrato de Locação', descricao: 'Se o imóvel for alugado', obrigatorio: false }
-    ]
-  },
-  {
-    id: 'financeiros', nome: 'Documentos Financeiros',
-    gradiente: 'from-emerald-500 to-teal-500',
-    documentos: [
-      { tipo: 'extrato_bancario_corrente', nome: 'Extratos Bancários - Conta Corrente', descricao: 'Últimos 3 meses de todas as contas', obrigatorio: true },
-      { tipo: 'balancete_verificacao', nome: 'Balancete de Verificação', descricao: 'Balancete mais recente (máx. 6 meses)', obrigatorio: true },
-      { tipo: 'balanco_patrimonial_integralizacao', nome: 'Balanço Patrimonial', descricao: 'Se houver integralização de capital', obrigatorio: false },
-      { tipo: 'extrato_bancario_integralizacao', nome: 'Extratos - Integralização de Capital', descricao: 'Se houver integralização', obrigatorio: false }
-    ]
-  },
-  {
-    id: 'tributos', nome: 'Comprovantes de Tributos',
-    gradiente: 'from-rose-500 to-pink-500',
-    documentos: [
-      { tipo: 'das_simples_nacional', nome: 'DAS - Simples Nacional', descricao: 'Últimos 12 meses', obrigatorio: true },
-      { tipo: 'darf_cprb', nome: 'DARF CPRB', descricao: 'Se aplicável', obrigatorio: false }
-    ]
-  },
-  {
-    id: 'especiais', nome: 'Documentos Especiais',
-    gradiente: 'from-cyan-500 to-sky-500',
-    documentos: [
-      { tipo: 'contrato_mutuo', nome: 'Contrato de Mútuo', descricao: 'Se houver empréstimo de sócio', obrigatorio: false },
-      { tipo: 'comprovante_iof', nome: 'Comprovante de IOF', descricao: 'Necessário se houver contrato de mútuo', obrigatorio: false },
-      { tipo: 'balancete_mutuante', nome: 'Balancete do Mutuante', descricao: 'Se o mutuante for pessoa jurídica', obrigatorio: false }
-    ]
-  }
-];
 
 export default function ChecklistDocumentos({ documentos = [], onUploadClick, onViewClick, hipotese = 'I' }) {
   const [categoriasExpandidas, setCategoriasExpandidas] = useState(

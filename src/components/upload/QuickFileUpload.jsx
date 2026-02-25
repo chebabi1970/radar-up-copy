@@ -62,7 +62,7 @@ export default function QuickFileUpload({
           accept={allowedTypes.join(',')}
           onChange={handleFileSelect}
           disabled={uploading}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10"
         />
         <Button
           variant={buttonVariant}

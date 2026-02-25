@@ -132,7 +132,7 @@ Retorne apenas o resumo das principais alterações.`
                   setErro(null);
                 }}
                 disabled={uploadMutation.isPending}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
               />
               <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center bg-slate-50 hover:bg-slate-100 transition-colors">
                 <Upload className="h-8 w-8 mx-auto text-slate-400 mb-2" />
