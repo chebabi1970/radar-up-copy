@@ -3,7 +3,7 @@
  * Detecta automaticamente o tipo de documento e faz upload em lote
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useImperativeHandle } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -98,7 +98,7 @@ const detectarTipoDocumento = (nomeArquivo) => {
   return 'outro';
 };
 
-export default function SmartUpload({ casoId, onUploadComplete, triggerAnalise }) {
+const SmartUpload = React.forwardRef(function SmartUpload({ casoId, onUploadComplete, triggerAnalise, tipoPreSelecionado }, ref) {
   const [arquivos, setArquivos] = useState([]);
   const [uploading, setUploading] = useState(false);
   const queryClient = useQueryClient();
@@ -114,7 +114,7 @@ export default function SmartUpload({ casoId, onUploadComplete, triggerAnalise }
       file,
       nome: file.name,
       tamanho: file.size,
-      tipoDetectado: detectarTipoDocumento(file.name),
+      tipoDetectado: tipoPreSelecionado || detectarTipoDocumento(file.name),
       status: 'pendente', // pendente, uploading, processando, concluido, erro
       progresso: 0,
       url: null,
@@ -124,7 +124,7 @@ export default function SmartUpload({ casoId, onUploadComplete, triggerAnalise }
     setArquivos(prev => [...prev, ...novosArquivos]);
   }, [casoId]);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
     accept: {
       'application/pdf': ['.pdf'],
@@ -132,8 +132,13 @@ export default function SmartUpload({ casoId, onUploadComplete, triggerAnalise }
       'application/msword': ['.doc'],
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
     },
-    maxSize: 50 * 1024 * 1024 // 50MB
+    maxSize: 50 * 1024 * 1024, // 50MB
+    noClick: false
   });
+
+  useImperativeHandle(ref, () => ({
+    open
+  }), [open]);
 
   const removerArquivo = (id) => {
     setArquivos(prev => prev.filter(a => a.id !== id));
@@ -428,4 +433,6 @@ export default function SmartUpload({ casoId, onUploadComplete, triggerAnalise }
       </CardContent>
     </Card>
   );
-}
+});
+
+export default SmartUpload;
