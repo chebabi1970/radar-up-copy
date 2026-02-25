@@ -9,41 +9,74 @@ import { getGuide } from '../analisisGuides';
  * Constrói prompt para análise de documento individual
  * @param {string} tipoDocumento - Tipo do documento
  * @param {Object} cliente - Dados do cliente
+ * @param {Object} opcoes - Opções adicionais
+ * @param {Array} opcoes.correcoesUsuario - Correções do usuário sobre análise anterior
+ * @param {string} opcoes.observacoesUsuario - Observações livres do usuário
  * @returns {string} Prompt otimizado
  */
-export function construirPromptDocumento(tipoDocumento, cliente = {}) {
+export function construirPromptDocumento(tipoDocumento, cliente = {}, opcoes = {}) {
   const guide = getGuide(tipoDocumento);
+  const { correcoesUsuario, observacoesUsuario } = opcoes;
 
+  let prompt;
   if (guide) {
-    return construirPromptComGuia(guide, cliente);
+    prompt = construirPromptComGuia(guide, cliente);
+  } else {
+    prompt = construirPromptGenerico(tipoDocumento);
   }
 
-  return construirPromptGenerico(tipoDocumento);
+  // Se há correções do usuário, incluir no prompt para reanálise
+  if (correcoesUsuario?.length > 0 || observacoesUsuario) {
+    prompt += '\n\nIMPORTANTE - CORREÇÕES DO REVISOR HUMANO sobre análise anterior:';
+    if (correcoesUsuario?.length > 0) {
+      correcoesUsuario.forEach(c => {
+        prompt += `\n- O item "${c.item}" foi marcado como INCORRETO pelo revisor.`;
+        if (c.nota) prompt += ` Motivo: ${c.nota}`;
+      });
+    }
+    if (observacoesUsuario) {
+      prompt += `\n\nOBSERVAÇÕES DO REVISOR: ${observacoesUsuario}`;
+    }
+    prompt += '\n\nReleia o documento com atenção redobrada nos pontos acima. O revisor afirma que esses dados EXISTEM no documento. Procure com cuidado antes de reportar como ausente.';
+  }
+
+  return prompt;
 }
 
 /**
  * Constrói prompt com guia de análise
  */
 function construirPromptComGuia(guide, cliente) {
-  const regras = guide.regras.slice(0, 3).join(' | ');
-  const criticos = guide.checklist
-    .filter(c => c.critico)
-    .map(c => c.item)
-    .join(' | ');
+  const regras = guide.regras.join('\n- ');
+  const checklistItems = guide.checklist
+    .map(c => `- ${c.item}${c.critico ? ' (CRÍTICO)' : ''}`)
+    .join('\n');
 
-  return `Analise RÁPIDO este documento RFB: ${guide.nome}
+  return `Você está analisando o documento "${guide.nome}" anexado nas imagens/arquivos abaixo.
 
-REGRAS: ${regras}
-CRÍTICOS: ${criticos}
+IMPORTANTE: O documento FOI ANEXADO. Leia atentamente TODO o conteúdo visível nas imagens antes de responder. NÃO diga que o documento não foi anexado ou que informações estão ausentes sem antes procurar cuidadosamente em todas as páginas do documento.
 
 EMPRESA: ${cliente?.razao_social || 'N/A'} | CNPJ: ${cliente?.cnpj || 'N/A'}
 
+REGRAS DE ANÁLISE:
+- ${regras}
+
+CHECKLIST DE VERIFICAÇÃO:
+${checklistItems}
+
+INSTRUÇÕES:
+1. Leia o documento anexado com atenção
+2. Extraia todos os dados visíveis (titular, endereço, datas, valores, etc.)
+3. Para cada item do checklist, verifique se o documento atende
+4. Só marque como CRÍTICO se realmente NÃO encontrar a informação após leitura cuidadosa
+5. Se encontrar a informação, marque como OK e inclua o dado na observação
+
 RESPONDA EM JSON APENAS:
 {
-  "dados_extraidos": {},
-  "checklist_verificacao": [{"item": "", "status": "OK|ALERTA|CRÍTICO", "observacao": ""}],
+  "dados_extraidos": {"titular": "", "endereco": "", "data_referencia": "", "valor": "", ...},
+  "checklist_verificacao": [{"item": "", "status": "OK|ALERTA|CRÍTICO", "observacao": "descreva o que encontrou ou não"}],
   "indicadores_alerta": [{"tipo": "", "severidade": "critica|media|leve", "descricao": ""}],
-  "resumo": "análise breve",
+  "resumo": "análise breve do documento",
   "classificacao_final": "APROVADO|INCONSISTENTE"
 }`;
 }
@@ -52,18 +85,21 @@ RESPONDA EM JSON APENAS:
  * Constrói prompt genérico
  */
 function construirPromptGenerico(tipoDocumento) {
-  return `Analise rapidamente documento: ${tipoDocumento}
+  return `Você está analisando um documento do tipo "${tipoDocumento}" anexado nas imagens/arquivos abaixo.
 
-1. Dados principais
-2. Período de referência
-3. Legibilidade
-4. Alertas críticos
-5. Aprovável?
+IMPORTANTE: O documento FOI ANEXADO. Leia atentamente TODO o conteúdo visível antes de responder. NÃO diga que o documento não foi anexado ou que informações estão ausentes sem antes procurar cuidadosamente.
+
+ANALISE:
+1. Extraia todos os dados principais visíveis no documento (nomes, datas, valores, endereços, etc.)
+2. Verifique período de referência
+3. Avalie legibilidade
+4. Identifique alertas críticos (somente se realmente houver)
+5. Classifique se aprovável
 
 RESPONDA EM JSON:
 {
-  "dados_extraidos": {},
-  "checklist_verificacao": [{"item": "", "status": "OK|ALERTA|CRÍTICO"}],
+  "dados_extraidos": {"titular": "", "endereco": "", "data_referencia": "", "valor": "", ...},
+  "checklist_verificacao": [{"item": "", "status": "OK|ALERTA|CRÍTICO", "observacao": "descreva o que encontrou"}],
   "indicadores_alerta": [{"tipo": "", "severidade": "critica|media|leve", "descricao": ""}],
   "resumo": "breve",
   "classificacao_final": "APROVADO|INCONSISTENTE"

@@ -80,8 +80,8 @@ export default function AnaliseIndividualTab({ caso, documentos, cliente, onDocu
     }
   }, [documentoAtual, tipoSelecionado]);
 
-  // Run LLM analysis
-  const executarAnaliseIA = useCallback(async () => {
+  // Run LLM analysis (accepts optional corrections from contest mode)
+  const executarAnaliseIA = useCallback(async (opcoes = {}) => {
     if (!documentoAtual || documentosDesseTipo.length === 0) return;
     setAnalisando(true);
     try {
@@ -95,8 +95,11 @@ export default function AnaliseIndividualTab({ caso, documentos, cliente, onDocu
         return;
       }
 
-      // Build prompt and call LLM
-      const prompt = construirPromptDocumento(tipoSelecionado, cliente);
+      // Build prompt with optional corrections
+      const prompt = construirPromptDocumento(tipoSelecionado, cliente, {
+        correcoesUsuario: opcoes.correcoesUsuario,
+        observacoesUsuario: opcoes.observacoesUsuario
+      });
       const resultado = await base44.integrations.Core.InvokeLLM({
         prompt,
         file_urls: urls,
@@ -109,7 +112,7 @@ export default function AnaliseIndividualTab({ caso, documentos, cliente, onDocu
       try {
         await salvarAnaliseHistorico({
           casoId: caso.id,
-          tipoAnalise: 'individual',
+          tipoAnalise: opcoes.correcoesUsuario?.length > 0 ? 'individual_corrigida' : 'individual',
           documentoTipo: tipoSelecionado,
           documentoNome: documentoAtual.nome_arquivo,
           resultado: resultado,
@@ -120,7 +123,10 @@ export default function AnaliseIndividualTab({ caso, documentos, cliente, onDocu
         // Silent fail for history save
       }
 
-      toast.success('Análise concluída');
+      const msg = opcoes.correcoesUsuario?.length > 0
+        ? 'Re-análise com correções concluída'
+        : 'Análise concluída';
+      toast.success(msg);
     } catch (error) {
       console.error('Erro na análise IA:', error);
       toast.error('Erro ao analisar documento: ' + error.message);

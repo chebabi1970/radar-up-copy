@@ -52,32 +52,38 @@ export const analisarDocumentoIndividual = async (documento, opcoes = {}) => {
       problemas.push(...validacaoFormato.problemas);
     }
 
-    // 2. Validação de Identificação
-    const validacaoIdentificacao = validarIdentificacao(documento);
-    if (!validacaoIdentificacao.valido) {
-      problemas.push(...validacaoIdentificacao.problemas);
-    }
+    // 2-5: Validações de conteúdo dependem de dados_extraidos.
+    // Se não existem dados extraídos, pular validações de conteúdo e
+    // orientar o usuário a executar a análise com IA primeiro.
+    const dados = documento.dados_extraidos || {};
+    const temDadosExtraidos = Object.keys(dados).some(k => dados[k] !== null && dados[k] !== undefined);
 
-    // 3. Validação de Validade Temporal
-    const validacaoValidade = validarValidadeTemporal(documento);
-    if (!validacaoValidade.valido) {
-      problemas.push(...validacaoValidade.problemas);
-    }
-    alertas.push(...validacaoValidade.alertas);
+    if (temDadosExtraidos) {
+      // 2. Validação de Identificação
+      const validacaoIdentificacao = validarIdentificacao(documento);
+      if (!validacaoIdentificacao.valido) {
+        problemas.push(...validacaoIdentificacao.problemas);
+      }
 
-    // 4. Validação de Conteúdo Específico por Tipo
-    const validacaoConteudo = await validarConteudoEspecifico(documento);
-    if (!validacaoConteudo.valido) {
-      problemas.push(...validacaoConteudo.problemas);
-    }
-    alertas.push(...validacaoConteudo.alertas);
-    informacoes.push(...validacaoConteudo.informacoes);
+      // 3. Validação de Validade Temporal
+      const validacaoValidade = validarValidadeTemporal(documento);
+      if (!validacaoValidade.valido) {
+        problemas.push(...validacaoValidade.problemas);
+      }
+      alertas.push(...validacaoValidade.alertas);
 
-    // 5. Validação com Schema Zod
-    if (documento.dados_extraidos) {
+      // 4. Validação de Conteúdo Específico por Tipo
+      const validacaoConteudo = await validarConteudoEspecifico(documento);
+      if (!validacaoConteudo.valido) {
+        problemas.push(...validacaoConteudo.problemas);
+      }
+      alertas.push(...validacaoConteudo.alertas);
+      informacoes.push(...validacaoConteudo.informacoes);
+
+      // 5. Validação com Schema Zod
       const validacaoSchema = validarDadosDocumento(
         documento.tipo_documento?.toUpperCase(),
-        documento.dados_extraidos
+        dados
       );
       if (!validacaoSchema.sucesso) {
         problemas.push({
@@ -87,6 +93,18 @@ export const analisarDocumentoIndividual = async (documento, opcoes = {}) => {
           detalhes: validacaoSchema.erro
         });
       }
+    } else {
+      informacoes.push({
+        categoria: CategoriaValidacao.CONTEUDO,
+        mensagem: 'Dados ainda não extraídos. Execute "Analisar com IA" para extrair e validar o conteúdo do documento.'
+      });
+
+      // Still validate temporal data if available on the document record itself
+      const validacaoValidade = validarValidadeTemporal(documento);
+      if (!validacaoValidade.valido) {
+        problemas.push(...validacaoValidade.problemas);
+      }
+      alertas.push(...validacaoValidade.alertas);
     }
 
     const duration = performance.now() - startTime;
