@@ -23,7 +23,8 @@ export default function DocumentViewerInline({ documento, documentos = [], onSel
     if (fileUrl) {
       setSignedUrl(fileUrl);
       setLoading(false);
-    } else if (fileUri) {
+    } else if (fileUri && !fileUri.startsWith('http')) {
+      // Private file with relative path - create signed URL
       base44.integrations.Core.CreateFileSignedUrl({
         file_uri: fileUri,
         expires_in: 3600
@@ -31,6 +32,10 @@ export default function DocumentViewerInline({ documento, documentos = [], onSel
         setSignedUrl(result.signed_url);
         setLoading(false);
       }).catch(() => setLoading(false));
+    } else if (fileUri) {
+      // fileUri is already a full URL
+      setSignedUrl(fileUri);
+      setLoading(false);
     } else {
       setLoading(false);
     }
@@ -38,8 +43,11 @@ export default function DocumentViewerInline({ documento, documentos = [], onSel
 
   if (!doc) return null;
 
-  const isPDF = signedUrl && typeof signedUrl === 'string' && /\.pdf(\?|$)/i.test(String(signedUrl).toLowerCase());
-  const isImage = signedUrl && typeof signedUrl === 'string' && /\.(jpg|jpeg|png|gif|webp)(\?|$)/i.test(String(signedUrl).toLowerCase());
+  // Detect file type from the original filename, NOT the signed URL
+  // (signed URLs from Supabase don't contain the original file extension)
+  const nomeArquivo = (doc.nome_arquivo || '').toLowerCase();
+  const isPDF = nomeArquivo.endsWith('.pdf');
+  const isImage = /\.(jpg|jpeg|png|gif|webp)$/.test(nomeArquivo);
 
   return (
     <div className="rounded-2xl border border-slate-100 bg-white overflow-hidden">
@@ -116,12 +124,16 @@ export default function DocumentViewerInline({ documento, documentos = [], onSel
             }}
           />
         ) : signedUrl ? (
-          <div className="text-center py-12">
-            <p className="text-sm text-slate-500 mb-2">Visualização não disponível para este formato</p>
-            <a href={signedUrl} download target="_blank" rel="noopener noreferrer" className="text-sm text-indigo-600 hover:underline">
-              Baixar arquivo
-            </a>
-          </div>
+          <iframe
+            src={signedUrl}
+            className="w-full rounded"
+            title={doc.nome_arquivo}
+            style={{
+              height: '500px',
+              transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
+              transformOrigin: 'top center'
+            }}
+          />
         ) : (
           <div className="text-center py-12">
             <p className="text-sm text-slate-400">Nenhum arquivo disponível</p>

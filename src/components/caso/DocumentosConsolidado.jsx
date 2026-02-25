@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -6,6 +6,7 @@ import { Upload, FileText, CheckSquare, Eye } from 'lucide-react';
 import SmartUpload from '@/components/upload/SmartUpload';
 import ChecklistDocumentos from '@/components/caso/ChecklistDocumentos';
 import DocumentosTab from '@/components/caso/DocumentosTab';
+import VisualizadorDocumento from '@/components/caso/VisualizadorDocumento';
 
 /**
  * Componente consolidado que une Upload, Checklist e Visualizador de Documentos
@@ -13,24 +14,48 @@ import DocumentosTab from '@/components/caso/DocumentosTab';
  */
 export default function DocumentosConsolidado({ caso, documentos, onDocumentosChange }) {
   const [visualizadorAberto, setVisualizadorAberto] = useState(false);
+  const [tipoPreSelecionado, setTipoPreSelecionado] = useState(null);
+  const [docVisualizando, setDocVisualizando] = useState(null);
+  const smartUploadRef = useRef(null);
+  const uploadSectionRef = useRef(null);
+
+  const handleUploadClick = useCallback((tipo) => {
+    setTipoPreSelecionado(tipo);
+    // Scroll to upload area and open file dialog
+    uploadSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => {
+      smartUploadRef.current?.open();
+    }, 300);
+  }, []);
+
+  const handleViewClick = useCallback((tipo) => {
+    const doc = documentos?.find(d => d.tipo_documento === tipo);
+    if (doc) {
+      setDocVisualizando(doc);
+    }
+  }, [documentos]);
 
   return (
     <div className="space-y-6">
       {/* Seção de Upload */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Upload className="h-5 w-5 text-blue-600" />
-            Upload de Documentos
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <SmartUpload 
-            casoId={caso?.id}
-            onUploadComplete={onDocumentosChange}
-          />
-        </CardContent>
-      </Card>
+      <div ref={uploadSectionRef}>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Upload className="h-5 w-5 text-blue-600" />
+              Upload de Documentos
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <SmartUpload
+              ref={smartUploadRef}
+              casoId={caso?.id}
+              onUploadComplete={onDocumentosChange}
+              tipoPreSelecionado={tipoPreSelecionado}
+            />
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Seção de Checklist */}
       <Card>
@@ -44,9 +69,11 @@ export default function DocumentosConsolidado({ caso, documentos, onDocumentosCh
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <ChecklistDocumentos 
+          <ChecklistDocumentos
             hipotese={caso?.hipotese_revisao || 'I'}
             documentos={documentos}
+            onUploadClick={handleUploadClick}
+            onViewClick={handleViewClick}
           />
         </CardContent>
       </Card>
@@ -71,7 +98,7 @@ export default function DocumentosConsolidado({ caso, documentos, onDocumentosCh
           </CardHeader>
           {visualizadorAberto && (
             <CardContent>
-              <DocumentosTab 
+              <DocumentosTab
                 caso={caso}
                 documentos={documentos}
               />
@@ -79,6 +106,14 @@ export default function DocumentosConsolidado({ caso, documentos, onDocumentosCh
           )}
         </Card>
       )}
+
+      {/* Modal Visualizador */}
+      <VisualizadorDocumento
+        isOpen={!!docVisualizando}
+        onClose={() => setDocVisualizando(null)}
+        documento={docVisualizando}
+        casoId={caso?.id}
+      />
     </div>
   );
 }

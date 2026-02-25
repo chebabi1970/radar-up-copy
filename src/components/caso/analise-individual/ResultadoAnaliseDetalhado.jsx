@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -10,7 +10,11 @@ import {
   Info,
   Loader2,
   Sparkles,
-  RefreshCw
+  RefreshCw,
+  ThumbsDown,
+  MessageSquare,
+  Send,
+  X
 } from 'lucide-react';
 
 function ScoreRing({ score }) {
@@ -53,8 +57,57 @@ const severidadeConfig = {
 };
 
 export default function ResultadoAnaliseDetalhado({ resultadoLocal, resultadoLLM, documento, onReanalizar, onAnalisarIA, analisando }) {
+  const [contestacoes, setContestacoes] = useState({}); // { "item_text": true }
+  const [notasContestacao, setNotasContestacao] = useState({}); // { "item_text": "nota" }
+  const [observacoesGerais, setObservacoesGerais] = useState('');
+  const [modoContestacao, setModoContestacao] = useState(false);
+  const [editandoNota, setEditandoNota] = useState(null); // which item is being edited
+
   const temResultadoLocal = resultadoLocal && resultadoLocal.score !== undefined;
   const temResultadoLLM = resultadoLLM && resultadoLLM.resumo;
+  const totalContestacoes = Object.keys(contestacoes).filter(k => contestacoes[k]).length;
+
+  const toggleContestacao = (itemText) => {
+    setContestacoes(prev => {
+      const novo = { ...prev, [itemText]: !prev[itemText] };
+      if (!novo[itemText]) {
+        // Remove nota se descontestar
+        setNotasContestacao(p => { const n = { ...p }; delete n[itemText]; return n; });
+      }
+      return novo;
+    });
+  };
+
+  const setNota = (itemText, nota) => {
+    setNotasContestacao(prev => ({ ...prev, [itemText]: nota }));
+  };
+
+  const handleReanalisarComCorrecoes = () => {
+    const correcoesUsuario = Object.keys(contestacoes)
+      .filter(k => contestacoes[k])
+      .map(item => ({
+        item,
+        nota: notasContestacao[item] || ''
+      }));
+
+    if (onAnalisarIA) {
+      onAnalisarIA({
+        correcoesUsuario,
+        observacoesUsuario: observacoesGerais
+      });
+    }
+
+    // Reset contest mode
+    setModoContestacao(false);
+  };
+
+  const limparContestacoes = () => {
+    setContestacoes({});
+    setNotasContestacao({});
+    setObservacoesGerais('');
+    setModoContestacao(false);
+    setEditandoNota(null);
+  };
 
   if (!temResultadoLocal && !temResultadoLLM) {
     return (
@@ -70,7 +123,7 @@ export default function ResultadoAnaliseDetalhado({ resultadoLocal, resultadoLLM
           <div className="flex items-center justify-center gap-2">
             {onAnalisarIA && (
               <Button
-                onClick={onAnalisarIA}
+                onClick={() => onAnalisarIA()}
                 disabled={analisando}
                 className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-xl"
               >
@@ -86,6 +139,64 @@ export default function ResultadoAnaliseDetalhado({ resultadoLocal, resultadoLLM
       </Card>
     );
   }
+
+  // Helper to render a contestable item
+  const renderContestavel = (itemText, children) => {
+    const contestado = contestacoes[itemText];
+    const editando = editandoNota === itemText;
+    const nota = notasContestacao[itemText] || '';
+
+    if (!modoContestacao) return children;
+
+    return (
+      <div className="relative">
+        <div
+          className={`cursor-pointer transition-all ${contestado ? 'ring-2 ring-orange-400 rounded-xl' : ''}`}
+          onClick={() => toggleContestacao(itemText)}
+        >
+          {children}
+          {contestado && (
+            <div className="absolute top-1 right-1">
+              <Badge className="bg-orange-500 text-white text-[9px] px-1.5 py-0">Contestado</Badge>
+            </div>
+          )}
+        </div>
+        {contestado && (
+          <div className="mt-1 ml-6 flex items-center gap-1.5">
+            {editando ? (
+              <div className="flex-1 flex items-center gap-1">
+                <input
+                  type="text"
+                  value={nota}
+                  onChange={(e) => setNota(itemText, e.target.value)}
+                  placeholder="Ex: O titular é Rogério, está na linha 3..."
+                  className="flex-1 text-xs border border-orange-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-orange-400"
+                  autoFocus
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => { if (e.key === 'Enter') setEditandoNota(null); }}
+                />
+                <Button
+                  variant="ghost" size="sm"
+                  className="h-6 w-6 p-0 rounded"
+                  onClick={(e) => { e.stopPropagation(); setEditandoNota(null); }}
+                >
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                </Button>
+              </div>
+            ) : (
+              <button
+                onClick={(e) => { e.stopPropagation(); setEditandoNota(itemText); }}
+                className="text-[10px] text-orange-600 hover:text-orange-700 flex items-center gap-1"
+              >
+                <MessageSquare className="h-3 w-3" />
+                {nota ? nota : 'Adicionar motivo...'}
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <Card className="rounded-2xl border-slate-100">
@@ -119,9 +230,20 @@ export default function ResultadoAnaliseDetalhado({ resultadoLocal, resultadoLLM
             )}
           </div>
           <div className="flex gap-1.5">
-            {onAnalisarIA && (
+            {temResultadoLLM && !modoContestacao && (
               <Button
-                onClick={onAnalisarIA}
+                onClick={() => setModoContestacao(true)}
+                variant="outline" size="sm"
+                className="rounded-lg text-xs gap-1 border-orange-200 text-orange-700 hover:bg-orange-50"
+                title="Contestar itens incorretos"
+              >
+                <ThumbsDown className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Contestar</span>
+              </Button>
+            )}
+            {onAnalisarIA && !modoContestacao && (
+              <Button
+                onClick={() => onAnalisarIA()}
                 disabled={analisando}
                 size="sm"
                 className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-lg text-xs"
@@ -129,13 +251,66 @@ export default function ResultadoAnaliseDetalhado({ resultadoLocal, resultadoLLM
                 {analisando ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
               </Button>
             )}
-            {onReanalizar && (
+            {onReanalizar && !modoContestacao && (
               <Button onClick={onReanalizar} disabled={analisando} variant="outline" size="sm" className="rounded-lg">
                 <RefreshCw className="h-3.5 w-3.5" />
               </Button>
             )}
           </div>
         </div>
+
+        {/* Contest Mode Banner */}
+        {modoContestacao && (
+          <div className="rounded-xl bg-orange-50 border border-orange-200 p-3">
+            <div className="flex items-start gap-2">
+              <ThumbsDown className="h-4 w-4 text-orange-600 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-orange-900">Modo Contestação</p>
+                <p className="text-xs text-orange-700 mt-0.5">
+                  Clique nos itens que a IA errou. Adicione um motivo para cada um (opcional). Depois clique em "Re-analisar" para a IA corrigir.
+                </p>
+                {totalContestacoes > 0 && (
+                  <p className="text-xs font-medium text-orange-800 mt-1.5">
+                    {totalContestacoes} item(ns) contestado(s)
+                  </p>
+                )}
+
+                {/* General observations */}
+                <div className="mt-3">
+                  <label className="text-xs font-medium text-orange-800">Observações gerais (opcional):</label>
+                  <textarea
+                    value={observacoesGerais}
+                    onChange={(e) => setObservacoesGerais(e.target.value)}
+                    placeholder="Ex: O documento mostra claramente o nome Rogério na primeira página, endereço na Rua X nº 123, data de 01/2025..."
+                    className="w-full mt-1 text-xs border border-orange-200 rounded-lg px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-orange-400 resize-none"
+                    rows={2}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-2 mt-3">
+              <Button
+                onClick={limparContestacoes}
+                variant="ghost" size="sm"
+                className="rounded-lg text-xs text-orange-700 hover:bg-orange-100"
+              >
+                <X className="h-3.5 w-3.5 mr-1" /> Cancelar
+              </Button>
+              <Button
+                onClick={handleReanalisarComCorrecoes}
+                disabled={analisando || (totalContestacoes === 0 && !observacoesGerais)}
+                size="sm"
+                className="rounded-lg text-xs bg-orange-600 hover:bg-orange-700 text-white"
+              >
+                {analisando ? (
+                  <><Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" /> Analisando...</>
+                ) : (
+                  <><Send className="h-3.5 w-3.5 mr-1" /> Re-analisar com correções</>
+                )}
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* LLM Checklist */}
         {temResultadoLLM && resultadoLLM.checklist_verificacao?.length > 0 && (
@@ -145,7 +320,7 @@ export default function ResultadoAnaliseDetalhado({ resultadoLocal, resultadoLLM
               {resultadoLLM.checklist_verificacao.map((item, idx) => {
                 const isOk = item.status === 'OK';
                 const isCritico = item.status === 'CRÍTICO' || item.status === 'CRITICO';
-                return (
+                const itemContent = (
                   <div key={idx} className={`flex items-start gap-2 p-2.5 rounded-xl ${
                     isOk ? 'bg-emerald-50/60' : isCritico ? 'bg-red-50/60' : 'bg-amber-50/60'
                   }`}>
@@ -160,6 +335,11 @@ export default function ResultadoAnaliseDetalhado({ resultadoLocal, resultadoLLM
                       <p className="text-xs font-medium text-slate-800">{item.item}</p>
                       {item.observacao && <p className="text-[10px] text-slate-500 mt-0.5">{item.observacao}</p>}
                     </div>
+                  </div>
+                );
+                return (
+                  <div key={idx}>
+                    {renderContestavel(`checklist:${item.item}`, itemContent)}
                   </div>
                 );
               })}
@@ -212,8 +392,8 @@ export default function ResultadoAnaliseDetalhado({ resultadoLocal, resultadoLLM
             <div className="space-y-1.5">
               {resultadoLLM.indicadores_alerta.map((alerta, idx) => {
                 const isCritica = alerta.severidade === 'critica';
-                return (
-                  <div key={idx} className={`flex items-start gap-2 p-2.5 rounded-xl ${isCritica ? 'bg-red-50/60 border border-red-100' : 'bg-amber-50/60 border border-amber-100'}`}>
+                const itemContent = (
+                  <div className={`flex items-start gap-2 p-2.5 rounded-xl ${isCritica ? 'bg-red-50/60 border border-red-100' : 'bg-amber-50/60 border border-amber-100'}`}>
                     {isCritica ? (
                       <XCircle className="h-4 w-4 text-red-500 flex-shrink-0 mt-0.5" />
                     ) : (
@@ -223,6 +403,11 @@ export default function ResultadoAnaliseDetalhado({ resultadoLocal, resultadoLLM
                       <p className="text-xs font-medium text-slate-800">{alerta.tipo}</p>
                       <p className="text-[10px] text-slate-600 mt-0.5">{alerta.descricao}</p>
                     </div>
+                  </div>
+                );
+                return (
+                  <div key={idx}>
+                    {renderContestavel(`alerta:${alerta.tipo}:${alerta.descricao}`, itemContent)}
                   </div>
                 );
               })}
