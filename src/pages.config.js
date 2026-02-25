@@ -59,6 +59,7 @@ import Home from './pages/Home';
 import Reports from './pages/Reports';
 import Ajuda from './pages/Ajuda';
 import CasoDetalhe from './pages/CasoDetalhe';
+import DashboardAnalitico from './pages/DashboardAnalitico';
 import __Layout from './Layout.jsx';
 
 
@@ -75,6 +76,7 @@ export const PAGES = {
     "Reports": Reports,
     "Ajuda": Ajuda,
     "CasoDetalhe": CasoDetalhe,
+    "DashboardAnalitico": DashboardAnalitico,
 }
 
 export const pagesConfig = {
