@@ -3,13 +3,15 @@ import { base44 } from '@/api/base44Client';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, ChevronUp, Loader2, Zap, Eye, Plus } from 'lucide-react';
+import { ChevronDown, ChevronUp, Loader2, Zap, Eye, Plus, GitCompare } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import UploadNovaVersao from './UploadNovaVersao';
+import ComparadorVersoes from './ComparadorVersoes';
 
 export default function VersionHistoricoPanel({ documentoId, casoId, cliente, onSelectVersion, onViewDoc }) {
   const [expandedVersions, setExpandedVersions] = useState({});
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showComparador, setShowComparador] = useState(false);
   const [comparandoVersions, setComparandoVersions] = useState(false);
   const [sugestaoIA, setSugestaoIA] = useState(null);
   const queryClient = useQueryClient();
@@ -374,25 +376,46 @@ Retorne como JSON estruturado:
             </div>
           )}
 
-          {/* Botão de Análise com IA */}
+          {/* Botões de análise */}
           {versoes.length >= 2 && (
-            <Button
-              onClick={() => gerarSugestaoIAMutation.mutate()}
-              disabled={gerarSugestaoIAMutation.isPending || comparandoVersions}
-              className="w-full mt-4 bg-amber-600 hover:bg-amber-700"
-            >
-              {comparandoVersions ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Analisando versões...
-                </>
-              ) : (
-                <>
-                  <Zap className="h-4 w-4 mr-2" />
-                  Análise de IA - Versão Recomendada
-                </>
-              )}
-            </Button>
+            <div className="space-y-2 mt-4">
+              <Button
+                onClick={() => setShowComparador(!showComparador)}
+                variant={showComparador ? "default" : "outline"}
+                className={`w-full ${showComparador ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
+              >
+                <GitCompare className="h-4 w-4 mr-2" />
+                {showComparador ? 'Fechar Comparador' : 'Comparar Versões'}
+              </Button>
+              <Button
+                onClick={() => gerarSugestaoIAMutation.mutate()}
+                disabled={gerarSugestaoIAMutation.isPending || comparandoVersions}
+                className="w-full bg-amber-600 hover:bg-amber-700"
+              >
+                {comparandoVersions ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Analisando versões...
+                  </>
+                ) : (
+                  <>
+                    <Zap className="h-4 w-4 mr-2" />
+                    Análise de IA - Versão Recomendada
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
+
+          {/* Comparador de Versões */}
+          {showComparador && versoes.length >= 2 && (
+            <div className="mt-4">
+              <ComparadorVersoes
+                versoes={versoes}
+                casoId={casoId}
+                tipoDocumento={versoes[0]?.tipo_documento}
+              />
+            </div>
           )}
         </CardContent>
       </Card>

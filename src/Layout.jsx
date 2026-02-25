@@ -11,7 +11,8 @@ import {
   LogOut,
   MessageCircle,
   HelpCircle,
-  Calculator
+  Calculator,
+  BarChart3
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import NotificationBell from '@/components/NotificationBell';
@@ -20,6 +21,7 @@ const navigation = [
   { name: 'Home', href: 'Home', icon: LayoutDashboard },
   { name: 'Clientes', href: 'Clientes', icon: Users },
   { name: 'Casos', href: 'Casos', icon: FolderOpen },
+  { name: 'Analítico', href: 'DashboardAnalitico', icon: BarChart3 },
   { name: 'Calculadora', href: 'Calculadora', icon: Calculator },
   { name: 'Ajuda', href: 'Ajuda', icon: HelpCircle },
   { name: 'FAQ', href: 'FAQ', icon: MessageCircle },

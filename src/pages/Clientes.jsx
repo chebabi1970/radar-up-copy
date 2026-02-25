@@ -40,10 +40,13 @@ import {
   Edit,
   FolderOpen,
   Loader2,
-  Trash2
+  Trash2,
+  CheckCircle2,
+  XCircle
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { validarCNPJ, mascararCNPJ, limparCNPJ } from '@/utils/cnpjValidator';
 
 const modalidadeColors = {
   limitada: "bg-blue-100 text-blue-800",
@@ -56,6 +59,7 @@ export default function Clientes() {
   const [searchTerm, setSearchTerm] = useState('');
   const [editingCliente, setEditingCliente] = useState(null);
   const [cepLoading, setCepLoading] = useState(false);
+  const [cnpjErro, setCnpjErro] = useState('');
   const [formData, setFormData] = useState({
     razao_social: '',
     cnpj: '',
@@ -171,13 +175,15 @@ export default function Clientes() {
       cep: ''
     });
     setEditingCliente(null);
+    setCnpjErro('');
   };
 
   const handleEdit = (cliente) => {
     setEditingCliente(cliente);
+    setCnpjErro('');
     setFormData({
       razao_social: cliente.razao_social || '',
-      cnpj: cliente.cnpj || '',
+      cnpj: mascararCNPJ(cliente.cnpj || ''),
       nome_fantasia: cliente.nome_fantasia || '',
       email: cliente.email || '',
       telefone: cliente.telefone || '',
@@ -199,11 +205,20 @@ export default function Clientes() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Validar CNPJ antes de enviar
+    const resultadoCNPJ = validarCNPJ(formData.cnpj);
+    if (!resultadoCNPJ.valido) {
+      setCnpjErro(resultadoCNPJ.erro);
+      return;
+    }
+
     const data = {
       ...formData,
+      cnpj: limparCNPJ(formData.cnpj),
       limite_atual: formData.limite_atual ? parseFloat(formData.limite_atual) : null
     };
-    
+
     if (editingCliente) {
       updateMutation.mutate({ id: editingCliente.id, data });
     } else {
@@ -292,10 +307,31 @@ export default function Clientes() {
                     <Input
                       id="cnpj"
                       value={formData.cnpj}
-                      onChange={(e) => setFormData({...formData, cnpj: e.target.value})}
+                      onChange={(e) => {
+                        const mascarado = mascararCNPJ(e.target.value);
+                        setFormData({...formData, cnpj: mascarado});
+                        const limpo = limparCNPJ(mascarado);
+                        if (limpo.length === 14) {
+                          const resultado = validarCNPJ(limpo);
+                          setCnpjErro(resultado.valido ? '' : resultado.erro);
+                        } else if (limpo.length > 0) {
+                          setCnpjErro('');
+                        }
+                      }}
                       placeholder="00.000.000/0000-00"
                       required
+                      className={cnpjErro ? 'border-red-300 focus:ring-red-200' : limparCNPJ(formData.cnpj).length === 14 && !cnpjErro ? 'border-emerald-300 focus:ring-emerald-200' : ''}
                     />
+                    {cnpjErro && (
+                      <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+                        <XCircle className="h-3 w-3" /> {cnpjErro}
+                      </p>
+                    )}
+                    {!cnpjErro && limparCNPJ(formData.cnpj).length === 14 && (
+                      <p className="text-xs text-emerald-500 mt-1 flex items-center gap-1">
+                        <CheckCircle2 className="h-3 w-3" /> CNPJ válido
+                      </p>
+                    )}
                   </div>
                   <div>
                     <Label htmlFor="nome_fantasia">Nome Fantasia</Label>
