@@ -3,7 +3,7 @@
  * Design moderno com glass-morphism e timeline visual
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -62,12 +62,11 @@ export default function DashboardUnificado({ caso, documentos = [], cliente = {}
   const [analiseCruzada, setAnaliseCruzada] = useState(null);
   const [analisando, setAnalisando] = useState(false);
   const [progressoAnalise, setProgressoAnalise] = useState(0);
+  const analisandoRef = useRef(false);
 
-  useEffect(() => {
-    if (documentos.length > 0) executarAnalises();
-  }, [documentos]);
-
-  const executarAnalises = async () => {
+  const executarAnalises = useCallback(async () => {
+    if (analisandoRef.current) return;
+    analisandoRef.current = true;
     setAnalisando(true);
     setProgressoAnalise(0);
     try {
@@ -90,9 +89,14 @@ export default function DashboardUnificado({ caso, documentos = [], cliente = {}
     } catch (error) {
       console.error('Erro na análise:', error);
     } finally {
+      analisandoRef.current = false;
       setAnalisando(false);
     }
-  };
+  }, [documentos, cliente]);
+
+  useEffect(() => {
+    if (documentos.length > 0) executarAnalises();
+  }, [documentos, executarAnalises]);
 
   const totalDocumentos = documentos.length;
   const documentosAnalisados = analiseIndividual.length;

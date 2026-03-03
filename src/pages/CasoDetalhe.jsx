@@ -129,15 +129,12 @@ export default function CasoDetalhe() {
     enabled: !!casoId
   });
 
-  // Hook de análise automática
+  // Hook de análise automática (autoStart desabilitado - análise é feita pelo DashboardUnificado)
   const {
-    analisando,
-    progresso,
-    resultados,
     executarAnalise,
     forcarAnalise
   } = useAutoAnalysis(casoId, documentos, cliente, {
-    autoStart: true,
+    autoStart: false,
     notificar: true
   });
 
