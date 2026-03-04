@@ -3,13 +3,14 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, Send, X } from 'lucide-react';
+import { Loader2, Send, X, AlertCircle } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
 export default function ConformidadeChat({ casoId, onClose, analiseExistente }) {
   const [mensagens, setMensagens] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -23,6 +24,8 @@ export default function ConformidadeChat({ casoId, onClose, analiseExistente }) 
     setInput('');
     setIsLoading(true);
 
+    setError(null);
+
     try {
       // Adicionar mensagem do usuário
       const novasMensagens = [...mensagens, { role: 'user', content: mensagem }];
@@ -30,21 +33,32 @@ export default function ConformidadeChat({ casoId, onClose, analiseExistente }) 
 
       // Chamar LLM para análise
       const historico = novasMensagens.map(m => `${m.role === 'user' ? 'Usuário' : 'Assistente'}: ${m.content}`).join('\n\n');
-      
-      const resposta = await base44.integrations.Core.InvokeLLM({
-        prompt: `Você é um especialista em conformidade fiscal e habilitação com a RFB conforme IN 1984/2020 e Portaria Coana 72/2020.
-        
+
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Timeout')), 45000)
+      );
+
+      const resposta = await Promise.race([
+        base44.integrations.Core.InvokeLLM({
+          prompt: `Você é um especialista em conformidade fiscal e habilitação com a RFB conforme IN 1984/2020 e Portaria Coana 72/2020.
+
 Histórico da conversa:
 ${historico}
 
 Forneça uma análise detalhada e profissional sobre o caso, considerando documentação, capacidade financeira e requisitos legais.`,
-        add_context_from_internet: false
-      });
+          add_context_from_internet: false
+        }),
+        timeoutPromise
+      ]);
 
       setMensagens([...novasMensagens, { role: 'assistant', content: resposta }]);
-    } catch (error) {
-      console.error('Erro ao enviar mensagem:', error);
-      setMensagens(prev => [...prev, { role: 'assistant', content: 'Erro ao processar a mensagem. Tente novamente.' }]);
+    } catch (err) {
+      console.error('Erro ao enviar mensagem:', err);
+      const msg = err?.message === 'Timeout'
+        ? 'A IA demorou muito para responder. Tente novamente.'
+        : 'Erro ao processar a mensagem. Tente novamente.';
+      setError(msg);
+      setMensagens(prev => prev.slice(0, -1));
     } finally {
       setIsLoading(false);
     }
@@ -98,6 +112,13 @@ Forneça uma análise detalhada e profissional sobre o caso, considerando docume
                   <Loader2 className="h-4 w-4 animate-spin" />
                   <span className="text-sm">Analisando...</span>
                 </div>
+              </div>
+            )}
+
+            {error && (
+              <div className="flex gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <AlertCircle className="h-4 w-4 text-red-600 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-red-800">{error}</p>
               </div>
             )}
 
