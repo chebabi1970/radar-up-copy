@@ -18,8 +18,7 @@ export default function NotificationBell() {
     queryKey: ['notificacoes', user?.email],
     queryFn: () => base44.entities.Notificacao.filter({ usuario_email: user?.email }, '-created_date', 100),
     enabled: !!user?.email,
-    staleTime: 30000,
-    refetchInterval: 60000
+    staleTime: Infinity
   });
 
   const naoLidas = notificacoes.filter(n => !n.lida);
