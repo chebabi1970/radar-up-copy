@@ -44,7 +44,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { validarCNPJ, mascararCNPJ, limparCNPJ } from '@/utils/cnpjValidator';
+import { validarCNPJ, mascararCNPJ, limparCNPJ } from '@/components/utils/cnpjValidator';
 
 const modalidadeColors = {
   limitada: "bg-blue-100 text-blue-800",
