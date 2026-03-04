@@ -1,3 +1,3 @@
 export function createPageUrl(pageName) {
-    return '/' + pageName.replace(/ /g, '-');
+  return '/' + String(pageName).replace(/ /g, '-');
 }
