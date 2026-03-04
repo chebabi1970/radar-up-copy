@@ -307,7 +307,7 @@ function RelatorioAnalise({ casoId }) {
       const result = await base44.entities.CasoAnalise.filter({ id: casoId });
       return result[0];
     },
-    refetchInterval: 2000
+    refetchInterval: false
   });
 
   if (!caso) return null;

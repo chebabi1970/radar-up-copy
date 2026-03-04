@@ -220,25 +220,18 @@ export const useAutoAnalysis = (casoId, documentos = [], cliente = {}, opcoes = 
 
   /**
    * Efeito para verificação periódica
+   * Desabilitado para evitar sobrecarga da plataforma com chamadas contínuas de LLM
    */
-  useEffect(() => {
-    if (!autoStart || !intervaloVerificacao) return;
-
-    const interval = setInterval(() => {
-      // Verifica se há documentos novos
-      const documentosNovos = documentos.filter(d => !documentosAnalisados.has(d.id));
-      
-      if (documentosNovos.length > 0 && !analisando) {
-        logger.logAnalise('verificacao_periodica_detectou_novos', {
-          casoId,
-          documentosNovos: documentosNovos.length
-        });
-        executarAnaliseCompleta(false);
-      }
-    }, intervaloVerificacao);
-
-    return () => clearInterval(interval);
-  }, [autoStart, intervaloVerificacao, documentos, documentosAnalisados, analisando, casoId, executarAnaliseCompleta]);
+  // useEffect(() => {
+  //   if (!autoStart || !intervaloVerificacao) return;
+  //   const interval = setInterval(() => {
+  //     const documentosNovos = documentos.filter(d => !documentosAnalisados.has(d.id));
+  //     if (documentosNovos.length > 0 && !analisando) {
+  //       executarAnaliseCompleta(false);
+  //     }
+  //   }, intervaloVerificacao);
+  //   return () => clearInterval(interval);
+  // }, [autoStart, intervaloVerificacao, documentos, documentosAnalisados, analisando, casoId, executarAnaliseCompleta]);
 
   /**
    * Força nova análise completa

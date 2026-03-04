@@ -71,14 +71,24 @@ ${userMessage}
 
 Analise a questão levando em conta o contexto do caso e as análises já realizadas. Se o usuário está contestando uma análise, explique de forma técnica e fundamentada em normas do RLUR e da Portaria Coana 72/2020. Seja conciso mas detalhado.`;
 
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt,
-        add_context_from_internet: true
-      });
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Timeout')), 45000)
+      );
+
+      const response = await Promise.race([
+        base44.integrations.Core.InvokeLLM({
+          prompt,
+          add_context_from_internet: true
+        }),
+        timeoutPromise
+      ]);
 
       setMessages(prev => [...prev, { role: 'assistant', content: response }]);
     } catch (err) {
-      setError('Erro ao processar mensagem. Tente novamente.');
+      const msg = err?.message === 'Timeout'
+        ? 'A IA demorou muito para responder. Tente novamente.'
+        : 'Erro ao processar mensagem. Tente novamente.';
+      setError(msg);
       console.error('Erro no chat:', err);
       setMessages(prev => prev.slice(0, -1));
     } finally {
