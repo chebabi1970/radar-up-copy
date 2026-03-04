@@ -221,6 +221,7 @@ export const useAutoAnalysis = (casoId, documentos = [], cliente = {}, opcoes = 
 
   /**
    * Efeito para verificação periódica
+   * Desabilitado para evitar sobrecarga da plataforma com chamadas contínuas de LLM
    */
   useEffect(() => {
     if (!autoStart || !intervaloVerificacao) return;
