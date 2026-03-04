@@ -39,13 +39,14 @@ export default function Calculadora() {
     let formula = '';
 
     switch(hipoteseSelecionada) {
-      case 'I':
+      case 'I': {
         // Saldo de contas correntes + aplicações financeiras (mês anterior)
         numerador = parseFloat(saldosContasCorrente || 0) + parseFloat(aplicacoesFinanceiras || 0);
         formula = 'Saldos Bancários + Aplicações Financeiras';
         break;
+      }
 
-      case 'II':
+      case 'II': {
         // Maior entre tributos I-IV ou contribuições V + tributos não recolhidos
         const tribs = parseFloat(somaTribs1a4 || 0);
         const contrib = parseFloat(somaContrib5 || 0);
@@ -53,26 +54,30 @@ export default function Calculadora() {
         numerador = Math.max(tribs, contrib) + naoRecolhidos;
         formula = 'Maior entre (Tributos I-IV ou Contribuições V) + Tributos Não Recolhidos';
         break;
+      }
 
-      case 'III':
+      case 'III': {
         // Receitas brutas DAS 60 meses / 20
         numerador = parseFloat(receitasBrutasDAS || 0) / 20;
         formula = 'Receitas Brutas DAS (60 meses) ÷ 20';
         break;
+      }
 
-      case 'IV':
+      case 'IV': {
         // Receitas brutas CPRB 60 meses / 20
         numerador = parseFloat(receitasBrutasCPRB || 0) / 20;
         formula = 'Receitas Brutas CPRB (60 meses) ÷ 20';
         break;
+      }
 
-      case 'V':
+      case 'V': {
         // Maior entre tributos ou contribuições dos 6 meses x 10
         const tribsSeis = parseFloat(tribsSeis1a4 || 0);
         const contribSeis = parseFloat(contribSeis5 || 0);
         numerador = Math.max(tribsSeis, contribSeis) * 10;
         formula = 'Maior entre (Tributos I-IV ou Contribuições V dos 6 meses) × 10';
         break;
+      }
 
       default:
         return;
