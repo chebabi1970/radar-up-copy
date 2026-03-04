@@ -43,7 +43,7 @@ import {
   XCircle
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
+import { createPageUrl } from '@/components/utils';
 import { validarCNPJ, mascararCNPJ, limparCNPJ } from '@/components/utils/cnpjValidator';
 
 const modalidadeColors = {
