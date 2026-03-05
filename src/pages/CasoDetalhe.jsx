@@ -453,6 +453,15 @@ export default function CasoDetalhe() {
                   <span className="hidden lg:inline">Atividade</span>
                   <span className="lg:hidden">Log</span>
                 </TabsTrigger>
+
+                <TabsTrigger
+                  value="revisao"
+                  className="data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm rounded-lg px-3 md:px-4 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0 text-slate-500 transition-all"
+                >
+                  <BookOpen className="h-3.5 w-3.5 md:h-4 md:w-4 mr-1.5 md:mr-2" />
+                  <span className="hidden sm:inline">Revisão</span>
+                  <span className="sm:hidden">Rev.</span>
+                </TabsTrigger>
               </TabsList>
             </div>
 
