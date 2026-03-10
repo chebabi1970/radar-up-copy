@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import NotificationBell from '@/components/NotificationBell';
+import TrialBanner from '@/components/trial/TrialBanner';
 
 const navigation = [
   { name: 'Home', href: 'Home', icon: LayoutDashboard },

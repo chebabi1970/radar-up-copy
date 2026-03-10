@@ -45,6 +45,7 @@ import {
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/components/utils';
 import { validarCNPJ, mascararCNPJ, limparCNPJ } from '@/components/utils/cnpjValidator';
+import { useTrial } from '@/components/trial/useTrial';
 
 const modalidadeColors = {
   limitada: "bg-blue-100 text-blue-800",
