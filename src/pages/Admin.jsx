@@ -530,9 +530,29 @@ export default function Admin() {
                           <td className="py-3 px-3 font-medium text-slate-900">{u.email}</td>
                           <td className="py-3 px-3 text-slate-700">{u.full_name || '-'}</td>
                           <td className="py-3 px-3">
-                            <Badge variant={u.role === 'admin' ? 'default' : 'secondary'}>
-                              {u.role}
-                            </Badge>
+                            {editingRole?.userId === u.id ? (
+                              <div className="flex items-center gap-2">
+                                <select
+                                  defaultValue={u.role}
+                                  autoFocus
+                                  className="text-sm border border-slate-300 rounded px-2 py-1 bg-white"
+                                  onChange={(e) => handleUpdateRole(u.id, e.target.value)}
+                                  onBlur={() => setEditingRole(null)}
+                                >
+                                  <option value="user">user</option>
+                                  <option value="admin">admin</option>
+                                </select>
+                              </div>
+                            ) : (
+                              <Badge
+                                variant={u.role === 'admin' ? 'default' : 'secondary'}
+                                className="cursor-pointer hover:opacity-70"
+                                onClick={() => u.id !== user.id && setEditingRole({ userId: u.id })}
+                                title={u.id === user.id ? 'Não é possível alterar seu próprio papel' : 'Clique para editar'}
+                              >
+                                {u.role}
+                              </Badge>
+                            )}
                           </td>
                           <td className="py-3 px-3 text-slate-600 text-xs">{formatDateBrasilia(u.created_date)}</td>
                           <td className="py-3 px-3 text-slate-600 text-xs">{formatDateTimeBrasilia(u.updated_date)}</td>
