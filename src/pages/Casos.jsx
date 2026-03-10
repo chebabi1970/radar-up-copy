@@ -467,13 +467,23 @@ export default function Casos() {
               <Download className="h-4 w-4" />
               <span className="hidden sm:inline">Exportar</span>
             </Button>
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            {trialExpired ? (
+              <RouterLink to={createPageUrl('Assinatura')}>
+                <Button className="bg-gradient-to-r from-red-500 to-rose-600 shadow-lg rounded-xl text-white" title="Período de teste expirado">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Novo Caso 🔒
+                </Button>
+              </RouterLink>
+            ) : null}
+            <Dialog open={isDialogOpen && !trialExpired} onOpenChange={(v) => !trialExpired && setIsDialogOpen(v)}>
+              {!trialExpired && (
               <DialogTrigger asChild>
                 <Button className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 shadow-lg shadow-indigo-200/50 rounded-xl text-white">
                   <Plus className="h-4 w-4 mr-2" />
                   Novo Caso
                 </Button>
               </DialogTrigger>
+              )}
               <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl">
                 <DialogHeader>
                   <DialogTitle className="flex items-center gap-2">
