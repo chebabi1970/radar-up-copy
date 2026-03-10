@@ -204,7 +204,7 @@ export default function Layout({ children, currentPageName }) {
         </header>
 
         {/* Trial Banner */}
-        <TrialBanner />
+        {currentPageName !== 'Home' && <TrialBanner />}
 
         {/* Page content */}
         <main>
