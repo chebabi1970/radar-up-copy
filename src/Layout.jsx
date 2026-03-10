@@ -203,6 +203,9 @@ export default function Layout({ children, currentPageName }) {
           <NotificationBell />
         </header>
 
+        {/* Trial Banner */}
+        <TrialBanner />
+
         {/* Page content */}
         <main>
           {children}
