@@ -54,6 +54,7 @@ const modalidadeColors = {
 };
 
 export default function Clientes() {
+  const { trialExpired } = useTrial();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [editingCliente, setEditingCliente] = useState(null);

@@ -93,6 +93,7 @@ const hipoteseLabelsShort = {
 };
 
 export default function Casos() {
+  const { trialExpired } = useTrial();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
