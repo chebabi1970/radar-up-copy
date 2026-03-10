@@ -50,6 +50,7 @@
 import Admin from './pages/Admin';
 import Ajuda from './pages/Ajuda';
 import AnalisadorDocumentos from './pages/AnalisadorDocumentos';
+import Assinatura from './pages/Assinatura';
 import Calculadora from './pages/Calculadora';
 import CasoDetalhe from './pages/CasoDetalhe';
 import Casos from './pages/Casos';
@@ -60,7 +61,6 @@ import DetalheCliente from './pages/DetalheCliente';
 import FAQ from './pages/FAQ';
 import Home from './pages/Home';
 import Reports from './pages/Reports';
-import Assinatura from './pages/Assinatura';
 import __Layout from './Layout.jsx';
 
 
@@ -68,6 +68,7 @@ export const PAGES = {
     "Admin": Admin,
     "Ajuda": Ajuda,
     "AnalisadorDocumentos": AnalisadorDocumentos,
+    "Assinatura": Assinatura,
     "Calculadora": Calculadora,
     "CasoDetalhe": CasoDetalhe,
     "Casos": Casos,
@@ -78,7 +79,6 @@ export const PAGES = {
     "FAQ": FAQ,
     "Home": Home,
     "Reports": Reports,
-    "Assinatura": Assinatura,
 }
 
 export const pagesConfig = {
