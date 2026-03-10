@@ -21,7 +21,7 @@ export function useTrial() {
 
   const createdDate = new Date(user.created_date);
   const now = new Date();
-  const daysUsed = Math.floor((now - createdDate) / (1000 * 60 * 60 * 24));
+  const daysUsed = Math.max(0, Math.floor((now - createdDate) / (1000 * 60 * 60 * 24)));
   const daysRemaining = Math.max(0, TRIAL_DAYS - daysUsed);
   const trialExpired = daysUsed >= TRIAL_DAYS;
 
