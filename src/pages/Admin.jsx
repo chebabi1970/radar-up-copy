@@ -91,7 +91,9 @@ export default function Admin() {
   const [usuariosPagina, setUsuariosPagina] = useState(1);
   const usuariosPorPagina = 10;
   const [showNotificationSender, setShowNotificationSender] = useState(false);
-  
+  const [editingRole, setEditingRole] = useState(null); // { userId, currentRole }
+  const queryClient = useQueryClient();
+
   // Rate limiters para operações críticas (previne abuso)
   const emailRateLimiter = React.useRef(createRateLimiter(5, 60000)); // 5 envios por minuto
   const deleteRateLimiter = React.useRef(createRateLimiter(3, 60000)); // 3 deletes por minuto
