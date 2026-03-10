@@ -25,6 +25,7 @@ const navigation = [
   { name: 'Calculadora', href: 'Calculadora', icon: Calculator },
   { name: 'Ajuda', href: 'Ajuda', icon: HelpCircle },
   { name: 'FAQ', href: 'FAQ', icon: MessageCircle },
+  { name: 'Assinatura', href: 'Assinatura', icon: LayoutDashboard },
   { name: 'Admin', href: 'Admin', icon: Users, adminOnly: true },
 ];
 const WHATSAPP_NUMBER = '+5511984848700'; // Atualize com seu número
