@@ -12,7 +12,8 @@ import {
   MessageCircle,
   HelpCircle,
   Calculator,
-  BarChart3
+  BarChart3,
+  CreditCard
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import NotificationBell from '@/components/NotificationBell';
