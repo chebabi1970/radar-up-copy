@@ -60,6 +60,7 @@ import DetalheCliente from './pages/DetalheCliente';
 import FAQ from './pages/FAQ';
 import Home from './pages/Home';
 import Reports from './pages/Reports';
+import Assinatura from './pages/Assinatura';
 import __Layout from './Layout.jsx';
 
 
@@ -77,6 +78,7 @@ export const PAGES = {
     "FAQ": FAQ,
     "Home": Home,
     "Reports": Reports,
+    "Assinatura": Assinatura,
 }
 
 export const pagesConfig = {
