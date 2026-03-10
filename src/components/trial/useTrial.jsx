@@ -15,6 +15,10 @@ export function useTrial() {
     return { loading: true, trialExpired: false, daysRemaining: TRIAL_DAYS, trialActive: true };
   }
 
+  if (user.role === 'admin') {
+    return { loading: false, trialExpired: false, daysRemaining: TRIAL_DAYS, trialActive: true };
+  }
+
   const createdDate = new Date(user.created_date);
   const now = new Date();
   const daysUsed = Math.floor((now - createdDate) / (1000 * 60 * 60 * 24));
