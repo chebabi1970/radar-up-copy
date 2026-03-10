@@ -363,6 +363,17 @@ export default function Admin() {
       return 0;
     });
 
+  const handleUpdateRole = async (userId, newRole) => {
+    try {
+      await base44.entities.User.update(userId, { role: newRole });
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      toast.success('Papel atualizado com sucesso');
+      setEditingRole(null);
+    } catch (error) {
+      toast.error('Erro ao atualizar papel');
+    }
+  };
+
   const handleLogout = () => {
     base44.auth.logout();
   };
