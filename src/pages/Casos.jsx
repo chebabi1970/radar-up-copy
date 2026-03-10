@@ -50,7 +50,6 @@ import { toast } from 'sonner';
 import { HIPOTESES } from '@/config/documentosPorHipotese';
 import { useTrial } from '@/components/trial/useTrial';
 import { Link as RouterLink } from 'react-router-dom';
-import { createPageUrl } from '@/components/utils';
 
 const statusColors = {
   novo: "bg-blue-100 text-blue-800 border-blue-200",
