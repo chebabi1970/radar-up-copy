@@ -24,6 +24,7 @@ Deno.serve(async (req) => {
           quantity: 1,
         },
       ],
+      allow_promotion_codes: true,
       success_url: success_url || `${req.headers.get('origin')}/`,
       cancel_url: cancel_url || `${req.headers.get('origin')}/`,
       metadata: {
