@@ -276,15 +276,25 @@ export default function Clientes() {
             </div>
             <p className="text-sm text-slate-600 ml-10">Administre sua carteira de clientes</p>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={(open) => {
+          {trialExpired && (
+            <Link to={createPageUrl('Assinatura')}>
+              <Button className="bg-gradient-to-r from-red-500 to-rose-600 shadow-lg w-full sm:w-auto h-9 sm:h-10 text-xs sm:text-sm text-white" title="Período de teste expirado">
+                <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Novo Cliente 🔒
+              </Button>
+            </Link>
+          )}
+          <Dialog open={isDialogOpen && !trialExpired} onOpenChange={(open) => {
+            if (trialExpired) return;
             setIsDialogOpen(open);
             if (!open) resetForm();
           }}>
+            {!trialExpired && (
             <DialogTrigger asChild>
               <Button className="bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200 w-full sm:w-auto h-9 sm:h-10 text-xs sm:text-sm">
                 <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> <span className="hidden sm:inline">Novo Cliente</span><span className="sm:hidden">Novo</span>
               </Button>
             </DialogTrigger>
+            )}
             <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="text-lg sm:text-xl">
