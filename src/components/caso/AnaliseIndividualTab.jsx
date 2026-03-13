@@ -91,6 +91,7 @@ export default function AnaliseIndividualTab({ caso, documentos, cliente, onDocu
       const urls = await obterUrlsDocumentos(documentosDesseTipo, 3);
       if (urls.length === 0) {
         toast.error('Não foi possível obter URLs dos documentos');
+        setAnalisando(false);
         return;
       }
 
@@ -99,11 +100,19 @@ export default function AnaliseIndividualTab({ caso, documentos, cliente, onDocu
         correcoesUsuario: opcoes.correcoesUsuario,
         observacoesUsuario: opcoes.observacoesUsuario
       });
-      const resultado = await base44.integrations.Core.InvokeLLM({
-        prompt,
-        file_urls: urls,
-        response_json_schema: SCHEMAS_DOCUMENTOS.generico
-      });
+
+      // Timeout de 90 segundos para evitar travamento
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Tempo limite excedido (90s). Tente novamente.')), 90000)
+      );
+      const resultado = await Promise.race([
+        base44.integrations.Core.InvokeLLM({
+          prompt,
+          file_urls: urls,
+          response_json_schema: SCHEMAS_DOCUMENTOS.generico
+        }),
+        timeoutPromise
+      ]);
 
       setResultadosLLM(prev => ({ ...prev, [tipoSelecionado]: resultado }));
 
