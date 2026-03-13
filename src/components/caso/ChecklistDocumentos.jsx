@@ -203,11 +203,13 @@ export default function ChecklistDocumentos({ documentos = [], onUploadClick, on
                           <p className="text-xs text-slate-500 mt-0.5">{doc.descricao}</p>
                         </div>
                       </div>
-                      <div className="flex-shrink-0">
+                      <div className="flex-shrink-0 flex flex-col gap-1">
                         {presente ? (
-                          <Button variant="ghost" size="sm" onClick={() => onViewClick && onViewClick(doc.tipo)} className="rounded-lg h-8 text-xs gap-1">
-                            <Eye className="h-3.5 w-3.5" /> Ver
-                          </Button>
+                          presente.map((arquivo, idx) => (
+                            <Button key={idx} variant="ghost" size="sm" onClick={() => onViewClick && onViewClick(arquivo)} className="rounded-lg h-8 text-xs gap-1 whitespace-nowrap">
+                              <Eye className="h-3.5 w-3.5" /> {arquivo.nome_arquivo || `Arquivo ${idx + 1}`}
+                            </Button>
+                          ))
                         ) : (
                           <Button variant="outline" size="sm" onClick={() => onUploadClick && onUploadClick(doc.tipo)} className="rounded-lg h-8 text-xs gap-1 border-indigo-200 text-indigo-700 hover:bg-indigo-50">
                             <Upload className="h-3.5 w-3.5" /> Enviar
