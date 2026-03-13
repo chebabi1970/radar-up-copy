@@ -152,41 +152,41 @@ export default function Home() {
           {/* Stats Grid */}
            {stats &&
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-16">
-               <div className="rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 p-8 text-white shadow-2xl hover:shadow-3xl transition-shadow">
-                 <div className="text-center">
-                   <p className="text-5xl font-bold mb-2">{stats.totalClientes}</p>
-                   <p className="text-blue-100 text-sm font-medium flex items-center justify-center gap-2">
-                     <Users className="h-4 w-4" /> Clientes
-                   </p>
-                 </div>
-               </div>
+               
 
-               <div className="rounded-2xl bg-gradient-to-br from-purple-600 to-purple-700 p-8 text-white shadow-2xl hover:shadow-3xl transition-shadow">
-                 <div className="text-center">
-                   <p className="text-5xl font-bold mb-2">{stats.totalCasos}</p>
-                   <p className="text-purple-100 text-sm font-medium flex items-center justify-center gap-2">
-                     <FileText className="h-4 w-4" /> Casos
-                   </p>
-                 </div>
-               </div>
 
-               <div className="rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-700 p-8 text-white shadow-2xl hover:shadow-3xl transition-shadow">
-                 <div className="text-center">
-                   <p className="text-5xl font-bold mb-2">{stats.casosAtivos}</p>
-                   <p className="text-emerald-100 text-sm font-medium flex items-center justify-center gap-2">
-                     <Rocket className="h-4 w-4" /> Ativos
-                   </p>
-                 </div>
-               </div>
 
-               <div className="rounded-2xl bg-gradient-to-br from-amber-600 to-amber-700 p-8 text-white shadow-2xl hover:shadow-3xl transition-shadow">
-                 <div className="text-center">
-                   <p className="text-5xl font-bold mb-2">{stats.documentosPendentes}</p>
-                   <p className="text-amber-100 text-sm font-medium flex items-center justify-center gap-2">
-                     <Clock className="h-4 w-4" /> Pendentes
-                   </p>
-                 </div>
-               </div>
+
+
+
+
+
+               
+
+
+
+
+
+
+
+
+               
+
+
+
+
+
+
+
+
+               
+
+
+
+
+
+
+
              </div>
           }
         </div>
