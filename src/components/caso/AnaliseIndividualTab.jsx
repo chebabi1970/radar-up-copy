@@ -145,7 +145,7 @@ export default function AnaliseIndividualTab({ caso, documentos, cliente, onDocu
   }, [documentoAtual, documentosDesseTipo, tipoSelecionado, cliente, caso?.id, executarAnaliseLocal]);
 
   // Auto-run local analysis when document changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (documentoAtual && !resultadosAnalise[tipoSelecionado]) {
       executarAnaliseLocal();
     }
