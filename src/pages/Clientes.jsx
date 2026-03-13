@@ -366,26 +366,38 @@ export default function Clientes() {
                   </div>
                   <div>
                     <Label htmlFor="cnpj">CNPJ *</Label>
-                    <Input
-                      id="cnpj"
-                      value={formData.cnpj}
-                      onChange={(e) => {
-                        const mascarado = mascararCNPJ(e.target.value);
-                        setFormData({...formData, cnpj: mascarado});
-                        const limpo = limparCNPJ(mascarado);
-                        setCnpjAutoPreenchido(false);
-                        setCnpjApiErro('');
-                        if (limpo.length === 14) {
-                          const resultado = validarCNPJ(limpo);
-                          setCnpjErro(resultado.valido ? '' : resultado.erro);
-                        } else if (limpo.length > 0) {
-                          setCnpjErro('');
-                        }
-                      }}
-                      placeholder="00.000.000/0000-00"
-                      required
-                      className={cnpjErro ? 'border-red-300 focus:ring-red-200' : limparCNPJ(formData.cnpj).length === 14 && !cnpjErro ? 'border-emerald-300 focus:ring-emerald-200' : ''}
-                    />
+                    <div className="flex gap-2">
+                      <Input
+                        id="cnpj"
+                        value={formData.cnpj}
+                        onChange={(e) => {
+                          const mascarado = mascararCNPJ(e.target.value);
+                          setFormData({...formData, cnpj: mascarado});
+                          const limpo = limparCNPJ(mascarado);
+                          setCnpjAutoPreenchido(false);
+                          setCnpjApiErro('');
+                          if (limpo.length === 14) {
+                            const resultado = validarCNPJ(limpo);
+                            setCnpjErro(resultado.valido ? '' : resultado.erro);
+                          } else if (limpo.length > 0) {
+                            setCnpjErro('');
+                          }
+                        }}
+                        placeholder="00.000.000/0000-00"
+                        required
+                        className={cnpjErro ? 'border-red-300 focus:ring-red-200' : limparCNPJ(formData.cnpj).length === 14 && !cnpjErro ? 'border-emerald-300 focus:ring-emerald-200' : ''}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => buscarDadosCNPJ(limparCNPJ(formData.cnpj))}
+                        disabled={cnpjLoading || limparCNPJ(formData.cnpj).length !== 14 || !!cnpjErro}
+                        className="flex-shrink-0 text-xs h-10 px-3 border-blue-300 text-blue-700 hover:bg-blue-50"
+                      >
+                        {cnpjLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Search className="h-3.5 w-3.5 mr-1" />}
+                        {cnpjLoading ? '' : 'Consultar RFB'}
+                      </Button>
+                    </div>
                     {cnpjErro && (
                       <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
                         <XCircle className="h-3 w-3" /> {cnpjErro}
@@ -401,10 +413,9 @@ export default function Clientes() {
                         <AlertCircle className="h-3 w-3" /> {cnpjApiErro}
                       </p>
                     )}
-                    {!cnpjErro && !cnpjLoading && !cnpjApiErro && limparCNPJ(formData.cnpj).length === 14 && (
+                    {!cnpjErro && !cnpjLoading && !cnpjApiErro && cnpjAutoPreenchido && (
                       <p className="text-xs text-emerald-500 mt-1 flex items-center gap-1">
-                        <CheckCircle2 className="h-3 w-3" />
-                        {cnpjAutoPreenchido ? 'CNPJ válido — dados preenchidos automaticamente' : 'CNPJ válido'}
+                        <CheckCircle2 className="h-3 w-3" /> Dados preenchidos automaticamente via Receita Federal
                       </p>
                     )}
                   </div>
