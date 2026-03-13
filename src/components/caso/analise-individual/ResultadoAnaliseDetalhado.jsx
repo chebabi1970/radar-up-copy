@@ -324,9 +324,10 @@ export default function ResultadoAnaliseDetalhado({ resultadoLocal, resultadoLLM
           <div>
             <h5 className="text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Checklist de Verificação</h5>
             <div className="space-y-1.5">
-              {resultadoLLM.checklist_verificacao.map((item, idx) => {
-                const isOk = item.status === 'OK';
-                const isCritico = item.status === 'CRÍTICO' || item.status === 'CRITICO';
+              {resultadoLLM.checklist_verificacao.filter(item => item?.item).map((item, idx) => {
+                const statusUpper = (item.status || '').toUpperCase();
+                const isOk = statusUpper === 'OK';
+                const isCritico = statusUpper === 'CRÍTICO' || statusUpper === 'CRITICO';
                 const itemContent = (
                   <div key={idx} className={`flex items-start gap-2 p-2.5 rounded-xl ${
                     isOk ? 'bg-emerald-50/60' : isCritico ? 'bg-red-50/60' : 'bg-amber-50/60'
