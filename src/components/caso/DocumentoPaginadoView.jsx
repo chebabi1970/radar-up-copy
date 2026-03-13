@@ -286,115 +286,52 @@ function AnaliseIndividualCard({ documento, tipoDocumento, hipotese, cliente, ca
 }
 
 // ─── Análise Cruzada ──────────────────────────────────────────────────────────
-function AnaliseCruzadaCard({ documento, documentos, cliente }) {
+function AnaliseCruzadaCard({ documentos, caso, cliente }) {
   const [analisando, setAnalisando] = useState(false);
-  const [resultado, setResultado] = useState(null);
-  const [regraAtiva, setRegraAtiva] = useState(null);
+  const [resultados, setResultados] = useState(null);
 
-  const regrasDisponiveis = [
-    { id: 'procuracao_vs_doc_procurador', nome: 'Procuração vs Procurador' },
-    { id: 'contrato_social_vs_certidao', nome: 'Contrato vs Junta Comercial' },
-    { id: 'balancete_vs_extratos', nome: 'Balancete vs Extratos' },
-    { id: 'mutuo_vs_iof', nome: 'Mútuo vs IOF' },
-    { id: 'domicilio_vs_cnpj', nome: 'Endereço vs CNPJ' },
-  ];
-
-  const analisarCruzada = async (regraId) => {
+  const executar = async () => {
     setAnalisando(true);
-    setRegraAtiva(regraId);
-    try {
-      const regra = crossDocumentRules[regraId];
-      if (!regra) throw new Error('Regra não encontrada');
-      let res = {};
-      switch (regraId) {
-        case 'procuracao_vs_doc_procurador':
-          res = executarAnaliseCruzada(documentos, 'procuracao', 'documento_identificacao_procurador', regra); break;
-        case 'contrato_social_vs_certidao':
-          res = executarAnaliseCruzada(documentos, 'contrato_social', 'certidao_junta_comercial', regra); break;
-        case 'balancete_vs_extratos': {
-          const balancete = documentos.find(d => d.tipo_documento?.includes('balancete'));
-          const extratos = documentos.filter(d => d.tipo_documento?.includes('extrato'));
-          res = regra.validar(balancete, extratos); break;
-        }
-        case 'mutuo_vs_iof':
-          res = executarAnaliseCruzada(documentos, 'contrato_mutuo', 'comprovante_iof', regra); break;
-        case 'domicilio_vs_cnpj': {
-          const docDom = documentos.find(d =>
-            d.tipo_documento?.includes('energia') || d.tipo_documento?.includes('internet') || d.tipo_documento?.includes('iptu'));
-          res = regra.validar(docDom, cliente); break;
-        }
-        default: throw new Error('Regra desconhecida');
-      }
-      setResultado({ regraId, regraNome: regrasDisponiveis.find(r => r.id === regraId)?.nome, ...res });
-    } catch (e) {
-      setResultado({ regraId, passado: false, aviso: 'Erro: ' + e.message });
-    } finally {
-      setAnalisando(false);
-      setRegraAtiva(null);
-    }
+    await new Promise(r => setTimeout(r, 150));
+    setResultados(executarAuditoriaPlen(documentos, caso || {}));
+    setAnalisando(false);
   };
+
+  const criticos = resultados?.filter(r => r.alertas?.some(a => a.severidade === 'critica')).length || 0;
+  const alertas = resultados?.filter(r => r.passado === false && !r.alertas?.some(a => a.severidade === 'critica')).length || 0;
 
   return (
     <Card className="rounded-2xl border-slate-100">
       <CardContent className="p-4 space-y-3">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600">
-            <Shield className="h-4 w-4 text-white" />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-slate-900">Análise Cruzada</p>
-            <p className="text-[10px] text-slate-500">Consistência entre documentos</p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 gap-1.5">
-          {regrasDisponiveis.map(regra => (
-            <button
-              key={regra.id}
-              onClick={() => analisarCruzada(regra.id)}
-              disabled={analisando}
-              className={`flex items-center justify-between px-3 py-2 rounded-xl border text-left text-xs transition-all hover:shadow-sm ${analisando && regraAtiva === regra.id
-                ? 'border-violet-200 bg-violet-50 text-violet-700'
-                : 'border-slate-100 bg-white hover:border-violet-100 text-slate-600 hover:text-slate-900'}`}
-            >
-              <span className="font-medium">{regra.nome}</span>
-              {analisando && regraAtiva === regra.id
-                ? <Loader2 className="h-3.5 w-3.5 animate-spin text-violet-500" />
-                : <Zap className="h-3.5 w-3.5 text-slate-300" />}
-            </button>
-          ))}
-        </div>
-
-        {resultado && (
-          <div className={`rounded-xl border-2 p-3 space-y-2 ${resultado.passado ? 'border-emerald-200 bg-emerald-50' : resultado.passado === false ? 'border-red-200 bg-red-50' : 'border-amber-200 bg-amber-50'}`}>
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold text-slate-800">{resultado.regraNome}</p>
-              <Badge className={`text-[10px] ${resultado.passado ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-red-100 text-red-700 border-red-200'}`} variant="outline">
-                {resultado.passado ? 'OK' : 'INCONSISTENTE'}
-              </Badge>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600">
+              <Shield className="h-4 w-4 text-white" />
             </div>
-            {resultado.aviso && <p className="text-[11px] text-slate-600">{resultado.aviso}</p>}
-            {(resultado.erros || resultado.discrepancias)?.length > 0 && (
-              <div className="space-y-1">
-                {(resultado.erros || resultado.discrepancias).map((err, idx) => (
-                  <div key={idx} className="flex items-start gap-1.5 p-2 rounded-lg bg-white border border-slate-100">
-                    <AlertCircle className="h-3.5 w-3.5 text-red-400 flex-shrink-0 mt-0.5" />
-                    <p className="text-[11px] text-slate-700">
-                      <strong>{err.campo || err.banco}:</strong> {err.valor1} <ArrowRight className="h-3 w-3 inline mx-0.5" /> {err.valor2}
-                    </p>
-                  </div>
-                ))}
+            <div>
+              <p className="text-sm font-semibold text-slate-900">Auditoria Cruzada</p>
+              <p className="text-[10px] text-slate-500">16 regras — IN 1984/Portaria Coana 72</p>
+            </div>
+          </div>
+          <Button onClick={executar} disabled={analisando} size="sm" className="bg-violet-600 hover:bg-violet-700 rounded-xl text-xs gap-1.5">
+            {analisando ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Zap className="h-3.5 w-3.5" />}
+            {resultados ? 'Re-auditar' : 'Auditar'}
+          </Button>
+        </div>
+
+        {resultados && (
+          <div className="space-y-1.5">
+            <div className="flex gap-2">
+              {criticos > 0 && <span className="text-[10px] font-bold bg-red-100 text-red-700 px-2 py-0.5 rounded-full">{criticos} crítico{criticos > 1 ? 's' : ''}</span>}
+              {alertas > 0 && <span className="text-[10px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">{alertas} alerta{alertas > 1 ? 's' : ''}</span>}
+              {criticos === 0 && alertas === 0 && <span className="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">Sem inconsistências</span>}
+            </div>
+            {resultados.filter(r => r.passado === false).map(res => (
+              <div key={res.id} className={`rounded-lg border p-2.5 text-xs ${res.alertas?.some(a => a.severidade === 'critica') ? 'border-red-200 bg-red-50' : 'border-amber-200 bg-amber-50'}`}>
+                <p className="font-semibold text-slate-800 mb-1">{res.id} — {REGRAS_META[res.id]?.titulo}</p>
+                {res.alertas?.map((a, i) => <p key={i} className="text-slate-600 ml-2">• {a.mensagem}</p>)}
               </div>
-            )}
-            {resultado.sugestao && (
-              <div className="flex items-start gap-1.5 p-2 rounded-lg bg-amber-50/80 border border-amber-100">
-                <Lightbulb className="h-3.5 w-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
-                <p className="text-[11px] text-amber-700">{resultado.sugestao}</p>
-              </div>
-            )}
-            <Button variant="ghost" size="sm" onClick={() => setResultado(null)} className="rounded-lg text-[10px] h-6 text-slate-500">
-              Fechar
-            </Button>
+            ))}
           </div>
         )}
       </CardContent>
