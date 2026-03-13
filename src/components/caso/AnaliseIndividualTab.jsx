@@ -53,7 +53,7 @@ export default function AnaliseIndividualTab({ caso, documentos, cliente, onDocu
   }, [hipotese]);
 
   // Auto-select first type if none selected
-  React.useEffect(() => {
+  useEffect(() => {
     if (!tipoSelecionado && tiposAplicaveis.length > 0) {
       setTipoSelecionado(tiposAplicaveis[0].tipo);
     }
