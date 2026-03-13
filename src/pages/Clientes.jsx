@@ -62,6 +62,7 @@ export default function Clientes() {
   const [cnpjErro, setCnpjErro] = useState('');
   const [cnpjLoading, setCnpjLoading] = useState(false);
   const [cnpjAutoPreenchido, setCnpjAutoPreenchido] = useState(false);
+  const [cnpjApiErro, setCnpjApiErro] = useState('');
   const [formData, setFormData] = useState({
     razao_social: '',
     cnpj: '',
