@@ -33,14 +33,13 @@ export default function DocumentosConsolidado({ caso, documentos, onDocumentosCh
     }, 300);
   }, []);
 
-  const handleViewClick = useCallback((tipo) => {
-    const doc = documentos?.find(d => d.tipo_documento === tipo);
-    if (doc) {
+  const handleViewClick = useCallback((doc) => {
+    if (doc && doc.tipo_documento) {
       setDocVisualizando(doc);
-      setTipoPreSelecionado(tipo);
+      setTipoPreSelecionado(doc.tipo_documento);
       setMostrarAnaliseDetalhada(true);
     }
-  }, [documentos]);
+  }, []);
 
   return (
     <div className="space-y-6">
