@@ -36,7 +36,6 @@ import AnaliseIndividualTab from '@/components/caso/AnaliseIndividualTab';
 
 import { useAutoAnalysis } from '@/hooks/useAutoAnalysis';
 import DocumentoPaginadoView from '@/components/caso/DocumentoPaginadoView';
-import UploadInteligenteTab from '@/components/caso/UploadInteligenteTab';
 import { logInfo, logError } from '@/components/utils/logger';
 
 const hipoteseLabels = {
