@@ -114,7 +114,7 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Sidebar */}
       <aside className={`
-        fixed top-0 left-0 z-50 h-full w-52 bg-white border-r border-slate-200 
+        fixed top-0 left-0 z-50 h-full w-44 bg-white border-r border-slate-200 
         transform transition-transform duration-200 ease-in-out
         lg:translate-x-0
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
