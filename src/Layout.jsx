@@ -13,7 +13,8 @@ import {
   HelpCircle,
   Calculator,
   BarChart3,
-  CreditCard
+  CreditCard,
+  Upload
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import NotificationBell from '@/components/NotificationBell';
