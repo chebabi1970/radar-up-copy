@@ -398,7 +398,7 @@ export default function ResultadoAnaliseDetalhado({ resultadoLocal, resultadoLLM
           <div>
             <h5 className="text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Indicadores de Alerta (IA)</h5>
             <div className="space-y-1.5">
-              {resultadoLLM.indicadores_alerta.map((alerta, idx) => {
+              {resultadoLLM.indicadores_alerta.filter(a => a?.tipo || a?.descricao).map((alerta, idx) => {
                 const isCritica = alerta.severidade === 'critica';
                 const itemContent = (
                   <div className={`flex items-start gap-2 p-2.5 rounded-xl ${isCritica ? 'bg-red-50/60 border border-red-100' : 'bg-amber-50/60 border border-amber-100'}`}>
