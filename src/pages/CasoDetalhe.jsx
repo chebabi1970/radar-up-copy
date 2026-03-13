@@ -22,7 +22,6 @@ import { toast } from 'sonner';
 import DocumentosConsolidado from '@/components/caso/DocumentosConsolidado';
 import AnaliseCruzadaPanel from '@/components/caso/AnaliseCruzadaPanel';
 import GerarPDFCaso from '@/components/caso/GerarPDFCaso';
-import PrivacyWarning from '@/components/caso/PrivacyWarning';
 
 // Componentes modularizados
 import CasoHeader from '@/components/caso/CasoHeader';
