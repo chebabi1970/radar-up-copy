@@ -152,7 +152,11 @@ export default function UploadInteligente() {
 
   const adicionarArquivos = useCallback((files) => {
     const novos = Array.from(files)
-      .filter(f => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'))
+      .filter(f =>
+        f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf') ||
+        f.type === 'image/jpeg' || f.name.toLowerCase().endsWith('.jpg') || f.name.toLowerCase().endsWith('.jpeg') ||
+        f.type === 'image/png' || f.name.toLowerCase().endsWith('.png')
+      )
       .map(criarItemArquivo);
     if (!novos.length) return;
     setItens(prev => [...prev, ...novos]);
