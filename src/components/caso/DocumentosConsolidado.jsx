@@ -39,7 +39,7 @@ export default function DocumentosConsolidado({ caso, documentos, onDocumentosCh
 
   return (
     <div className="space-y-6">
-      {/* Seção de Upload */}
+      {/* Seção de Upload - Abas com Upload Manual e IA */}
       <div ref={uploadSectionRef}>
         <Card>
           <CardHeader>
@@ -48,13 +48,41 @@ export default function DocumentosConsolidado({ caso, documentos, onDocumentosCh
               Upload de Documentos
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <SmartUpload
-              ref={smartUploadRef}
-              casoId={caso?.id}
-              onUploadComplete={onDocumentosChange}
-              tipoPreSelecionado={tipoPreSelecionado}
-            />
+          <CardContent className="space-y-4">
+            {/* Botão para alternar entre upload manual e IA */}
+            <div className="flex gap-2">
+              <Button
+                variant={!uploadIAAberto ? "default" : "outline"}
+                onClick={() => setUploadIAAberto(false)}
+                className="flex-1"
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                Upload Manual
+              </Button>
+              <Button
+                variant={uploadIAAberto ? "default" : "outline"}
+                onClick={() => setUploadIAAberto(true)}
+                className="flex-1"
+              >
+                <Sparkles className="h-4 w-4 mr-2" />
+                Upload com IA
+              </Button>
+            </div>
+
+            {/* Conteúdo condicional */}
+            {!uploadIAAberto ? (
+              <SmartUpload
+                ref={smartUploadRef}
+                casoId={caso?.id}
+                onUploadComplete={onDocumentosChange}
+                tipoPreSelecionado={tipoPreSelecionado}
+              />
+            ) : (
+              <UploadInteligenteTab
+                casoId={caso?.id}
+                onDocumentosChange={onDocumentosChange}
+              />
+            )}
           </CardContent>
         </Card>
       </div>
