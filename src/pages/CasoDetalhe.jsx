@@ -269,7 +269,7 @@ export default function CasoDetalhe() {
             </Button>
           </Link>
 
-          <div className="flex flex-col gap-3 md:gap-4">
+          <div className="flex flex-col gap-2">
             <div className="flex-1">
               {editandoNome ? (
                 <div className="flex items-center gap-1.5 md:gap-2 mb-3 md:mb-4">
