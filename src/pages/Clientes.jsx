@@ -272,12 +272,12 @@ export default function Clientes() {
         razao_social: data.razao_social || prev.razao_social,
         nome_fantasia: data.nome_fantasia || prev.nome_fantasia,
         email: data.email || prev.email,
-        endereco: endereco || prev.endereco,
-        data_abertura_empresa: dataAbertura || prev.data_abertura_empresa,
+        telefone: data.telefone || prev.telefone,
+        endereco: data.endereco || prev.endereco,
+        data_abertura_empresa: data.data_abertura_empresa || prev.data_abertura_empresa,
         capital_social: data.capital_social != null ? String(data.capital_social) : prev.capital_social,
-        qsa: data.qsa?.length
-          ? data.qsa.map(s => `${s.nome_socio} (${s.qualificacao_socio})`).join('\n')
-          : prev.qsa
+        qsa: data.qsa || prev.qsa,
+        optante_simples_nacional: data.optante_simples_nacional ?? prev.optante_simples_nacional
       }));
       setCnpjAutoPreenchido(true);
     } catch (error) {
