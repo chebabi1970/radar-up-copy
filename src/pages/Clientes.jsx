@@ -378,7 +378,6 @@ export default function Clientes() {
                         if (limpo.length === 14) {
                           const resultado = validarCNPJ(limpo);
                           setCnpjErro(resultado.valido ? '' : resultado.erro);
-                          if (resultado.valido) buscarDadosCNPJ(limpo);
                         } else if (limpo.length > 0) {
                           setCnpjErro('');
                         }
