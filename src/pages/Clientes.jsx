@@ -60,6 +60,8 @@ export default function Clientes() {
   const [editingCliente, setEditingCliente] = useState(null);
   const [cepLoading, setCepLoading] = useState(false);
   const [cnpjErro, setCnpjErro] = useState('');
+  const [cnpjLoading, setCnpjLoading] = useState(false);
+  const [cnpjAutoPreenchido, setCnpjAutoPreenchido] = useState(false);
   const [formData, setFormData] = useState({
     razao_social: '',
     cnpj: '',
