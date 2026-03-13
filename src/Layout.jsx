@@ -28,7 +28,6 @@ const navigation = [
   { name: 'Calculadora', href: 'Calculadora', icon: Calculator },
   { name: 'Ajuda', href: 'Ajuda', icon: HelpCircle },
   { name: 'FAQ', href: 'FAQ', icon: MessageCircle },
-  { name: 'Upload IA', href: 'UploadInteligente', icon: Upload },
   { name: 'Assinatura', href: 'Assinatura', icon: CreditCard },
   { name: 'Admin', href: 'Admin', icon: Users, adminOnly: true },
 ];
