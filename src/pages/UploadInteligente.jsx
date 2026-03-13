@@ -299,7 +299,7 @@ export default function UploadInteligente() {
           />
           <Upload className={`h-10 w-10 mx-auto mb-3 ${dragging ? 'text-blue-500' : 'text-slate-300'}`} />
           <p className="text-slate-600 font-medium">Arraste PDFs aqui ou clique para selecionar</p>
-          <p className="text-xs text-slate-400 mt-1">Vários arquivos de uma vez • Sem limite de tamanho por arquivo</p>
+          <p className="text-xs text-slate-400 mt-1">PDF, JPG ou PNG • Vários arquivos de uma vez</p>
         </div>
 
         {/* Lista de itens */}
