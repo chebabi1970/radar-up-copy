@@ -2,11 +2,12 @@ import React, { useState, useRef, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Upload, FileText, CheckSquare, Eye } from 'lucide-react';
+import { Upload, FileText, CheckSquare, Eye, Sparkles } from 'lucide-react';
 import SmartUpload from '@/components/upload/SmartUpload';
 import ChecklistDocumentos from '@/components/caso/ChecklistDocumentos';
 import DocumentosTab from '@/components/caso/DocumentosTab';
 import VisualizadorDocumento from '@/components/caso/VisualizadorDocumento';
+import UploadInteligenteTab from '@/components/caso/UploadInteligenteTab';
 
 /**
  * Componente consolidado que une Upload, Checklist e Visualizador de Documentos
