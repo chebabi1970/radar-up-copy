@@ -158,7 +158,7 @@ export default function UploadInteligenteTab({ casoId, onDocumentosChange }) {
           onChange={(e) => adicionar(e.target.files)} />
         <Upload className={`h-9 w-9 mx-auto mb-2 ${dragging ? 'text-blue-500' : 'text-slate-300'}`} />
         <p className="text-slate-600 font-medium text-sm">Arraste arquivos aqui ou clique para selecionar</p>
-        <p className="text-xs text-slate-400 mt-1">PDF, JPG ou PNG • Múltiplos arquivos</p>
+        <p className="text-xs text-slate-400 mt-1">PDF, JPG ou PNG • Múltiplos arquivos • Máx. 50 MB por arquivo</p>
       </div>
 
       {/* Lista */}
