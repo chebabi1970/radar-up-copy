@@ -477,7 +477,7 @@ export default function CasoDetalhe() {
               </TabsList>
             </div>
 
-            <TabsContent value="dashboard" className="p-3 md:p-6 mt-0 max-h-[calc(100vh-280px)] overflow-y-auto">
+            <TabsContent value="dashboard" className="p-3 mt-0 max-h-[calc(100vh-220px)] overflow-y-auto">
               <div className="space-y-6">
                 {/* Seletor de Hipótese */}
                 <SeletorHipotese
