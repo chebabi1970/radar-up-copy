@@ -486,6 +486,7 @@ export default function DocumentoPaginadoView({ documentos = [], caso, cliente }
 
           {/* Individual Analysis */}
           <AnaliseIndividualCard
+            key={documento.id}
             documento={documento}
             tipoDocumento={documento.tipo_documento}
             hipotese={hipotese}
