@@ -97,52 +97,6 @@ export default function CasoDetalhe() {
     notificar: true
   });
 
-  const updateStatusMutation = useMutation({
-    mutationFn: async ({ newStatus, enviarEmail }) => {
-      // Validar transição de estado
-      const transicoes_validas = {
-        novo: ['em_analise', 'aguardando_documentos'],
-        em_analise: ['aguardando_documentos', 'documentacao_completa'],
-        aguardando_documentos: ['em_analise', 'documentacao_completa'],
-        documentacao_completa: ['protocolado', 'indeferido'],
-        protocolado: ['deferido', 'indeferido', 'arquivado'],
-        deferido: ['arquivado'],
-        indeferido: ['arquivado'],
-        arquivado: []
-      };
-
-      if (!transicoes_validas[caso.status]?.includes(newStatus)) {
-        throw new Error(`Transição inválida de ${statusLabels[caso.status]} para ${statusLabels[newStatus]}`);
-      }
-
-      await base44.entities.Caso.update(casoId, { status: newStatus });
-      
-      // Enviar email se autorizado
-      if (enviarEmail && cliente?.email) {
-         try {
-           await base44.integrations.Core.SendEmail({
-             to: cliente.email,
-             subject: `Status do Caso ${caso.numero_caso || casoId.slice(0, 8)} Atualizado`,
-             body: `<h2>Atualização de Status</h2><p>Olá,</p><p>O status do seu caso <strong>${caso.numero_caso || `#${casoId.slice(0, 8)}`}</strong> foi atualizado para:</p><h3 style="color: #3b82f6;">${statusLabels[newStatus]}</h3><p><strong>Cliente:</strong> ${cliente.razao_social}<br/><strong>CNPJ:</strong> ${cliente.cnpj}</p><p>Para mais detalhes, acesse o sistema RevEstimativa.</p><p>Atenciosamente,<br/>Equipe RevEstimativa</p>`
-           });
-           toast.success('Email enviado com sucesso');
-         } catch (error) {
-           console.error('Erro ao enviar email:', error);
-           toast.error('Erro ao enviar email de notificação');
-         }
-       }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['caso', casoId] });
-      setDialogEmail(false);
-      setNovoStatus(null);
-      toast.success('Status atualizado');
-    },
-    onError: (error) => {
-      toast.error(`Erro ao atualizar status: ${error.message}`);
-    }
-  });
-
   // Mutation para mudar hipótese
   const updateHipoteseMutation = useMutation({
     mutationFn: async (novaHipotese) => {
@@ -151,37 +105,16 @@ export default function CasoDetalhe() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['caso', casoId] });
       toast.success('Hipótese atualizada com sucesso');
+      logInfo('Hipótese atualizada', { casoId });
     },
     onError: (error) => {
+      logError('Erro ao atualizar hipótese', error, { casoId });
       toast.error(`Erro ao atualizar hipótese: ${error.message}`);
     }
   });
 
   const handleMudarHipotese = (novaHipotese) => {
     updateHipoteseMutation.mutate(novaHipotese);
-  };
-
-  const handleStatusChange = (value) => {
-    setNovoStatus(value);
-    setDialogEmail(true);
-  };
-
-  const confirmarAlteracao = (enviarEmail) => {
-    updateStatusMutation.mutate({ newStatus: novoStatus, enviarEmail });
-  };
-
-  const updateNomeMutation = useMutation({
-    mutationFn: (newNome) => base44.entities.Caso.update(casoId, { numero_caso: newNome }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['caso', casoId] });
-      setEditandoNome(false);
-    }
-  });
-
-  const handleSalvarNome = () => {
-    if (novoNome.trim()) {
-      updateNomeMutation.mutate(novoNome.trim());
-    }
   };
 
   if (!casoId) {
