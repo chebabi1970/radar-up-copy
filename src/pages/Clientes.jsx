@@ -240,7 +240,8 @@ export default function Clientes() {
   };
 
   const buscarDadosCNPJ = async (cnpjLimpo) => {
-    if (cnpjLimpo.length !== 14 || editingCliente) return;
+    if (!cnpjLimpo) cnpjLimpo = limparCNPJ(formData.cnpj);
+    if (cnpjLimpo.length !== 14) return;
     setCnpjLoading(true);
     setCnpjAutoPreenchido(false);
     setCnpjApiErro('');
