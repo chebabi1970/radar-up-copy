@@ -212,6 +212,10 @@ export default function CasoDetalhe() {
                   onAcaoClick={(acao) => {
                     if (acao === 'upload') {
                       document.querySelector('[value="documentos"]')?.click();
+                    } else if (acao === 'resolver_inconsistencias') {
+                      document.querySelector('[value="cruzada"]')?.click();
+                    } else if (acao === 'corrigir_criticos' || acao === 'revisar_alertas') {
+                      document.querySelector('[value="documentos"]')?.click();
                     }
                   }}
                 />
