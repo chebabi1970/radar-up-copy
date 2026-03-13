@@ -138,9 +138,6 @@ export default function CasoDetalhe() {
     );
   }
 
-  const pendingItems = checklistItems.filter(i => i.status === 'pendente').length;
-  const completedItems = checklistItems.filter(i => i.status !== 'pendente').length;
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
       <div className="max-w-full mx-auto px-3 sm:px-4 lg:px-6 py-3">
@@ -149,7 +146,7 @@ export default function CasoDetalhe() {
           <PrivacyWarning />
         </div>
 
-        {/* Header */}
+        {/* Header com navegação */}
         <div className="mb-3">
           <Link to={createPageUrl('Casos')}>
             <Button variant="ghost" className="mb-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 px-2 h-8 rounded-xl transition-all">
@@ -157,143 +154,21 @@ export default function CasoDetalhe() {
             </Button>
           </Link>
 
-          <div className="flex flex-col gap-2">
-            <div className="flex-1">
-              {editandoNome ? (
-                <div className="flex items-center gap-1.5 md:gap-2 mb-3 md:mb-4">
-                  <Input
-                    value={novoNome}
-                    onChange={(e) => setNovoNome(e.target.value)}
-                    placeholder="Digite o nome do caso"
-                    className="text-xl md:text-3xl font-bold h-9 md:h-10"
-                    autoFocus
-                  />
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={handleSalvarNome}
-                    disabled={updateNomeMutation.isPending}
-                    className="h-9 w-9 md:h-10 md:w-10"
-                  >
-                    <Check className="h-4 w-4 md:h-5 md:w-5 text-green-600" />
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => setEditandoNome(false)}
-                    className="h-9 w-9 md:h-10 md:w-10"
-                  >
-                    <X className="h-4 w-4 md:h-5 md:w-5 text-red-600" />
-                  </Button>
-                </div>
-              ) : (
-                <div className="flex items-center gap-1.5 md:gap-2 mb-1 md:mb-2 flex-wrap">
-                  <h1 className="text-xl md:text-3xl font-bold text-slate-900 tracking-tight break-words">
-                    {caso.numero_caso || `Caso #${caso.id.slice(0, 8)}`}
-                  </h1>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="text-slate-400 hover:text-slate-600 h-8 w-8 md:h-10 md:w-10 flex-shrink-0"
-                    onClick={() => {
-                      setNovoNome(caso.numero_caso || `Caso #${caso.id.slice(0, 8)}`);
-                      setEditandoNome(true);
-                    }}
-                  >
-                    <Edit2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
-                  </Button>
-                </div>
-              )}
-              <div className="flex items-center gap-1.5 md:gap-2 mt-1.5 md:mt-2 flex-wrap">
-                <Building2 className="h-3.5 w-3.5 md:h-4 md:w-4 text-slate-400 flex-shrink-0" />
-                <span className="text-xs md:text-sm text-slate-600 break-words">{cliente?.razao_social}</span>
-              </div>
-              <p className="text-xs md:text-sm text-slate-500 mt-1 md:mt-1.5 line-clamp-2">
-                {hipoteseLabels[caso.hipotese_revisao]}
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2 md:gap-3 flex-wrap">
-              <Select
-                value={caso.status}
-                onValueChange={handleStatusChange}
-              >
-                <SelectTrigger className="w-full md:w-[200px] h-9 md:h-10 text-xs md:text-sm rounded-xl border-slate-200">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(statusLabels).map(([value, label]) => (
-                    <SelectItem key={value} value={value}>{label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Badge className={`${statusColors[caso.status]} border text-xs md:text-sm py-1 md:py-1.5 px-2.5 md:px-3 flex-shrink-0 rounded-lg font-medium`}>
-                {statusLabels[caso.status]}
-              </Badge>
-              <GerarPDFCaso 
-                caso={caso} 
-                cliente={cliente} 
-                documentos={documentos} 
-                checklist={checklistItems} 
-              />
-            </div>
-          </div>
+          {/* Componente modularizado para header do caso */}
+          <CasoHeader 
+            caso={caso} 
+            cliente={cliente} 
+            hipoteseLabel={hipoteseLabels[caso.hipotese_revisao]}
+            onStatusChange={() => queryClient.invalidateQueries({ queryKey: ['caso', casoId] })}
+          />
         </div>
 
-        {/* Dialog de confirmação de email */}
-        <Dialog open={dialogEmail} onOpenChange={setDialogEmail}>
-          <DialogContent className="rounded-2xl">
-            <DialogHeader>
-              <DialogTitle>Notificar Cliente?</DialogTitle>
-              <DialogDescription>
-                Deseja enviar um email para <strong>{cliente?.email}</strong> notificando sobre a mudança de status para <strong>{statusLabels[novoStatus]}</strong>?
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter className="gap-2">
-              <Button
-                variant="outline"
-                onClick={() => confirmarAlteracao(false)}
-                disabled={updateStatusMutation.isPending}
-                className="rounded-xl"
-              >
-                Não enviar
-              </Button>
-              <Button
-                onClick={() => confirmarAlteracao(true)}
-                disabled={updateStatusMutation.isPending}
-                className="rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white"
-              >
-                {updateStatusMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                Enviar email
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        {/* Summary Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
-          {[
-            { icon: FileText, label: 'Documentos', value: documentos.length, color: 'blue', gradient: 'from-blue-500 to-indigo-600' },
-            { icon: CheckSquare, label: 'Checklist', value: `${completedItems}/${checklistItems.length}`, color: 'emerald', gradient: 'from-emerald-500 to-teal-600' },
-            { icon: AlertTriangle, label: 'Pendentes', value: pendingItems, color: 'amber', gradient: 'from-amber-500 to-orange-600' },
-            { icon: Calculator, label: 'Estimativa', value: caso.estimativa_calculada && typeof caso.estimativa_calculada === 'number' && caso.estimativa_calculada > 0
-              ? `R$ ${caso.estimativa_calculada.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-              : 'Pendente', color: 'violet', gradient: 'from-violet-500 to-purple-600' }
-          ].map((card, idx) => (
-            <div key={idx} className="group relative overflow-hidden rounded-xl border border-slate-100 bg-white p-2.5 transition-all hover:shadow-lg hover:shadow-slate-100/50 hover:-translate-y-0.5">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-slate-50/80 to-transparent rounded-full -translate-y-1/3 translate-x-1/3 group-hover:from-slate-100/80 transition-colors" />
-              <div className="relative flex items-center gap-2 md:gap-3">
-                <div className={`h-9 w-9 md:h-11 md:w-11 rounded-xl bg-gradient-to-br ${card.gradient} flex items-center justify-center flex-shrink-0 shadow-lg shadow-${card.color}-200/50`}>
-                  <card.icon className="h-4 w-4 md:h-5 md:w-5 text-white" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[10px] md:text-xs font-medium text-slate-400 uppercase tracking-wider">{card.label}</p>
-                  <p className="text-lg md:text-xl font-bold text-slate-900 truncate">{card.value}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        {/* Componente modularizado para stats */}
+        <CasoStats 
+          documentos={documentos} 
+          checklistItems={checklistItems} 
+          caso={caso}
+        />
 
         {/* Tabs */}
         <div className="rounded-xl border border-slate-100 bg-white shadow-lg shadow-slate-200/30 overflow-hidden">
