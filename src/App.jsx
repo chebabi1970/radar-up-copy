@@ -61,6 +61,7 @@ const AuthenticatedApp = () => {
         />
       ))}
       <Route path="/UploadInteligente" element={<LayoutWrapper currentPageName="UploadInteligente"><UploadInteligente /></LayoutWrapper>} />
+      <Route path="/CasoDetalhe" element={<LayoutWrapper currentPageName="CasoDetalhe"><CasoDetalhe /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
