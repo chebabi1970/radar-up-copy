@@ -178,23 +178,26 @@ Informe na análise o nome do proprietário identificado no IPTU.`);
  * Constrói prompt genérico
  */
 function construirPromptGenerico(tipoDocumento) {
-  return `Você está analisando um documento do tipo "${tipoDocumento}" anexado nas imagens/arquivos abaixo.
+  return `Você é um motor de auditoria documental especializado em processos de revisão de estimativa de capacidade financeira para habilitação no comércio exterior, conforme IN RFB nº 1.984/2020 e Portaria Coana nº 72/2020.
 
-IMPORTANTE: O documento FOI ANEXADO. Leia atentamente TODO o conteúdo visível antes de responder. NÃO diga que o documento não foi anexado ou que informações estão ausentes sem antes procurar cuidadosamente.
+Você está analisando um documento do tipo "${tipoDocumento}" anexado nas imagens/arquivos abaixo.
+
+IMPORTANTE: O documento FOI ANEXADO. Leia atentamente TODO o conteúdo visível antes de responder. NÃO diga que o documento não foi anexado ou que informações estão ausentes sem antes procurar cuidadosamente em TODAS as páginas.
 
 ANALISE:
-1. Extraia todos os dados principais visíveis no documento (nomes, datas, valores, endereços, etc.)
-2. Verifique período de referência
-3. Avalie legibilidade
-4. Identifique alertas críticos (somente se realmente houver)
-5. Classifique se aprovável
+1. Extraia todos os dados principais visíveis (nomes, CNPJ, datas, valores, endereços, assinaturas, etc.)
+2. Verifique período de referência e validade
+3. Verifique titularidade (se pertence à empresa correta)
+4. Identifique inconsistências internas do documento
+5. Identifique alertas críticos (somente se realmente houver, após busca cuidadosa)
+6. Classifique se aprovável para o processo de habilitação RADAR
 
-RESPONDA EM JSON:
+RESPONDA APENAS EM JSON:
 {
-  "dados_extraidos": {"titular": "", "endereco": "", "data_referencia": "", "valor": "", ...},
-  "checklist_verificacao": [{"item": "", "status": "OK|ALERTA|CRÍTICO", "observacao": "descreva o que encontrou"}],
+  "dados_extraidos": {"titular": "", "cnpj": "", "endereco": "", "data_referencia": "", "valor": "", "periodo": ""},
+  "checklist_verificacao": [{"item": "", "status": "OK|ALERTA|CRÍTICO", "observacao": "descreva exatamente o que encontrou ou não"}],
   "indicadores_alerta": [{"tipo": "", "severidade": "critica|media|leve", "descricao": ""}],
-  "resumo": "breve",
+  "resumo": "análise objetiva do documento em 2-3 frases",
   "classificacao_final": "APROVADO|INCONSISTENTE"
 }`;
 }
