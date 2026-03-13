@@ -17,6 +17,7 @@ export default function DocumentosConsolidado({ caso, documentos, onDocumentosCh
   const [visualizadorAberto, setVisualizadorAberto] = useState(false);
   const [tipoPreSelecionado, setTipoPreSelecionado] = useState(null);
   const [docVisualizando, setDocVisualizando] = useState(null);
+  const [uploadIAAberto, setUploadIAAberto] = useState(false);
   const smartUploadRef = useRef(null);
   const uploadSectionRef = useRef(null);
 
