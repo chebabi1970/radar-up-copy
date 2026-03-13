@@ -211,15 +211,23 @@ export default function CasoDetalhe() {
                 
                 {/* Dashboard Unificado */}
                 <DashboardUnificado
-                  caso={caso}
-                  documentos={documentos}
-                  cliente={cliente}
-                  onAcaoClick={(acao) => {
-                    if (acao === 'upload') {
-                      document.querySelector('[value="documentos"]')?.click();
-                    }
-                  }}
-                />
+                   caso={caso}
+                   documentos={documentos}
+                   cliente={cliente}
+                   onAcaoClick={(acao) => {
+                     const acaoMap = {
+                       'upload': 'documentos',
+                       'corrigir_criticos': 'documentos',
+                       'resolver_inconsistencias': 'cruzada',
+                       'revisar_alertas': 'documentos',
+                       'protocolar': 'atividade'
+                     };
+                     const tab = acaoMap[acao];
+                     if (tab) {
+                       document.querySelector(`[value="${tab}"]`)?.click();
+                     }
+                   }}
+                 />
               </div>
             </TabsContent>
 
