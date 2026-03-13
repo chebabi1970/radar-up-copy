@@ -372,6 +372,7 @@ export default function Clientes() {
                         setFormData({...formData, cnpj: mascarado});
                         const limpo = limparCNPJ(mascarado);
                         setCnpjAutoPreenchido(false);
+                        setCnpjApiErro('');
                         if (limpo.length === 14) {
                           const resultado = validarCNPJ(limpo);
                           setCnpjErro(resultado.valido ? '' : resultado.erro);
