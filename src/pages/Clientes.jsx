@@ -246,12 +246,12 @@ export default function Clientes() {
     setCnpjAutoPreenchido(false);
     setCnpjApiErro('');
     try {
-      const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpjLimpo}`);
-      if (!response.ok) {
-        setCnpjApiErro('CNPJ não encontrado na Receita Federal');
+      const res = await base44.functions.invoke('consultarCNPJ', { cnpj: cnpjLimpo });
+      if (res.data?.error) {
+        setCnpjApiErro(res.data.error);
         return;
       }
-      const data = await response.json();
+      const data = res.data;
 
       const endereco = [
         data.logradouro,
