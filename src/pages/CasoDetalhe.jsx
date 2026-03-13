@@ -36,7 +36,8 @@ import {
   LayoutDashboard,
   Sparkles,
   Clock,
-  BookOpen
+  BookOpen,
+  Upload
 } from 'lucide-react';
 import { toast } from 'sonner';
 
