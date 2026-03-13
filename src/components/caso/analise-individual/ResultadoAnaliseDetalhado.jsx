@@ -248,7 +248,11 @@ export default function ResultadoAnaliseDetalhado({ resultadoLocal, resultadoLLM
                 size="sm"
                 className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-lg text-xs"
               >
-                {analisando ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+                {analisando ? (
+                  <><Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /><span className="hidden sm:inline text-[10px]">Analisando...</span></>
+                ) : (
+                  <Sparkles className="h-3.5 w-3.5" />
+                )}
               </Button>
             )}
             {onReanalizar && !modoContestacao && (
