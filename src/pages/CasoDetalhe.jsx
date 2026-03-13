@@ -255,14 +255,14 @@ export default function CasoDetalhe() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-full mx-auto px-3 sm:px-4 lg:px-6 py-3">
         {/* Privacy Warning */}
-        <div className="mb-6">
+        <div className="mb-3">
           <PrivacyWarning />
         </div>
 
         {/* Header */}
-        <div className="mb-4 md:mb-6">
+        <div className="mb-3">
           <Link to={createPageUrl('Casos')}>
             <Button variant="ghost" className="mb-3 md:mb-4 text-slate-500 hover:text-slate-900 hover:bg-slate-100 px-2 md:px-4 h-8 md:h-10 rounded-xl transition-all">
               <ArrowLeft className="h-3.5 w-3.5 md:h-4 md:w-4 mr-1.5 md:mr-2" /> <span className="hidden sm:inline">Voltar aos Casos</span><span className="sm:hidden">Voltar</span>
