@@ -141,8 +141,28 @@ export const SCHEMAS_DOCUMENTOS = {
     type: 'object',
     properties: {
       dados_extraidos: { type: 'object' },
-      checklist_verificacao: { type: 'array' },
-      indicadores_alerta: { type: 'array' },
+      checklist_verificacao: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            item: { type: 'string' },
+            status: { type: 'string', description: 'OK, ALERTA ou CRÍTICO' },
+            observacao: { type: 'string' }
+          }
+        }
+      },
+      indicadores_alerta: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            tipo: { type: 'string' },
+            descricao: { type: 'string' },
+            severidade: { type: 'string', description: 'critica ou media' }
+          }
+        }
+      },
       resumo: { type: 'string' },
       classificacao_final: { type: 'string' }
     }
