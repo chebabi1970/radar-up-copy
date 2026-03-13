@@ -37,8 +37,7 @@ import { tipoDocumentoLabels } from '@/config/documentoLabels';
 import { analisarDocumentoIndividual } from '@/utils/documentAnalysis';
 import { obterUrlsDocumentos, SCHEMAS_DOCUMENTOS, salvarAnaliseHistorico } from './utils/documentAnalysisHelpers';
 import { construirPromptDocumento } from './utils/promptBuilder';
-import { crossDocumentRules, executarAnaliseCruzada } from './validators/crossDocumentAnalysis';
-import { gerarSugestoesParaDiscrepancia } from './validators/suggestionsEngine';
+import { executarAuditoriaPlen, REGRAS_META } from './validators/crossDocumentAnalysis';
 
 // ─── PDF Viewer inline ────────────────────────────────────────────────────────
 function PdfViewerInline({ documento }) {
