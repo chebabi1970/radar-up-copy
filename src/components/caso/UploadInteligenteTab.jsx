@@ -111,10 +111,15 @@ export default function UploadInteligenteTab({ casoId, onDocumentosChange }) {
     }
   };
 
+  const MAX_SIZE = 50 * 1024 * 1024; // 50 MB
+
   const adicionar = useCallback((files) => {
-    const novos = Array.from(files)
-      .filter(f => f.type === 'application/pdf' || /\.(pdf|jpg|jpeg|png)$/i.test(f.name))
-      .map(criarItem);
+    const validos = Array.from(files).filter(f => f.type === 'application/pdf' || /\.(pdf|jpg|jpeg|png)$/i.test(f.name));
+    const grandes = validos.filter(f => f.size > MAX_SIZE);
+    if (grandes.length > 0) {
+      alert(`${grandes.length} arquivo(s) excedem o limite de 50 MB e foram ignorados:\n${grandes.map(f => f.name).join('\n')}`);
+    }
+    const novos = validos.filter(f => f.size <= MAX_SIZE).map(criarItem);
     if (!novos.length) return;
     setItens(prev => [...prev, ...novos]);
     novos.forEach(item => classificar(item));
