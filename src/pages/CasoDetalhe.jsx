@@ -514,7 +514,7 @@ export default function CasoDetalhe() {
               />
             </TabsContent>
 
-            <TabsContent value="analise" className="p-3 md:p-6 mt-0 max-h-[calc(100vh-280px)] overflow-y-auto">
+            <TabsContent value="analise" className="p-3 mt-0 max-h-[calc(100vh-220px)] overflow-y-auto">
               <AnaliseIndividualTab
                 caso={caso}
                 documentos={documentos}
