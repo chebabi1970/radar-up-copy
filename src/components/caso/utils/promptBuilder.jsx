@@ -123,22 +123,13 @@ Código DARF obrigatório: 1150
 Verifique se o valor do DARF corresponde ao cálculo acima.`);
   }
 
-  // Extratos: alerta para todas as entradas
+  // Extratos: alerta para existência de entradas
   if (guide.codigo === '5100' || guide.codigo === '5100b') {
     extras.push(`
 ━━━ ATENÇÃO ESPECIAL — ENTRADAS/CRÉDITOS NOS EXTRATOS ━━━
-CRÍTICO: Este documento DEVE CONTER créditos/entradas que comprovem a capacidade financeira.
-Para CADA entrada/crédito identificado no extrato:
-  1. Registre o valor, data e descrição exata
-  2. Gere um alerta específico solicitando comprovação de ORIGEM
-  3. Origens aceitas: NF de venda, contrato de mútuo, aumento de capital integralizado, adiantamento de cliente, empréstimo bancário
-  4. Qualquer entrada sem origem clara = alerta crítico
-
-No checklist, inclua obrigatoriamente:
-  - "Existência de créditos/entradas no período" (OK se houver, CRÍTICO se período vazio/apenas débitos)
-  - Para cada entrada significativa: "Origem comprovada para crédito de R$ [valor] em [data]" (ALERTA se sem comprovante)
-
-Se o extrato mostrar apenas débitos ou movimentação nula, classifique como CRÍTICO.`);
+Este documento DEVE conter créditos/entradas que comprovem a capacidade financeira.
+Gere um alerta informando que as entradas/créditos identificadas devem ter origem comprovada (NF, contrato, aumento de capital, etc).
+Se o extrato não possuir entradas significativas, classifique como CRÍTICO.`);
   }
 
   // Balancete: cruzamento obrigatório com extratos
