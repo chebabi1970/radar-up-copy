@@ -60,7 +60,7 @@ export default function AnaliseIndividualTab({ caso, documentos, cliente, onDocu
   }, [tiposAplicaveis, tipoSelecionado]);
 
   // Reset doc selection and loading state when type changes
-  React.useEffect(() => {
+  useEffect(() => {
     setDocSelecionado(null);
     setAnalisando(false);
   }, [tipoSelecionado]);
