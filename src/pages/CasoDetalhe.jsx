@@ -408,9 +408,9 @@ export default function CasoDetalhe() {
         </div>
 
         {/* Tabs */}
-        <div className="rounded-2xl border border-slate-100 bg-white shadow-lg shadow-slate-200/30 overflow-hidden">
+        <div className="rounded-xl border border-slate-100 bg-white shadow-lg shadow-slate-200/30 overflow-hidden">
           <Tabs defaultValue="dashboard" className="w-full">
-            <div className="border-b border-slate-100 px-3 md:px-6 pt-3 md:pt-4 pb-0">
+            <div className="border-b border-slate-100 px-3 pt-2 pb-0">
               <TabsList className="bg-slate-100/80 rounded-xl p-1 h-auto gap-1 overflow-x-auto flex-nowrap w-full md:w-auto">
                 <TabsTrigger
                   value="dashboard"
