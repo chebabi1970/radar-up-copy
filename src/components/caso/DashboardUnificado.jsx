@@ -95,9 +95,11 @@ export default function DashboardUnificado({ caso, documentos = [], cliente = {}
     }
   }, [documentos, cliente]);
 
+  const documentosKey = documentos.map(d => d.id).join(',');
   useEffect(() => {
     if (documentos.length > 0) executarAnalises();
-  }, [documentos, executarAnalises]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [documentosKey]);
 
   const totalDocumentos = documentos.length;
   const documentosAnalisados = analiseIndividual.length;
