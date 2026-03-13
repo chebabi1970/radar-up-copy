@@ -538,6 +538,13 @@ export default function CasoDetalhe() {
                 cliente={cliente}
               />
             </TabsContent>
+
+            <TabsContent value="upload_ia" className="p-3 md:p-6 mt-0 max-h-[calc(100vh-280px)] overflow-y-auto">
+              <UploadInteligenteTab
+                casoId={casoId}
+                onDocumentosChange={() => queryClient.invalidateQueries(['documentos', casoId])}
+              />
+            </TabsContent>
           </Tabs>
         </div>
       </div>
