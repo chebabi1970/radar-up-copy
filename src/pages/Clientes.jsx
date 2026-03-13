@@ -381,9 +381,15 @@ export default function Clientes() {
                         <XCircle className="h-3 w-3" /> {cnpjErro}
                       </p>
                     )}
-                    {!cnpjErro && limparCNPJ(formData.cnpj).length === 14 && (
+                    {cnpjLoading && (
+                      <p className="text-xs text-blue-500 mt-1 flex items-center gap-1">
+                        <Loader2 className="h-3 w-3 animate-spin" /> Buscando dados na Receita Federal...
+                      </p>
+                    )}
+                    {!cnpjErro && !cnpjLoading && limparCNPJ(formData.cnpj).length === 14 && (
                       <p className="text-xs text-emerald-500 mt-1 flex items-center gap-1">
-                        <CheckCircle2 className="h-3 w-3" /> CNPJ válido
+                        <CheckCircle2 className="h-3 w-3" />
+                        {cnpjAutoPreenchido ? 'CNPJ válido — dados preenchidos automaticamente' : 'CNPJ válido'}
                       </p>
                     )}
                   </div>
