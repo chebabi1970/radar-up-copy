@@ -133,8 +133,9 @@ export default function DocumentosConsolidado({ caso, documentos, onDocumentosCh
           {visualizadorAberto && (
             <CardContent>
               <DocumentosTab
-                caso={caso}
+                casoId={caso?.id}
                 documentos={documentos}
+                cliente={cliente}
               />
             </CardContent>
           )}
