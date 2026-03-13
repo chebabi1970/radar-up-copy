@@ -253,20 +253,6 @@ export default function Clientes() {
       }
       const data = res.data;
 
-      const endereco = [
-        data.logradouro,
-        data.numero,
-        data.complemento,
-        data.bairro,
-        data.municipio,
-        data.uf
-      ].filter(Boolean).join(', ');
-
-      // BrasilAPI retorna data_inicio_atividade como "YYYY-MM-DD"
-      const dataAbertura = data.data_inicio_atividade
-        ? data.data_inicio_atividade.substring(0, 10)
-        : '';
-
       setFormData(prev => ({
         ...prev,
         razao_social: data.razao_social || prev.razao_social,
