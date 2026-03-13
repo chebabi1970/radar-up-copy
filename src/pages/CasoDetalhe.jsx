@@ -383,7 +383,7 @@ export default function CasoDetalhe() {
         </Dialog>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 mb-4 md:mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
           {[
             { icon: FileText, label: 'Documentos', value: documentos.length, color: 'blue', gradient: 'from-blue-500 to-indigo-600' },
             { icon: CheckSquare, label: 'Checklist', value: `${completedItems}/${checklistItems.length}`, color: 'emerald', gradient: 'from-emerald-500 to-teal-600' },
