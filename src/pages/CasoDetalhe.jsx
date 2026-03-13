@@ -392,7 +392,7 @@ export default function CasoDetalhe() {
               ? `R$ ${caso.estimativa_calculada.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
               : 'Pendente', color: 'violet', gradient: 'from-violet-500 to-purple-600' }
           ].map((card, idx) => (
-            <div key={idx} className="group relative overflow-hidden rounded-2xl border border-slate-100 bg-white p-3 md:p-4 transition-all hover:shadow-lg hover:shadow-slate-100/50 hover:-translate-y-0.5">
+            <div key={idx} className="group relative overflow-hidden rounded-xl border border-slate-100 bg-white p-2.5 transition-all hover:shadow-lg hover:shadow-slate-100/50 hover:-translate-y-0.5">
               <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-slate-50/80 to-transparent rounded-full -translate-y-1/3 translate-x-1/3 group-hover:from-slate-100/80 transition-colors" />
               <div className="relative flex items-center gap-2 md:gap-3">
                 <div className={`h-9 w-9 md:h-11 md:w-11 rounded-xl bg-gradient-to-br ${card.gradient} flex items-center justify-center flex-shrink-0 shadow-lg shadow-${card.color}-200/50`}>
