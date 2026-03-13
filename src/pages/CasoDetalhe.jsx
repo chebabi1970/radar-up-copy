@@ -6,46 +6,25 @@ import { createPageUrl } from '@/components/utils';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { 
   ArrowLeft,
-  Building2,
-  FileText,
-  CheckSquare,
-  AlertTriangle,
-  Loader2,
-  Calculator,
-  Shield,
-  Edit2,
-  Check,
-  X,
   LayoutDashboard,
   Sparkles,
   Clock,
   BookOpen,
   Upload
 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 import DocumentosConsolidado from '@/components/caso/DocumentosConsolidado';
 import AnaliseCruzadaPanel from '@/components/caso/AnaliseCruzadaPanel';
 import PrivacyWarning from '@/components/caso/PrivacyWarning';
 import GerarPDFCaso from '@/components/caso/GerarPDFCaso';
-import { Input } from "@/components/ui/input";
+
+// Componentes modularizados
+import CasoHeader from '@/components/caso/CasoHeader';
+import CasoStats from '@/components/caso/CasoStats';
 
 // Novos componentes implementados
 import DashboardUnificado from '@/components/caso/DashboardUnificado';
@@ -56,6 +35,7 @@ import AnaliseIndividualTab from '@/components/caso/AnaliseIndividualTab';
 import { useAutoAnalysis } from '@/hooks/useAutoAnalysis';
 import DocumentoPaginadoView from '@/components/caso/DocumentoPaginadoView';
 import UploadInteligenteTab from '@/components/caso/UploadInteligenteTab';
+import { logInfo, logError } from '@/components/utils/logger';
 
 const statusColors = {
   novo: "bg-blue-100 text-blue-800 border-blue-200",
