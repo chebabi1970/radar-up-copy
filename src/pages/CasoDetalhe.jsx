@@ -54,6 +54,7 @@ import AnaliseIndividualTab from '@/components/caso/AnaliseIndividualTab';
 
 import { useAutoAnalysis } from '@/hooks/useAutoAnalysis';
 import DocumentoPaginadoView from '@/components/caso/DocumentoPaginadoView';
+import UploadInteligenteTab from '@/components/caso/UploadInteligenteTab';
 
 const statusColors = {
   novo: "bg-blue-100 text-blue-800 border-blue-200",
