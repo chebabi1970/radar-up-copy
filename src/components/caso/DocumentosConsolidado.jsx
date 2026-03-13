@@ -8,16 +8,19 @@ import ChecklistDocumentos from '@/components/caso/ChecklistDocumentos';
 import DocumentosTab from '@/components/caso/DocumentosTab';
 import VisualizadorDocumento from '@/components/caso/VisualizadorDocumento';
 import UploadInteligenteTab from '@/components/caso/UploadInteligenteTab';
+import AnaliseIndividualTab from '@/components/caso/AnaliseIndividualTab';
 
 /**
  * Componente consolidado que une Upload, Checklist e Visualizador de Documentos
  * em uma única interface intuitiva
  */
-export default function DocumentosConsolidado({ caso, documentos, onDocumentosChange }) {
+export default function DocumentosConsolidado({ caso, documentos, onDocumentosChange, cliente }) {
   const [visualizadorAberto, setVisualizadorAberto] = useState(false);
   const [tipoPreSelecionado, setTipoPreSelecionado] = useState(null);
   const [docVisualizando, setDocVisualizando] = useState(null);
   const [uploadIAAberto, setUploadIAAberto] = useState(false);
+  const [analisandoDoc, setAnalisandoDoc] = useState(false);
+  const [mostrarAnaliseDetalhada, setMostrarAnaliseDetalhada] = useState(false);
   const smartUploadRef = useRef(null);
   const uploadSectionRef = useRef(null);
 
@@ -34,6 +37,8 @@ export default function DocumentosConsolidado({ caso, documentos, onDocumentosCh
     const doc = documentos?.find(d => d.tipo_documento === tipo);
     if (doc) {
       setDocVisualizando(doc);
+      setTipoPreSelecionado(tipo);
+      setMostrarAnaliseDetalhada(true);
     }
   }, [documentos]);
 
@@ -137,9 +142,32 @@ export default function DocumentosConsolidado({ caso, documentos, onDocumentosCh
         </Card>
       )}
 
-      {/* Modal Visualizador */}
+      {/* Modal com Visualizador + Análise Detalhada */}
+      {mostrarAnaliseDetalhada && tipoPreSelecionado && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl w-full sm:w-11/12 lg:w-5/6 max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b border-slate-100 p-4 flex items-center justify-between z-10">
+              <h3 className="font-semibold text-slate-900">Análise Detalhada do Documento</h3>
+              <button onClick={() => setMostrarAnaliseDetalhada(false)} className="text-slate-400 hover:text-slate-600">
+                <FileText className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="p-4">
+              <AnaliseIndividualTab
+                caso={caso}
+                documentos={documentos?.filter(d => d.tipo_documento === tipoPreSelecionado) || []}
+                cliente={cliente}
+                onDocumentosChange={onDocumentosChange}
+                modalMode={true}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Visualizador Simples */}
       <VisualizadorDocumento
-        isOpen={!!docVisualizando}
+        isOpen={!!docVisualizando && !mostrarAnaliseDetalhada}
         onClose={() => setDocVisualizando(null)}
         documento={docVisualizando}
         casoId={caso?.id}
