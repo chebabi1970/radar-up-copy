@@ -531,7 +531,7 @@ export default function CasoDetalhe() {
               <AtividadeTimeline casoId={casoId} documentos={documentos} caso={caso} />
             </TabsContent>
 
-            <TabsContent value="revisao" className="p-3 md:p-6 mt-0 max-h-[calc(100vh-280px)] overflow-y-auto">
+            <TabsContent value="revisao" className="p-3 mt-0 max-h-[calc(100vh-220px)] overflow-y-auto">
               <DocumentoPaginadoView
                 documentos={documentos}
                 caso={caso}
