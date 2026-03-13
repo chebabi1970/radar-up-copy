@@ -80,7 +80,6 @@ function App() {
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
         <Router>
-          <NavigationTracker />
           <AuthenticatedApp />
         </Router>
         <Toaster />

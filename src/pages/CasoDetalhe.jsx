@@ -210,12 +210,16 @@ export default function CasoDetalhe() {
                   documentos={documentos}
                   cliente={cliente}
                   onAcaoClick={(acao) => {
-                    if (acao === 'upload') {
-                      document.querySelector('[value="documentos"]')?.click();
-                    } else if (acao === 'resolver_inconsistencias') {
-                      document.querySelector('[value="cruzada"]')?.click();
-                    } else if (acao === 'corrigir_criticos' || acao === 'revisar_alertas') {
-                      document.querySelector('[value="documentos"]')?.click();
+                    const acaoMap = {
+                      'upload': 'documentos',
+                      'corrigir_criticos': 'documentos',
+                      'resolver_inconsistencias': 'cruzada',
+                      'revisar_alertas': 'documentos',
+                      'protocolar': 'atividade'
+                    };
+                    const tab = acaoMap[acao];
+                    if (tab) {
+                      document.querySelector(`[value="${tab}"]`)?.click();
                     }
                   }}
                 />
