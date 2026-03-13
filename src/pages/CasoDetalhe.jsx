@@ -48,10 +48,6 @@ const hipoteseLabels = {
 
 export default function CasoDetalhe() {
   const [casoId, setCasoId] = useState(null);
-  const [editandoNome, setEditandoNome] = useState(false);
-  const [novoNome, setNovoNome] = useState('');
-  const [dialogEmail, setDialogEmail] = useState(false);
-  const [novoStatus, setNovoStatus] = useState(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -62,6 +58,7 @@ export default function CasoDetalhe() {
       return;
     }
     setCasoId(id.trim());
+    logInfo('Caso detalhado carregado', { casoId: id });
   }, [window.location.search]);
 
   const { data: caso, isLoading: casoLoading } = useQuery({
