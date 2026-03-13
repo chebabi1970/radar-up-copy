@@ -506,7 +506,7 @@ export default function CasoDetalhe() {
 
 
 
-            <TabsContent value="documentos" className="p-3 md:p-6 mt-0 max-h-[calc(100vh-280px)] overflow-y-auto">
+            <TabsContent value="documentos" className="p-3 mt-0 max-h-[calc(100vh-220px)] overflow-y-auto">
               <DocumentosConsolidado 
                 caso={caso}
                 documentos={documentos}
