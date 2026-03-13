@@ -242,9 +242,13 @@ export default function Clientes() {
     if (cnpjLimpo.length !== 14 || editingCliente) return;
     setCnpjLoading(true);
     setCnpjAutoPreenchido(false);
+    setCnpjApiErro('');
     try {
       const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpjLimpo}`);
-      if (!response.ok) throw new Error('CNPJ não encontrado');
+      if (!response.ok) {
+        setCnpjApiErro('CNPJ não encontrado na Receita Federal');
+        return;
+      }
       const data = await response.json();
 
       const endereco = [
@@ -256,23 +260,26 @@ export default function Clientes() {
         data.uf
       ].filter(Boolean).join(', ');
 
+      // BrasilAPI retorna data_inicio_atividade como "YYYY-MM-DD"
+      const dataAbertura = data.data_inicio_atividade
+        ? data.data_inicio_atividade.substring(0, 10)
+        : '';
+
       setFormData(prev => ({
         ...prev,
         razao_social: data.razao_social || prev.razao_social,
         nome_fantasia: data.nome_fantasia || prev.nome_fantasia,
         email: data.email || prev.email,
         endereco: endereco || prev.endereco,
-        data_abertura_empresa: data.data_inicio_atividade
-          ? data.data_inicio_atividade.split('/').reverse().join('-')
-          : prev.data_abertura_empresa,
-        capital_social: data.capital_social ? String(data.capital_social) : prev.capital_social,
+        data_abertura_empresa: dataAbertura || prev.data_abertura_empresa,
+        capital_social: data.capital_social != null ? String(data.capital_social) : prev.capital_social,
         qsa: data.qsa?.length
           ? data.qsa.map(s => `${s.nome_socio} (${s.qualificacao_socio})`).join('\n')
           : prev.qsa
       }));
       setCnpjAutoPreenchido(true);
     } catch (error) {
-      // silently fail — API pode não ter o CNPJ
+      setCnpjApiErro('Erro ao consultar Receita Federal. Preencha manualmente.');
     } finally {
       setCnpjLoading(false);
     }
