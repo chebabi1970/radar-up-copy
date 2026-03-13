@@ -3,11 +3,13 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import { pagesConfig } from './pages.config'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { useEffect } from 'react';
 import PageNotFound from './lib/PageNotFound';
 import UploadInteligente from './pages/UploadInteligente';
 import CasoDetalhe from './pages/CasoDetalhe';
 import { AuthProvider, useAuth } from '@/components/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import NavigationTracker from '@/lib/NavigationTracker';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -29,13 +31,18 @@ const AuthenticatedApp = () => {
     );
   }
 
+  // Redirect to login when auth is required (useEffect to avoid render-phase side effects)
+  useEffect(() => {
+    if (authError?.type === 'auth_required') {
+      navigateToLogin();
+    }
+  }, [authError]);
+
   // Handle authentication errors
   if (authError) {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
     } else if (authError.type === 'auth_required') {
-      // Redirect to login automatically
-      navigateToLogin();
       return null;
     }
   }
