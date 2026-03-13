@@ -120,7 +120,7 @@ export default function ResultadoAnaliseDetalhado({ resultadoLocal, resultadoLLM
           <p className="text-sm text-slate-500 mt-1 mb-4">
             Execute a análise para verificar a conformidade deste documento.
           </p>
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-2 flex-col">
             {onAnalisarIA && (
               <Button
                 onClick={() => onAnalisarIA()}
@@ -133,6 +133,9 @@ export default function ResultadoAnaliseDetalhado({ resultadoLocal, resultadoLLM
                   <><Sparkles className="h-4 w-4 mr-2" /> Analisar com IA</>
                 )}
               </Button>
+            )}
+            {analisando && (
+              <p className="text-xs text-slate-400">Aguarde até 90 segundos...</p>
             )}
           </div>
         </CardContent>
