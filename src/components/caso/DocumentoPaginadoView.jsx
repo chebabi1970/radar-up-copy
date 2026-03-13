@@ -495,8 +495,8 @@ export default function DocumentoPaginadoView({ documentos = [], caso, cliente }
 
           {/* Cross Analysis */}
           <AnaliseCruzadaCard
-            documento={documento}
             documentos={documentos}
+            caso={caso}
             cliente={cliente}
           />
         </div>
