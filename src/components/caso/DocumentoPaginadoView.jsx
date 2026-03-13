@@ -159,7 +159,7 @@ function AnaliseIndividualCard({ documento, tipoDocumento, hipotese, cliente, ca
     setAnalisando(true);
     try {
       const urls = await obterUrlsDocumentos([documento], 1);
-      if (!urls.length) { toast.error('Não foi possível obter URL do documento'); return; }
+      if (!urls.length) { toast.error('Não foi possível obter URL do documento'); setAnalisando(false); return; }
       const prompt = construirPromptDocumento(tipoDocumento, cliente, {});
       const resultado = await base44.integrations.Core.InvokeLLM({
         prompt,
