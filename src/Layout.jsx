@@ -184,7 +184,7 @@ export default function Layout({ children, currentPageName }) {
       </aside>
 
       {/* Main content */}
-      <div className="lg:pl-52">
+      <div className="lg:pl-44">
         {/* Mobile header */}
         <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:hidden">
           <div className="flex items-center gap-2">
