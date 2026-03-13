@@ -21,7 +21,6 @@ import { toast } from 'sonner';
 
 import DocumentosConsolidado from '@/components/caso/DocumentosConsolidado';
 import AnaliseCruzadaPanel from '@/components/caso/AnaliseCruzadaPanel';
-import PrivacyWarning from '@/components/caso/PrivacyWarning';
 import GerarPDFCaso from '@/components/caso/GerarPDFCaso';
 
 // Componentes modularizados
@@ -32,10 +31,8 @@ import CasoStats from '@/components/caso/CasoStats';
 import DashboardUnificado from '@/components/caso/DashboardUnificado';
 import SeletorHipotese from '@/components/caso/SeletorHipotese';
 import AtividadeTimeline from '@/components/caso/AtividadeTimeline';
-import AnaliseIndividualTab from '@/components/caso/AnaliseIndividualTab';
 
 import { useAutoAnalysis } from '@/hooks/useAutoAnalysis';
-import DocumentoPaginadoView from '@/components/caso/DocumentoPaginadoView';
 import { logInfo, logError } from '@/components/utils/logger';
 
 const hipoteseLabels = {
@@ -142,11 +139,6 @@ export default function CasoDetalhe() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
       <div className="max-w-full mx-auto px-3 sm:px-4 lg:px-6 py-3">
-        {/* Privacy Warning */}
-        <div className="mb-3">
-          <PrivacyWarning />
-        </div>
-
         {/* Header com navegação */}
         <div className="mb-3">
           <Link to={createPageUrl('Casos')}>
@@ -195,15 +187,6 @@ export default function CasoDetalhe() {
                 </TabsTrigger>
 
                 <TabsTrigger
-                  value="analise"
-                  className="data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm rounded-lg px-3 md:px-4 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0 text-slate-500 transition-all"
-                >
-                  <Sparkles className="h-3.5 w-3.5 md:h-4 md:w-4 mr-1.5 md:mr-2" />
-                  <span className="hidden sm:inline">Análise</span>
-                  <span className="sm:hidden">Anal.</span>
-                </TabsTrigger>
-
-                <TabsTrigger
                   value="cruzada"
                   className="data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm rounded-lg px-3 md:px-4 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0 text-slate-500 transition-all"
                 >
@@ -219,15 +202,6 @@ export default function CasoDetalhe() {
                   <Clock className="h-3.5 w-3.5 md:h-4 md:w-4 mr-1.5 md:mr-2" />
                   <span className="hidden lg:inline">Atividade</span>
                   <span className="lg:hidden">Log</span>
-                </TabsTrigger>
-
-                <TabsTrigger
-                  value="revisao"
-                  className="data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm rounded-lg px-3 md:px-4 py-2 text-xs md:text-sm whitespace-nowrap flex-shrink-0 text-slate-500 transition-all"
-                >
-                  <BookOpen className="h-3.5 w-3.5 md:h-4 md:w-4 mr-1.5 md:mr-2" />
-                  <span className="hidden sm:inline">Revisão</span>
-                  <span className="sm:hidden">Rev.</span>
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -269,29 +243,12 @@ export default function CasoDetalhe() {
               />
             </TabsContent>
 
-            <TabsContent value="analise" className="p-3 mt-0 max-h-[calc(100vh-220px)] overflow-y-auto">
-              <AnaliseIndividualTab
-                caso={caso}
-                documentos={documentos}
-                cliente={cliente}
-                onDocumentosChange={() => queryClient.invalidateQueries(['documentos', casoId])}
-              />
-            </TabsContent>
-
             <TabsContent value="cruzada" className="p-3 mt-0 max-h-[calc(100vh-220px)] overflow-y-auto">
               <AnaliseCruzadaPanel documentos={documentos} cliente={cliente} />
             </TabsContent>
 
             <TabsContent value="atividade" className="p-3 mt-0 max-h-[calc(100vh-220px)] overflow-y-auto">
               <AtividadeTimeline casoId={casoId} documentos={documentos} caso={caso} />
-            </TabsContent>
-
-            <TabsContent value="revisao" className="p-3 mt-0 max-h-[calc(100vh-220px)] overflow-y-auto">
-              <DocumentoPaginadoView
-                documentos={documentos}
-                caso={caso}
-                cliente={cliente}
-              />
             </TabsContent>
           </Tabs>
         </div>
