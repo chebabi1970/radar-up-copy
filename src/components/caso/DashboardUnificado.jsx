@@ -62,6 +62,7 @@ export default function DashboardUnificado({ caso, documentos = [], cliente = {}
   const [analiseCruzada, setAnaliseCruzada] = useState(null);
   const [analisando, setAnalisando] = useState(false);
   const [progressoAnalise, setProgressoAnalise] = useState(0);
+  const [mostrarDetalhes, setMostrarDetalhes] = useState(false);
   const analisandoRef = useRef(false);
 
   const executarAnalises = useCallback(async () => {
@@ -268,75 +269,91 @@ export default function DashboardUnificado({ caso, documentos = [], cliente = {}
         </div>
       </div>
 
-      {/* Inconsistências Críticas */}
-      {(problemasCriticos > 0 || inconsistenciasCruzadas > 0) && (
-        <div className="rounded-2xl border border-red-200 bg-gradient-to-r from-red-50/80 to-white overflow-hidden">
-          <div className="p-5">
-            <h4 className="font-semibold text-red-900 flex items-center gap-2 mb-3">
-              <Zap className="h-5 w-5 text-red-500" />
-              Inconsistências Críticas
-            </h4>
-            <div className="space-y-2">
-              {analiseIndividual
-                .filter(a => a.problemas.some(p => p.severidade === 'critico'))
-                .map(analise => (
-                  <div key={analise.documentoId} className="flex items-start gap-2 p-3 rounded-xl bg-white border border-red-100">
-                    <AlertCircle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
-                    <div className="text-sm">
-                      <span className="font-medium text-slate-900">{tipoDocumentoLabels[analise.tipo] || analise.tipo}: </span>
-                      <span className="text-slate-600">
-                        {analise.problemas.filter(p => p.severidade === 'critico').map(p => p.mensagem).join(', ')}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              {analiseCruzada?.resultados
-                .filter(r => r.nivel === 'critico' && !r.passou)
-                .map((resultado, idx) => (
-                  <div key={idx} className="flex items-start gap-2 p-3 rounded-xl bg-white border border-red-100">
-                    <AlertTriangle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
-                    <div className="text-sm">
-                      <span className="font-medium text-slate-900">{resultado.nome}: </span>
-                      <span className="text-slate-600">{resultado.discrepancias?.[0]?.mensagem || resultado.sugestao}</span>
-                    </div>
-                  </div>
-                ))}
+      {/* Detalhes Expandíveis - Inconsistências + Timeline */}
+      {(problemasCriticos > 0 || inconsistenciasCruzadas > 0 || mostrarDetalhes) && (
+        <div className="space-y-4">
+          {/* Inconsistências Críticas */}
+          {(problemasCriticos > 0 || inconsistenciasCruzadas > 0) && (
+            <div className="rounded-2xl border border-red-200 bg-gradient-to-r from-red-50/80 to-white overflow-hidden">
+              <div className="p-5">
+                <h4 className="font-semibold text-red-900 flex items-center gap-2 mb-3">
+                  <Zap className="h-5 w-5 text-red-500" />
+                  Inconsistências Críticas
+                </h4>
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {analiseIndividual
+                    .filter(a => a.problemas.some(p => p.severidade === 'critico'))
+                    .map(analise => (
+                      <div key={analise.documentoId} className="flex items-start gap-2 p-3 rounded-xl bg-white border border-red-100">
+                        <AlertCircle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
+                        <div className="text-sm">
+                          <span className="font-medium text-slate-900">{tipoDocumentoLabels[analise.tipo] || analise.tipo}: </span>
+                          <span className="text-slate-600">
+                            {analise.problemas.filter(p => p.severidade === 'critico').map(p => p.mensagem).join(', ')}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  {analiseCruzada?.resultados
+                    .filter(r => r.nivel === 'critico' && !r.passou)
+                    .slice(0, 3)
+                    .map((resultado, idx) => (
+                      <div key={idx} className="flex items-start gap-2 p-3 rounded-xl bg-white border border-red-100">
+                        <AlertTriangle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
+                        <div className="text-sm">
+                          <span className="font-medium text-slate-900">{resultado.nome}: </span>
+                          <span className="text-slate-600">{resultado.discrepancias?.[0]?.mensagem || resultado.sugestao}</span>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* Timeline (só mostra expandido) */}
+          {mostrarDetalhes && (
+            <div className="rounded-2xl border border-slate-100 bg-white p-6">
+              <h4 className="font-semibold text-slate-900 flex items-center gap-2 mb-5">
+                <Clock className="h-5 w-5 text-slate-400" />
+                Timeline do Processo
+              </h4>
+              <div className="relative">
+                <div className="absolute left-5 top-5 bottom-5 w-0.5 bg-slate-100" />
+                <div className="space-y-6">
+                  {timelineSteps.map((step, idx) => (
+                    <div key={idx} className="relative flex items-start gap-4">
+                      <div className={`relative z-10 flex items-center justify-center w-10 h-10 rounded-xl flex-shrink-0 transition-all ${
+                        step.done ? 'bg-emerald-100 shadow-sm shadow-emerald-100' : 'bg-slate-100'
+                      }`}>
+                        {step.done ? (
+                          <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                        ) : (
+                          <div className="w-3 h-3 rounded-full bg-slate-300" />
+                        )}
+                      </div>
+                      <div className="pt-2">
+                        <p className={`font-medium ${step.done ? 'text-slate-900' : 'text-slate-400'}`}>{step.label}</p>
+                        <p className="text-xs text-slate-500">{step.sub}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
-      {/* Timeline */}
-      <div className="rounded-2xl border border-slate-100 bg-white p-6">
-        <h4 className="font-semibold text-slate-900 flex items-center gap-2 mb-5">
-          <Clock className="h-5 w-5 text-slate-400" />
-          Timeline do Processo
-        </h4>
-        <div className="relative">
-          {/* Connecting line */}
-          <div className="absolute left-5 top-5 bottom-5 w-0.5 bg-slate-100" />
-
-          <div className="space-y-6">
-            {timelineSteps.map((step, idx) => (
-              <div key={idx} className="relative flex items-start gap-4">
-                <div className={`relative z-10 flex items-center justify-center w-10 h-10 rounded-xl flex-shrink-0 transition-all ${
-                  step.done ? 'bg-emerald-100 shadow-sm shadow-emerald-100' : 'bg-slate-100'
-                }`}>
-                  {step.done ? (
-                    <CheckCircle2 className="h-5 w-5 text-emerald-600" />
-                  ) : (
-                    <div className="w-3 h-3 rounded-full bg-slate-300" />
-                  )}
-                </div>
-                <div className="pt-2">
-                  <p className={`font-medium ${step.done ? 'text-slate-900' : 'text-slate-400'}`}>{step.label}</p>
-                  <p className="text-xs text-slate-500">{step.sub}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      {/* Botão Expandir Detalhes */}
+      {!mostrarDetalhes && (
+        <button
+          onClick={() => setMostrarDetalhes(true)}
+          className="w-full py-3 text-center text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors"
+        >
+          Ver mais detalhes →
+        </button>
+      )}
     </div>
   );
 }
