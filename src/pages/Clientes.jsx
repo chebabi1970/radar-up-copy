@@ -253,17 +253,31 @@ export default function Clientes() {
       }
       const data = res.data;
 
+      const endereco = [
+        data.logradouro,
+        data.numero,
+        data.complemento,
+        data.bairro,
+        data.municipio,
+        data.uf
+      ].filter(Boolean).join(', ');
+
+      // BrasilAPI retorna data_inicio_atividade como "YYYY-MM-DD"
+      const dataAbertura = data.data_inicio_atividade
+        ? data.data_inicio_atividade.substring(0, 10)
+        : '';
+
       setFormData(prev => ({
         ...prev,
         razao_social: data.razao_social || prev.razao_social,
         nome_fantasia: data.nome_fantasia || prev.nome_fantasia,
         email: data.email || prev.email,
-        telefone: data.telefone || prev.telefone,
-        endereco: data.endereco || prev.endereco,
-        data_abertura_empresa: data.data_abertura_empresa || prev.data_abertura_empresa,
+        endereco: endereco || prev.endereco,
+        data_abertura_empresa: dataAbertura || prev.data_abertura_empresa,
         capital_social: data.capital_social != null ? String(data.capital_social) : prev.capital_social,
-        qsa: data.qsa || prev.qsa,
-        optante_simples_nacional: data.optante_simples_nacional ?? prev.optante_simples_nacional
+        qsa: data.qsa?.length
+          ? data.qsa.map(s => `${s.nome_socio} (${s.qualificacao_socio})`).join('\n')
+          : prev.qsa
       }));
       setCnpjAutoPreenchido(true);
     } catch (error) {
