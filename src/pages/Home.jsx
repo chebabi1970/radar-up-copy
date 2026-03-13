@@ -142,11 +142,11 @@ export default function Home() {
             <p className="text-lg text-slate-300 mb-12 max-w-2xl mx-auto">
               Análise automática, conforme IN RFB 1984/2020 e Portaria Coana 72/2020
             </p>
-            
-
-
-
-
+            {user &&
+            <p className="text-base text-blue-200 mb-8 font-medium">
+                🎉 Bem-vindo, <strong>{user.full_name}</strong>
+              </p>
+            }
           </div>
 
           {/* Stats Grid */}
