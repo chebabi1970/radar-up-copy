@@ -12,7 +12,9 @@ import {
   Sparkles,
   Clock,
   BookOpen,
-  Upload
+  Upload,
+  FileText,
+  Shield
 } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
