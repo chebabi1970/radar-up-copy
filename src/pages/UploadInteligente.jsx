@@ -293,7 +293,7 @@ export default function UploadInteligente() {
             ref={inputRef}
             type="file"
             multiple
-            accept=".pdf,application/pdf"
+            accept=".pdf,application/pdf,.jpg,.jpeg,.png,image/jpeg,image/png"
             className="hidden"
             onChange={(e) => adicionarArquivos(e.target.files)}
           />
