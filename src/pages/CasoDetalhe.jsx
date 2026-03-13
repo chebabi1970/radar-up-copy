@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { createPageUrl } from '@/components/utils';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -45,19 +45,13 @@ const hipoteseLabels = {
 };
 
 export default function CasoDetalhe() {
-  const [casoId, setCasoId] = useState(null);
+  const [searchParams] = useSearchParams();
+  const casoId = searchParams.get('id')?.trim() || null;
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get('id');
-    if (!id || id.trim() === '') {
-      setCasoId(null);
-      return;
-    }
-    setCasoId(id.trim());
-    logInfo('Caso detalhado carregado', { casoId: id });
-  }, [window.location.search]);
+    if (casoId) logInfo('Caso detalhado carregado', { casoId });
+  }, [casoId]);
 
   const { data: caso, isLoading: casoLoading } = useQuery({
     queryKey: ['caso', casoId],

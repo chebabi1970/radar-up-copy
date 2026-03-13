@@ -25,8 +25,7 @@ const navigation = [
   { name: 'Casos', href: 'Casos', icon: FolderOpen },
   { name: 'Analítico', href: 'DashboardAnalitico', icon: BarChart3 },
   { name: 'Calculadora', href: 'Calculadora', icon: Calculator },
-  { name: 'Ajuda', href: 'Ajuda', icon: HelpCircle },
-  { name: 'FAQ', href: 'FAQ', icon: MessageCircle },
+  { name: 'Ajuda / FAQ', href: 'Ajuda', icon: HelpCircle },
   { name: 'Assinatura', href: 'Assinatura', icon: CreditCard },
   { name: 'Admin', href: 'Admin', icon: Users, adminOnly: true },
 ];
@@ -207,7 +206,7 @@ export default function Layout({ children, currentPageName }) {
         {currentPageName !== 'Home' && <TrialBanner />}
 
         {/* Page content */}
-        <main>
+        <main className="pb-20 lg:pb-0">
           {children}
         </main>
       </div>

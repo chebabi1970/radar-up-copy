@@ -17,7 +17,9 @@ import {
   Zap,
   Sparkles,
   Clock,
-  Rocket } from
+  Rocket,
+  Plus,
+  FolderOpen } from
 'lucide-react';
 
 export default function Home() {
@@ -152,41 +154,22 @@ export default function Home() {
           {/* Stats Grid */}
            {stats &&
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-16">
-               
-
-
-
-
-
-
-
-
-               
-
-
-
-
-
-
-
-
-               
-
-
-
-
-
-
-
-
-               
-
-
-
-
-
-
-
+            <div className="rounded-2xl bg-white/10 border border-white/20 p-6 text-center">
+              <div className="text-4xl font-black text-white mb-1">{stats.totalClientes}</div>
+              <div className="text-sm text-blue-200 font-medium">Clientes</div>
+            </div>
+            <div className="rounded-2xl bg-white/10 border border-white/20 p-6 text-center">
+              <div className="text-4xl font-black text-white mb-1">{stats.totalCasos}</div>
+              <div className="text-sm text-blue-200 font-medium">Casos</div>
+            </div>
+            <div className="rounded-2xl bg-white/10 border border-white/20 p-6 text-center">
+              <div className="text-4xl font-black text-white mb-1">{stats.casosAtivos}</div>
+              <div className="text-sm text-blue-200 font-medium">Casos Ativos</div>
+            </div>
+            <div className="rounded-2xl bg-white/10 border border-white/20 p-6 text-center">
+              <div className="text-4xl font-black text-white mb-1">{stats.documentosPendentes}</div>
+              <div className="text-sm text-blue-200 font-medium">Docs Pendentes</div>
+            </div>
              </div>
           }
         </div>
@@ -228,7 +211,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-5xl font-bold text-white mb-6">
-              Por que escolher RevEstimativa?
+              Por que escolher RADAR UP?
             </h2>
             <p className="text-xl text-slate-300">Desenvolvido por especialistas em conformidade RFB</p>
           </div>
@@ -289,6 +272,46 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Quick Actions — only for logged-in users with existing data */}
+      {user && stats && stats.totalCasos > 0 &&
+      <div className="max-w-6xl mx-auto px-6 pb-8">
+        <div className="rounded-2xl bg-white/10 border border-white/20 p-6">
+          <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+            <Rocket className="h-5 w-5 text-blue-300" />
+            Acesso Rápido
+          </h2>
+          <div className="flex flex-wrap gap-3">
+            <Link to={createPageUrl('Casos')}>
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Plus className="h-4 w-4 mr-2" />
+                Novo Caso
+              </Button>
+            </Link>
+            <Link to={createPageUrl('Casos')}>
+              <Button variant="outline" className="border-white/30 text-white hover:bg-white/10">
+                <FolderOpen className="h-4 w-4 mr-2" />
+                Casos Ativos ({stats.casosAtivos})
+              </Button>
+            </Link>
+            <Link to={createPageUrl('Clientes')}>
+              <Button variant="outline" className="border-white/30 text-white hover:bg-white/10">
+                <Users className="h-4 w-4 mr-2" />
+                Clientes ({stats.totalClientes})
+              </Button>
+            </Link>
+            {stats.documentosPendentes > 0 &&
+            <Link to={createPageUrl('Casos')}>
+              <Button variant="outline" className="border-orange-400/50 text-orange-300 hover:bg-orange-500/10">
+                <Clock className="h-4 w-4 mr-2" />
+                {stats.documentosPendentes} Doc{stats.documentosPendentes !== 1 ? 's' : ''} Pendente{stats.documentosPendentes !== 1 ? 's' : ''}
+              </Button>
+            </Link>
+            }
+          </div>
+        </div>
+      </div>
+      }
 
       {/* Onboarding Section */}
       {user && stats && stats.totalClientes === 0 &&

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { createPageUrl } from '@/components/utils';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -93,13 +93,14 @@ const hipoteseLabelsShort = {
 
 export default function Casos() {
   const { trialExpired } = useTrial();
+  const [searchParams] = useSearchParams();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterHipotese, setFilterHipotese] = useState('all');
   const [viewMode, setViewMode] = useState('cards'); // 'cards' ou 'table'
   const [formData, setFormData] = useState({
-    cliente_id: '',
+    cliente_id: searchParams.get('cliente') || '',
     numero_caso: '',
     hipotese_revisao: '',
     modalidade_pretendida: '',
@@ -110,13 +111,6 @@ export default function Casos() {
   });
 
   const queryClient = useQueryClient();
-
-  // Get cliente from URL params
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const clienteId = params.get('cliente') || '';
-    setFormData(prev => ({ ...prev, cliente_id: clienteId }));
-  }, [window.location.search]);
 
   // Auto-switch to table on desktop
   useEffect(() => {
