@@ -239,6 +239,7 @@ export default function CasoDetalhe() {
               <DocumentosConsolidado 
                 caso={caso}
                 documentos={documentos}
+                cliente={cliente}
                 onDocumentosChange={() => queryClient.invalidateQueries(['documentos', casoId])}
               />
             </TabsContent>
