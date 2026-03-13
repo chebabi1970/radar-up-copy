@@ -264,7 +264,7 @@ export default function CasoDetalhe() {
         {/* Header */}
         <div className="mb-3">
           <Link to={createPageUrl('Casos')}>
-            <Button variant="ghost" className="mb-3 md:mb-4 text-slate-500 hover:text-slate-900 hover:bg-slate-100 px-2 md:px-4 h-8 md:h-10 rounded-xl transition-all">
+            <Button variant="ghost" className="mb-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 px-2 h-8 rounded-xl transition-all">
               <ArrowLeft className="h-3.5 w-3.5 md:h-4 md:w-4 mr-1.5 md:mr-2" /> <span className="hidden sm:inline">Voltar aos Casos</span><span className="sm:hidden">Voltar</span>
             </Button>
           </Link>
