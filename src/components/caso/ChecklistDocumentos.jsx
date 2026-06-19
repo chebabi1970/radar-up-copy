@@ -176,7 +176,7 @@ export default function ChecklistDocumentos({ documentos = [], onUploadClick, on
                         docs ? (aprovado ? 'bg-emerald-400' : 'bg-amber-300') : doc.obrigatorio ? 'bg-red-300' : 'bg-slate-200'
                       }`} />
                     );
-                  ))}
+                  })}
                 </div>
                 {expandida ? <ChevronUp className="h-5 w-5 text-slate-400" /> : <ChevronDown className="h-5 w-5 text-slate-400" />}
               </div>
