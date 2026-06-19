@@ -98,7 +98,7 @@ export default function DocumentosConsolidado({ caso, documentos, onDocumentosCh
             <CheckSquare className="h-5 w-5 text-green-600" />
             Checklist de Documentos
             <Badge variant="outline" className="ml-auto">
-              {documentos?.length || 0} enviados
+              {documentos?.length || 0} recebidos · análise pendente
             </Badge>
           </CardTitle>
         </CardHeader>

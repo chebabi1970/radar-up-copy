@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   Circle,
   AlertCircle,
+  Clock,
   FileText,
   Upload,
   Eye,
@@ -167,10 +168,14 @@ export default function ChecklistDocumentos({ documentos = [], onUploadClick, on
               </div>
               <div className="flex items-center gap-2">
                 <div className="hidden sm:flex items-center gap-1">
-                  {categoria.documentos.slice(0, 6).map((doc, i) => (
-                    <div key={i} className={`w-2 h-2 rounded-full ${
-                      documentosPorTipo[doc.tipo] ? 'bg-emerald-400' : doc.obrigatorio ? 'bg-red-300' : 'bg-slate-200'
-                    }`} />
+                  {categoria.documentos.slice(0, 6).map((doc, i) => {
+                    const docs = documentosPorTipo[doc.tipo];
+                    const aprovado = docs && docs.every(a => a.status_analise === 'aprovado');
+                    return (
+                      <div key={i} className={`w-2 h-2 rounded-full ${
+                        docs ? (aprovado ? 'bg-emerald-400' : 'bg-amber-300') : doc.obrigatorio ? 'bg-red-300' : 'bg-slate-200'
+                      }`} />
+                    );
                   ))}
                 </div>
                 {expandida ? <ChevronUp className="h-5 w-5 text-slate-400" /> : <ChevronDown className="h-5 w-5 text-slate-400" />}
@@ -184,14 +189,20 @@ export default function ChecklistDocumentos({ documentos = [], onUploadClick, on
                   const quantidade = presente ? presente.length : 0;
                   return (
                     <div key={doc.tipo} className={`flex items-start justify-between gap-3 p-3 rounded-xl border transition-all ${
-                      presente ? 'bg-emerald-50/60 border-emerald-100' : doc.obrigatorio ? 'bg-red-50/30 border-red-100/60' : 'bg-slate-50/50 border-slate-100'
+                      presente
+                        ? presente.every(a => a.status_analise === 'aprovado')
+                          ? 'bg-emerald-50/60 border-emerald-100'
+                          : 'bg-amber-50/50 border-amber-100'
+                        : doc.obrigatorio ? 'bg-red-50/30 border-red-100/60' : 'bg-slate-50/50 border-slate-100'
                     }`}>
                       <div className="flex items-start gap-3 flex-1 min-w-0">
-                        {presente ? (
-                          <CheckCircle2 className="h-5 w-5 text-emerald-500 flex-shrink-0 mt-0.5" />
-                        ) : (
-                          <Circle className={`h-5 w-5 flex-shrink-0 mt-0.5 ${doc.obrigatorio ? 'text-red-300' : 'text-slate-300'}`} />
-                        )}
+                      {presente ? (
+                        presente.every(a => a.status_analise === 'aprovado')
+                          ? <CheckCircle2 className="h-5 w-5 text-emerald-500 flex-shrink-0 mt-0.5" title="Aprovado" />
+                          : <Clock className="h-5 w-5 text-amber-400 flex-shrink-0 mt-0.5" title="Recebido – análise pendente" />
+                      ) : (
+                        <Circle className={`h-5 w-5 flex-shrink-0 mt-0.5 ${doc.obrigatorio ? 'text-red-300' : 'text-slate-300'}`} />
+                      )}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className={`text-sm font-medium ${presente ? 'text-emerald-900' : 'text-slate-700'}`}>{doc.nome}</span>
