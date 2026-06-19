@@ -22,6 +22,13 @@ const LayoutWrapper = ({ children, currentPageName }) => Layout ?
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
+  // Redirect to login when auth is required (useEffect to avoid render-phase side effects)
+  useEffect(() => {
+    if (authError?.type === 'auth_required') {
+      navigateToLogin();
+    }
+  }, [authError]);
+
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
@@ -30,13 +37,6 @@ const AuthenticatedApp = () => {
       </div>
     );
   }
-
-  // Redirect to login when auth is required (useEffect to avoid render-phase side effects)
-  useEffect(() => {
-    if (authError?.type === 'auth_required') {
-      navigateToLogin();
-    }
-  }, [authError]);
 
   // Handle authentication errors
   if (authError) {

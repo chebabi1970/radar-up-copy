@@ -1,0 +1,119 @@
+{
+  "name": "AnaliseHistorico",
+  "type": "object",
+  "properties": {
+    "caso_id": {
+      "type": "string",
+      "description": "ID do caso analisado"
+    },
+    "tipo_analise": {
+      "type": "string",
+      "enum": [
+        "balancete_vs_extrato",
+        "validacao_documento",
+        "analise_customizada"
+      ],
+      "description": "Tipo de an\u00e1lise realizada"
+    },
+    "documento_tipo": {
+      "type": "string",
+      "description": "Tipo do documento analisado"
+    },
+    "documento_nome": {
+      "type": "string",
+      "description": "Nome do arquivo analisado"
+    },
+    "usuario_email": {
+      "type": "string",
+      "description": "Email do usu\u00e1rio que realizou a an\u00e1lise"
+    },
+    "data_hora_analise": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data e hora da an\u00e1lise"
+    },
+    "total_discrepancias": {
+      "type": "integer",
+      "default": 0,
+      "description": "N\u00famero total de discrep\u00e2ncias encontradas"
+    },
+    "discrepancias_criticas": {
+      "type": "integer",
+      "default": 0,
+      "description": "N\u00famero de discrep\u00e2ncias cr\u00edticas"
+    },
+    "discrepancias_medias": {
+      "type": "integer",
+      "default": 0,
+      "description": "N\u00famero de discrep\u00e2ncias m\u00e9dias"
+    },
+    "discrepancias_leves": {
+      "type": "integer",
+      "default": 0,
+      "description": "N\u00famero de discrep\u00e2ncias leves"
+    },
+    "status_resultado": {
+      "type": "string",
+      "enum": [
+        "sem_discrepancias",
+        "com_discrepancias",
+        "erro"
+      ],
+      "description": "Status geral da an\u00e1lise"
+    },
+    "dados_completos": {
+      "type": "object",
+      "description": "Dados completos da an\u00e1lise (JSON)"
+    },
+    "observacoes": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es adicionais sobre a an\u00e1lise"
+    }
+  },
+  "required": [
+    "caso_id",
+    "tipo_analise",
+    "usuario_email"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

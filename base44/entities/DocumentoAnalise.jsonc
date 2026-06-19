@@ -1,0 +1,108 @@
+{
+  "name": "DocumentoAnalise",
+  "type": "object",
+  "properties": {
+    "caso_id": {
+      "type": "string",
+      "description": "ID do caso de an\u00e1lise"
+    },
+    "tipo_documento": {
+      "type": "string",
+      "description": "Tipo do documento (ex: extrato_bancario, balancete, procuracao)"
+    },
+    "nome_arquivo": {
+      "type": "string",
+      "description": "Nome do arquivo PDF"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "URL do arquivo armazenado"
+    },
+    "data_documento": {
+      "type": "string",
+      "format": "date",
+      "description": "Data do documento"
+    },
+    "dados_extraidos": {
+      "type": "object",
+      "description": "Dados extra\u00eddos do documento pela IA (JSON din\u00e2mico)"
+    },
+    "status_extracao": {
+      "type": "string",
+      "enum": [
+        "pendente",
+        "processando",
+        "sucesso",
+        "erro"
+      ],
+      "default": "pendente",
+      "description": "Status da extra\u00e7\u00e3o de dados"
+    },
+    "erros_extracao": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Erros encontrados durante a extra\u00e7\u00e3o"
+    },
+    "observacoes": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es sobre o documento"
+    }
+  },
+  "required": [
+    "caso_id",
+    "tipo_documento",
+    "nome_arquivo"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "name": "Cliente",
+  "type": "object",
+  "properties": {
+    "razao_social": {
+      "type": "string",
+      "description": "Raz\u00e3o social da empresa"
+    },
+    "cnpj": {
+      "type": "string",
+      "description": "CNPJ da empresa"
+    },
+    "nome_fantasia": {
+      "type": "string",
+      "description": "Nome fantasia"
+    },
+    "email": {
+      "type": "string",
+      "description": "Email de contato"
+    },
+    "telefone": {
+      "type": "string",
+      "description": "Telefone de contato"
+    },
+    "responsavel": {
+      "type": "string",
+      "description": "Nome do respons\u00e1vel/contato"
+    },
+    "endereco": {
+      "type": "string",
+      "description": "Endere\u00e7o completo"
+    },
+    "modalidade_habilitacao": {
+      "type": "string",
+      "enum": [
+        "limitada",
+        "ilimitada",
+        "analise_regularizacao"
+      ],
+      "description": "Modalidade atual de habilita\u00e7\u00e3o"
+    },
+    "limite_atual": {
+      "type": "number",
+      "description": "Limite de opera\u00e7\u00e3o atual em USD"
+    },
+    "observacoes": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es gerais sobre o cliente"
+    },
+    "procuracao_eletronica": {
+      "type": "boolean",
+      "default": false,
+      "description": "Cliente concedeu procura\u00e7\u00e3o eletr\u00f4nica para acesso ao e-CAC RFB para protocolo de documentos (obrigat\u00f3rio para habilita\u00e7\u00e3o)"
+    },
+    "data_procuracao_eletronica": {
+      "type": "string",
+      "format": "date",
+      "description": "Data em que a procura\u00e7\u00e3o eletr\u00f4nica foi concedida"
+    },
+    "data_abertura_empresa": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de abertura da empresa"
+    },
+    "optante_simples_nacional": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se a empresa \u00e9 optante do Simples Nacional"
+    },
+    "capital_social": {
+      "type": "number",
+      "description": "Valor do capital social em R$"
+    },
+    "qsa": {
+      "type": "string",
+      "description": "Quadro de S\u00f3cios e Administradores (QSA) - nomes e dados dos s\u00f3cios/administradores"
+    }
+  },
+  "required": [
+    "razao_social",
+    "cnpj",
+    "email",
+    "telefone",
+    "endereco"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,196 @@
+{
+  "name": "Caso",
+  "type": "object",
+  "properties": {
+    "cliente_id": {
+      "type": "string",
+      "description": "ID do cliente"
+    },
+    "numero_caso": {
+      "type": "string",
+      "description": "N\u00famero identificador do caso"
+    },
+    "numero_processo_ecac": {
+      "type": "string",
+      "description": "N\u00famero do processo no e-CAC"
+    },
+    "data_protocolo_ecac": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de protocolo no e-CAC"
+    },
+    "artigo_analise_in": {
+      "type": "string",
+      "enum": [
+        "art_14",
+        "art_15"
+      ],
+      "description": "Artigo da IN 1984/2020 que define o procedimento de an\u00e1lise"
+    },
+    "prazo_analise_rfb": {
+      "type": "string",
+      "format": "date",
+      "description": "Prazo final para an\u00e1lise pela RFB (Art. 14: 10-15 dias \u00fateis | Art. 15: 15-30 dias \u00fateis)"
+    },
+    "hipotese_revisao": {
+      "type": "string",
+      "enum": [
+        "recursos_financeiros_livres",
+        "fruicao_desoneracao_tributaria",
+        "recolhimento_tributos_das",
+        "recolhimento_tributos_cprb",
+        "retomada_atividades",
+        "inicio_retomada_atividades_5anos"
+      ],
+      "description": "Hip\u00f3tese que justifica a revis\u00e3o conforme Art. 4\u00ba Portaria Coana 72"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "novo",
+        "em_analise",
+        "aguardando_documentos",
+        "documentacao_completa",
+        "protocolado",
+        "deferido",
+        "indeferido",
+        "arquivado"
+      ],
+      "default": "novo",
+      "description": "Status do caso"
+    },
+    "modalidade_atual": {
+      "type": "string",
+      "enum": [
+        "expressa",
+        "limitada",
+        "ilimitada"
+      ],
+      "description": "Modalidade atual de habilita\u00e7\u00e3o"
+    },
+    "modalidade_pretendida": {
+      "type": "string",
+      "enum": [
+        "limitada",
+        "ilimitada"
+      ],
+      "description": "Modalidade de habilita\u00e7\u00e3o pretendida"
+    },
+    "limite_pretendido": {
+      "type": "number",
+      "description": "Novo limite de opera\u00e7\u00e3o pretendido em USD"
+    },
+    "estimativa_calculada": {
+      "type": "number",
+      "description": "Estimativa da capacidade financeira calculada em R$"
+    },
+    "saldos_bancarios": {
+      "type": "number",
+      "description": "Total de saldos banc\u00e1rios em R$ (\u00faltimos 3 meses)"
+    },
+    "aplicacoes_financeiras": {
+      "type": "number",
+      "description": "Total de aplica\u00e7\u00f5es financeiras em R$ (\u00faltimos 3 meses)"
+    },
+    "data_protocolo": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de protocolo do requerimento"
+    },
+    "prazo_analise": {
+      "type": "string",
+      "format": "date",
+      "description": "Prazo para an\u00e1lise pela RFB"
+    },
+    "numero_processo_rfb": {
+      "type": "string",
+      "description": "N\u00famero do processo na RFB"
+    },
+    "observacoes": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es sobre o caso"
+    },
+    "justificativa_ia": {
+      "type": "string",
+      "description": "Justificativa gerada pela IA para o c\u00e1lculo"
+    },
+    "divergencias_encontradas": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "tipo": {
+            "type": "string"
+          },
+          "descricao": {
+            "type": "string"
+          },
+          "documento1": {
+            "type": "string"
+          },
+          "documento2": {
+            "type": "string"
+          },
+          "resolvida": {
+            "type": "boolean"
+          }
+        }
+      },
+      "description": "Lista de diverg\u00eancias encontradas entre documentos"
+    }
+  },
+  "required": [
+    "cliente_id",
+    "hipotese_revisao"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

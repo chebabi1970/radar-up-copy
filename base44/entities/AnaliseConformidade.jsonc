@@ -1,0 +1,267 @@
+{
+  "name": "AnaliseConformidade",
+  "type": "object",
+  "properties": {
+    "caso_id": {
+      "type": "string",
+      "description": "ID do caso relacionado"
+    },
+    "cnpj": {
+      "type": "string",
+      "description": "CNPJ da empresa"
+    },
+    "modalidade_atual": {
+      "type": "string",
+      "enum": [
+        "expressa",
+        "limitada",
+        "ilimitada"
+      ],
+      "description": "Modalidade atual de habilita\u00e7\u00e3o"
+    },
+    "modalidade_pretendida": {
+      "type": "string",
+      "enum": [
+        "limitada",
+        "ilimitada"
+      ],
+      "description": "Modalidade pretendida"
+    },
+    "valor_pretendido": {
+      "type": "number",
+      "description": "Valor da capacidade financeira pretendida em reais"
+    },
+    "hipotese_legal": {
+      "type": "string",
+      "enum": [
+        "recursos_financeiros_livres",
+        "fruicao_desoneracao_tributaria",
+        "recolhimento_tributos_das",
+        "recolhimento_tributos_cprb",
+        "retomada_atividades",
+        "inicio_retomada_atividades_5anos"
+      ],
+      "description": "Hip\u00f3tese legal invocada (Art. 4\u00ba Portaria Coana 72/2020)"
+    },
+    "data_prevista_protocolo": {
+      "type": "string",
+      "format": "date",
+      "description": "Data prevista de protocolo"
+    },
+    "status_admissibilidade": {
+      "type": "string",
+      "enum": [
+        "nao_iniciado",
+        "em_validacao",
+        "apto",
+        "inapto"
+      ],
+      "default": "nao_iniciado",
+      "description": "Status da valida\u00e7\u00e3o de admissibilidade (etapa 2)"
+    },
+    "dte_regularizado": {
+      "type": "boolean",
+      "description": "Ades\u00e3o ao Domic\u00edlio Tribut\u00e1rio Eletr\u00f4nico"
+    },
+    "cnpj_ativo": {
+      "type": "boolean",
+      "description": "Situa\u00e7\u00e3o ATIVA do CNPJ"
+    },
+    "qsa_regular": {
+      "type": "boolean",
+      "description": "Situa\u00e7\u00e3o REGULAR ou PENDENTE DE REGULARIZA\u00c7\u00c3O dos CPFs do QSA"
+    },
+    "motivo_inaptidao": {
+      "type": "string",
+      "description": "Motivo se houver inaptid\u00e3o na admissibilidade"
+    },
+    "checklist_documentos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "tipo_documento": {
+            "type": "string"
+          },
+          "obrigatorio": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "nao_fornecido",
+              "fornecido",
+              "analise_pendente",
+              "conforme",
+              "nao_conforme",
+              "pendencia_sanavel"
+            ]
+          },
+          "documento_id": {
+            "type": "string"
+          },
+          "observacoes": {
+            "type": "string"
+          },
+          "data_analise": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "description": "Checklist de documentos conforme Art. 7\u00ba e Anexo \u00danico"
+    },
+    "pendencias": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "critica",
+              "sanavel",
+              "informativa"
+            ]
+          },
+          "descricao": {
+            "type": "string"
+          },
+          "norma_aplicavel": {
+            "type": "string"
+          },
+          "como_sanar": {
+            "type": "string"
+          },
+          "data_identificacao": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "solucionada": {
+            "type": "boolean"
+          }
+        }
+      },
+      "description": "Listagem de pend\u00eancias identificadas"
+    },
+    "riscos_fiscais": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "descricao": {
+            "type": "string"
+          },
+          "severidade": {
+            "type": "string",
+            "enum": [
+              "alta",
+              "media",
+              "baixa"
+            ]
+          },
+          "fundamento_normativo": {
+            "type": "string"
+          },
+          "impacto": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Quadro de riscos identificados na an\u00e1lise"
+    },
+    "capacidade_operacional_ok": {
+      "type": "boolean",
+      "description": "Resultado da etapa 3 (capacidade operacional)"
+    },
+    "capacidade_economica_ok": {
+      "type": "boolean",
+      "description": "Resultado da etapa 4 (capacidade econ\u00f4mico-financeira)"
+    },
+    "coerencia_geral_ok": {
+      "type": "boolean",
+      "description": "Resultado da etapa 5 (regras transversais)"
+    },
+    "classificacao_final": {
+      "type": "string",
+      "enum": [
+        "apto_protocolo",
+        "apto_ressalvas",
+        "inapto"
+      ],
+      "description": "Classifica\u00e7\u00e3o final do caso"
+    },
+    "fundamentos_inaptidao": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Fundamentos normativos em caso de inaptid\u00e3o"
+    },
+    "parecer_final": {
+      "type": "string",
+      "description": "Parecer t\u00e9cnico resumido (estilo parecer jur\u00eddico)"
+    },
+    "estrategia_recomendada": {
+      "type": "string",
+      "description": "Sugest\u00e3o de estrat\u00e9gia (refor\u00e7o documental, nova hip\u00f3tese, aguardar, etc)"
+    },
+    "data_ultima_atualizacao": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data da \u00faltima atualiza\u00e7\u00e3o da an\u00e1lise"
+    },
+    "versao_analise": {
+      "type": "integer",
+      "default": 1,
+      "description": "Vers\u00e3o/itera\u00e7\u00e3o da an\u00e1lise"
+    }
+  },
+  "required": [
+    "caso_id"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

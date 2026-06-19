@@ -1,0 +1,67 @@
+{
+  "name": "AuditoriaDocumento",
+  "type": "object",
+  "properties": {
+    "documento_id": {
+      "type": "string",
+      "description": "ID do documento acessado"
+    },
+    "usuario_email": {
+      "type": "string",
+      "description": "Email do usu\u00e1rio que acessou"
+    },
+    "tipo_acesso": {
+      "type": "string",
+      "enum": [
+        "visualizacao",
+        "download_solicitacao",
+        "analise_ia"
+      ],
+      "description": "Tipo de acesso ao documento"
+    },
+    "data_hora_acesso": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data e hora do acesso"
+    },
+    "tempo_visualizacao_segundos": {
+      "type": "integer",
+      "description": "Tempo que o documento foi visualizado (em segundos)"
+    },
+    "endereco_ip": {
+      "type": "string",
+      "description": "IP do usu\u00e1rio (quando dispon\u00edvel)"
+    },
+    "observacoes": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es adicionais"
+    }
+  },
+  "required": [
+    "documento_id",
+    "usuario_email",
+    "tipo_acesso"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

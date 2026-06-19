@@ -1,0 +1,160 @@
+{
+  "name": "Documento",
+  "type": "object",
+  "properties": {
+    "caso_id": {
+      "type": "string",
+      "description": "ID do caso relacionado"
+    },
+    "tipo_documento": {
+      "type": "string",
+      "enum": [
+        "requerimento_das",
+        "documento_identificacao_responsavel",
+        "procuracao",
+        "documento_identificacao_procurador",
+        "contrato_social",
+        "certidao_junta_comercial",
+        "conta_energia",
+        "plano_internet",
+        "guia_iptu",
+        "escritura_imovel",
+        "contrato_locacao",
+        "comprovante_espaco_armazenamento",
+        "extrato_bancario_corrente",
+        "extrato_bancario_integralizacao",
+        "extrato_bancario_aplicacoes",
+        "balancete_verificacao",
+        "balanco_patrimonial_integralizacao",
+        "comprovante_transferencia_integralizacao",
+        "das_simples_nacional",
+        "darf_cprb",
+        "contrato_mutuo",
+        "balancete_mutuante",
+        "comprovante_iof",
+        "outro"
+      ],
+      "description": "Tipo do documento conforme Anexo \u00danico Portaria Coana 72"
+    },
+    "nome_arquivo": {
+      "type": "string",
+      "description": "Nome do arquivo"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "URL do arquivo (descontinuado - usar file_uri)"
+    },
+    "file_uri": {
+      "type": "string",
+      "description": "URI do arquivo privado no storage seguro"
+    },
+    "data_documento": {
+      "type": "string",
+      "format": "date",
+      "description": "Data do documento"
+    },
+    "periodo_referencia": {
+      "type": "string",
+      "description": "Per\u00edodo de refer\u00eancia do documento"
+    },
+    "status_analise": {
+      "type": "string",
+      "enum": [
+        "pendente",
+        "aprovado",
+        "reprovado",
+        "com_ressalvas"
+      ],
+      "default": "pendente",
+      "description": "Status da an\u00e1lise do documento"
+    },
+    "dados_extraidos": {
+      "type": "object",
+      "description": "Dados extra\u00eddos do documento para an\u00e1lise"
+    },
+    "observacoes": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es sobre o documento"
+    },
+    "versao_numero": {
+      "type": "integer",
+      "default": 1,
+      "description": "N\u00famero da vers\u00e3o do documento"
+    },
+    "documento_pai_id": {
+      "type": "string",
+      "description": "ID do documento anterior (vers\u00e3o anterior)"
+    },
+    "status_versao": {
+      "type": "string",
+      "enum": [
+        "ativa",
+        "obsoleta",
+        "em_analise"
+      ],
+      "default": "ativa",
+      "description": "Status da vers\u00e3o do documento"
+    },
+    "tags_versao": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags para categorizar/marcar a vers\u00e3o (ex: 'final', 'corrigido', 'completo')"
+    },
+    "resumo_alteracoes": {
+      "type": "string",
+      "description": "Resumo das altera\u00e7\u00f5es em rela\u00e7\u00e3o \u00e0 vers\u00e3o anterior"
+    },
+    "usuario_upload": {
+      "type": "string",
+      "description": "Email do usu\u00e1rio que fez upload da vers\u00e3o"
+    }
+  },
+  "required": [
+    "caso_id",
+    "tipo_documento",
+    "nome_arquivo"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -59,7 +59,7 @@ const validateEmailRequest = (emailData) => {
 };
 
 const secureLog = (action, data, severity = 'info') => {
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     console.log(`[${severity.toUpperCase()}] ${action}`, data);
   }
 };

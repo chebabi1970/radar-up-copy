@@ -1,0 +1,98 @@
+{
+  "name": "ChecklistItem",
+  "type": "object",
+  "properties": {
+    "caso_id": {
+      "type": "string",
+      "description": "ID do caso"
+    },
+    "codigo_dda": {
+      "type": "string",
+      "description": "C\u00f3digo DDA conforme Anexo \u00danico"
+    },
+    "tipo_documento": {
+      "type": "string",
+      "description": "Tipo do documento requerido"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o do documento"
+    },
+    "base_legal": {
+      "type": "string",
+      "description": "Base legal na Portaria"
+    },
+    "obrigatorio": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se o documento \u00e9 obrigat\u00f3rio"
+    },
+    "aplicavel_hipotese": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Hip\u00f3teses em que este documento \u00e9 aplic\u00e1vel"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pendente",
+        "enviado",
+        "aprovado",
+        "nao_aplicavel"
+      ],
+      "default": "pendente",
+      "description": "Status do item"
+    },
+    "documento_id": {
+      "type": "string",
+      "description": "ID do documento vinculado"
+    }
+  },
+  "required": [
+    "caso_id",
+    "tipo_documento"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

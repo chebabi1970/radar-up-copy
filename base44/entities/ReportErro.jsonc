@@ -1,0 +1,86 @@
+{
+  "name": "ReportErro",
+  "type": "object",
+  "properties": {
+    "titulo": {
+      "type": "string",
+      "description": "T\u00edtulo breve do erro"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o detalhada do erro"
+    },
+    "pagina_origem": {
+      "type": "string",
+      "description": "P\u00e1gina onde ocorreu o erro"
+    },
+    "usuario_email": {
+      "type": "string",
+      "description": "Email do usu\u00e1rio que reportou"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "novo",
+        "em_analise",
+        "resolvido",
+        "ignorado"
+      ],
+      "default": "novo",
+      "description": "Status do report"
+    },
+    "prioridade": {
+      "type": "string",
+      "enum": [
+        "baixa",
+        "media",
+        "alta",
+        "critica"
+      ],
+      "default": "media",
+      "description": "Prioridade do erro"
+    },
+    "dados_adicionais": {
+      "type": "object",
+      "description": "Dados adicionais do contexto"
+    }
+  },
+  "required": [
+    "descricao",
+    "usuario_email"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

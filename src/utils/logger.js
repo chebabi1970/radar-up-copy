@@ -203,7 +203,7 @@ class Logger {
     this.notifyListeners(logEntry);
 
     // Em produção, pode enviar para API de logging
-    if (process.env.NODE_ENV === 'production' && logEntry.level !== LogLevel.DEBUG) {
+    if (import.meta.env.PROD && logEntry.level !== LogLevel.DEBUG) {
       this.sendToRemote(logEntry);
     }
   }
